@@ -15,7 +15,7 @@
 /*global readFile: true, process: false, Packages: false, print: false,
 console: false, java: false, module: false */
 
-var requirejs, require, define;
+var requirejs, require, define, semver = require('semver');
 (function (console, args, readFileFunc) {
 
     var fileName, env, fs, vm, path, exec, rhinoContext, dir, nodeRequire,
@@ -88,7 +88,11 @@ var requirejs, require, define;
         };
 
         exists = function (fileName) {
-            return path.existsSync(fileName);
+            // The path.existsSync function was renamed to fs.existsSync for Node 0.7.1 (unstable)
+            // onwards. This makes sure we use the correct one.
+            var fspathexistsSync = (semver.satisfies(process.version, '>=0.7.1')) ? fs.existsSync : path.existsSync;
+
+            return fspathexistsSync(fileName);
         };
 
 
@@ -2218,7 +2222,11 @@ var requirejs, require, define;
         context.loaded[moduleName] = false;
         context.scriptCount += 1;
 
-        if (path.existsSync(url)) {
+        // The path.existsSync function was renamed to fs.existsSync for Node 0.7.1 (unstable)
+        // onwards. This makes sure we use the correct one.
+        var fspathexistsSync = (semver.satisfies(process.version, '>=0.7.1')) ? fs.existsSync : path.existsSync;
+
+        if (fspathexistsSync(url)) {
             contents = fs.readFileSync(url, 'utf8');
 
             contents = req.makeNodeWrapper(contents);

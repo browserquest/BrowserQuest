@@ -9,10 +9,15 @@ var cls = require('./lib/class')
 module.exports = Map = cls.Class.extend({    
     init: function(filepath) {
     	var self = this;
-    
+
+        // The path.exists function was renamed to fs.exists for Node 0.7.1 (unstable)
+        // onwards. This makes sure we use the correct one.
+        var semver = require('semver');
+        var fspathexists = (semver.satisfies(process.version, '>=0.7.1')) ? fs.exists : path.exists;
+
     	this.isLoaded = false;
-    
-    	path.exists(filepath, function(exists) {
+
+    	fspathexists(filepath, function(exists) {
             if(!exists) {
                 log.error(filepath + " doesn't exist.");
                 return;
