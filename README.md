@@ -37,7 +37,6 @@ The BrowserQuest server should start up, showing output like
 this:
 
     $ node server/js/main.js
-    Could not open config file: ./server/config_local.json
     [Thu Sep 13 2012 17:16:27 GMT-0400 (EDT)] INFO Starting BrowserQuest game server...
     path.exists is now called `fs.exists`.
     [Thu Sep 13 2012 17:16:27 GMT-0400 (EDT)] INFO world1 created (capacity: 200 players).
@@ -47,8 +46,7 @@ this:
     [Thu Sep 13 2012 17:16:27 GMT-0400 (EDT)] INFO world5 created (capacity: 200 players).
     [Thu Sep 13 2012 17:16:27 GMT-0400 (EDT)] INFO Server is listening on port 8000
 
-That means its working.  Ignore the warnings about "Could not open config file"
-and "path.exists".  There should not be any other warnings or errors.
+That means its working.  Ignore the warning about "path.exists".  There should not be any other warnings or errors.
 
 
 Client side
