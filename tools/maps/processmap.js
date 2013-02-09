@@ -114,8 +114,8 @@ module.exports = function processMap(json, options) {
             log.info("Processing doors...");
             for(var j=0; j < doors.length; j += 1) {
                 map.doors[j] = {
-                    x: doors[j].x / map.tilesize,
-                    y: doors[j].y / map.tilesize,
+                    x: Math.round(doors[j].x / map.tilesize),
+                    y: Math.round(doors[j].y / map.tilesize),
                     p: (doors[j].type === 'portal') ? 1 : 0,
                 }
                 var doorprops = doors[j].properties.property;
@@ -138,10 +138,10 @@ module.exports = function processMap(json, options) {
                 }
         
                 map.roamingAreas[i] = {  id: i,
-                                         x: areas[i].x / 16,
-                                         y: areas[i].y / 16,
-                                         width: areas[i].width / 16,
-                                         height: areas[i].height / 16,
+                                         x: Math.round(areas[i].x / map.tilesize),
+                                         y: Math.round(areas[i].y / map.tilesize),
+                                         width: Math.round(areas[i].width / map.tilesize),
+                                         height: Math.round(areas[i].height / map.tilesize),
                                          type: areas[i].type,
                                          nb: nb
                                        };
@@ -151,10 +151,10 @@ module.exports = function processMap(json, options) {
             log.info("Processing chest areas...");
             _.each(objectlayer.object, function(area) {
                 var chestArea = {
-                    x: area.x / map.tilesize,
-                    y: area.y / map.tilesize,
-                    w: area.width / map.tilesize,
-                    h: area.height / map.tilesize
+                    x: Math.round(area.x / map.tilesize),
+                    y: Math.round(area.y / map.tilesize),
+                    w: Math.round(area.width / map.tilesize),
+                    h: Math.round(area.height / map.tilesize)
                 };
                 _.each(area.properties.property, function(prop) {
                     if(prop.name === 'items') {
@@ -173,8 +173,8 @@ module.exports = function processMap(json, options) {
             _.each(objectlayer.object, function(chest) {
                 var items = chest.properties.property.value;
                 var newChest = {
-                    x: chest.x / map.tilesize,
-                    y: chest.y / map.tilesize,
+                    x: Math.round(chest.x / map.tilesize),
+                    y: Math.round(chest.y / map.tilesize),
                     i: _.map(items.split(','), function(name) {
                         return Types.getKindFromString(name);
                     })
@@ -186,10 +186,10 @@ module.exports = function processMap(json, options) {
             log.info("Processing music areas...");
             _.each(objectlayer.object, function(music) {
                 var musicArea = {
-                    x: music.x / map.tilesize,
-                    y: music.y / map.tilesize,
-                    w: music.width / map.tilesize,
-                    h: music.height / map.tilesize,
+                    x: Math.round(music.x / map.tilesize),
+                    y: Math.round(music.y / map.tilesize),
+                    w: Math.round(music.width / map.tilesize),
+                    h: Math.round(music.height / map.tilesize),
                     id: music.properties.property.value
                 };
                 map.musicAreas.push(musicArea);
@@ -201,10 +201,10 @@ module.exports = function processMap(json, options) {
             _.each(objectlayer.object, function(checkpoint) {
                 var cp = {
                     id: ++count,
-                    x: checkpoint.x / map.tilesize,
-                    y: checkpoint.y / map.tilesize,
-                    w: checkpoint.width / map.tilesize,
-                    h: checkpoint.height / map.tilesize
+                    x: Math.round(checkpoint.x / map.tilesize),
+                    y: Math.round(checkpoint.y / map.tilesize),
+                    w: Math.round(checkpoint.width / map.tilesize),
+                    h: Math.round(checkpoint.height / map.tilesize)
                 };
                 if(mode === "server") {
                     cp.s = checkpoint.type ? 1 : 0;
