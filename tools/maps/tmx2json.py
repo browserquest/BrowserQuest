@@ -12,6 +12,7 @@ el = root
 
 def process(el, tagname):
     attrs = dict(el.attrib)
+ 
     for a in attrs.keys():
         if attrs[a].isdigit():
             attrs[a] = int(attrs[a])
@@ -24,12 +25,15 @@ def process(el, tagname):
             if c.tag not in sibs:
                 sibs[c.tag] = []
             sibs[c.tag].append(process(c, False))
+	    el.remove(c)
+
         for k in sibs.keys():
             attrs.update({k: sibs[k]})
     else:
         for c in children:
             attrs.update(process(c, True))
-    
+	    el.remove(c)  	    
+ 
     if tagname:
         return {el.tag: attrs}
     else:
@@ -37,7 +41,8 @@ def process(el, tagname):
 
 res = process(el, True)
 
-dest.write(json.dumps(res))
+json.dump(res,dest)
+
 tmx.close()
 dest.close()
 
