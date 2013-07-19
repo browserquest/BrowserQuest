@@ -3,3 +3,11 @@ node_js:
   - "0.6"
   - "0.8"
   - "0.10"
+
+deploy:
+    provider: openshift
+    user: ADD-USERNAME-HERE
+    password: ADD-PASSWORD-HERE
+    app: browserquest
+    domain: teambq
+    key-name: bq
