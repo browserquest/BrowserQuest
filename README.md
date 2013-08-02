@@ -178,6 +178,9 @@ Visit the url shown by the above command to see BrowserQuest running. You will n
     http://your_openshift_browserquest_url.rhcloud.com:8000/
 
 
+If you want to set up Travis CI to deploy to your instance of BrowserQuest, you'll need to update the `user`, `password`, and `domain` field in the `.travis.yml`.
+
+
 Documentation
 -------------
 
