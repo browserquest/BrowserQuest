@@ -8,6 +8,7 @@
   , "private": false
   , "dependencies": {
     "underscore": ">=1.4"
+    , "coffee-script": ">=0"
     , "log": ">=0"
     , "bison": ">=0"
     , "websocket": ">=0"
