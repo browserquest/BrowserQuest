@@ -137,13 +137,9 @@ footer, header, hgroup, menu, nav, section {
     #parchment, #parchment input {font-family:'GraphicPixel';}
     #parchment input {width:50%;background:rgba(0,0,0,0.05);text-align:center;-moz-animation:glow 0.5s linear infinite alternate;-webkit-animation:glow 0.5s linear infinite alternate;-o-animation:glow 0.5s linear infinite alternate;-ms-animation:glow 0.5s linear infinite alternate;color:#eee;}
     #parchment input:focus {-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;animation:none;color:#fff;background:rgba(0,0,0,0.1);border-color:rgba(0,0,0,0.3);}
+    #parchment input.field-error {background:rgba(255,0,0,0.1);border-color:#f84444;}
 
     #character div {-moz-transition:0.4s opacity linear;-webkit-transition:0.4s opacity linear;-o-transition:0.4s opacity linear;-ms-transition:0.4s opacity linear;transition:0.4s opacity linear;}
-
-    .play div {position:absolute;top:0;left:0;opacity:1;-moz-transition:0.4s linear opacity;-webkit-transition:0.4s linear opacity;-o-transition:0.4s linear opacity;-ms-transition:0.4s linear opacity;transition:0.4s linear opacity}
-    .play.disabled div {opacity:0;pointer-events:none;}
-    .play img {display:none;}
-    .play.loading img {display:block;position:absolute;top:54%;left:50%;}
 
     #mask {height:100%;width:100%;position:fixed;top:0;left:0;background:rgba(20,20,20,1);opacity:1;z-index:20;-moz-transition:0.5s opacity linear;-webkit-transition:0.5s opacity linear;-o-transition:0.5s opacity linear;-ms-transition:0.5s opacity linear;transition:0.5s opacity linear;pointer-events:none;}
 
@@ -266,16 +262,18 @@ footer, header, hgroup, menu, nav, section {
     
 	#bubbles a {pointer-events:auto;text-decoration:none;color:#fcda5c;}
 
-    #create-new span:hover, #cancel span:hover {cursor:pointer;color:#d83939;}
-    #create-new span span {color:#b2af9b;}
-    #create-new span span:hover {color:#b2af9b;}
-    #playbutton span:hover, #cancel span:hover {cursor:pointer;color:#d83939;}
-    #playbutton span span {color:#b2af9b;}
-    #playbutton span span:hover {color:#b2af9b;}
-    #continue span:hover, #cancel span:hover {cursor:pointer;color:#d83939;}
-    #continue span span {color:#b2af9b;}
-    #continue span span:hover {color:#b2af9b;}
+    .link:hover {cursor:pointer;color:#d83939;}
+    .play img {display:none;}
+    .play.loading span:hover {color:inherit;cursor:default;}
+    .play.loading img {display:inline;}
+    #create-new {margin-top:2em;}
     #playername {color:#fff;}
+
+    .validation-summary {margin:.5em;min-height:1em;}
+    .validation-error {color:#880000;text-shadow:2px 2px 2px #ff6666;}
+    @keyframes blink { 0% {color:red;} 100% {color:#880000;}}
+    @-webkit-keyframes blink { 0% {color:red;} 100% {color:#880000;}}
+    .blink {-webkit-animation:blink 0.3s linear 5 alternate;-moz-animation:blink 0.3s linear 5 alternate;animation:blink 0.3s linear 5 alternate;}
 
     #credits, #loadcharacter, #confirmation, #death, #error, #about, #legal {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel', sans-serif;z-index:1000;}
     
@@ -530,11 +528,13 @@ footer, header, hgroup, menu, nav, section {
         #character div {height:63px;width:36px;position:absolute;top:0;left:0;background-position:-1098px -36px;opacity:1;}
         #character.disabled div {opacity:0;pointer-events:none;}
         #parchment input {margin-top:30px; padding:0 15px; border:3px dashed #b2af9b; font-size:30px;border-radius:9px;height:61px;}
+        #parchment.createcharacter input {margin-top:20px;height:50px;}
+        #createcharacter .play {margin: 10px auto 10px auto;}
         .button {height:153px;width:375px;background-position:-687px -306px;margin:30px auto 0 auto;position:relative;}
         .play div {height:153px;width:375px;background-position:-687px 0px;}
         .play div:active {background-position:-687px -459px;}
         .play.loading div {background-position:-681px -2178px;}
-        .play.loading img {margin-top:-16px;margin-left:-16px;height:32px;width:32px;}
+        .play.loading img {width:24px;height:24px;}
         .stroke, .achievement-name {text-shadow:3px 3px 0 #373737, 3px -3px 0 #373737, 0 3px 0 #373737, 3px 0 0 #373737, -3px 3px 0 #373737, -3px -3px 0 #373737, 0 -3px 0 #373737, 0 3px 0 #373737, -3px 0 0 #373737;}
 
         #loadcharacter h1, #confirmation h1, #error h1, #legal h1 {margin-top:30px;}
@@ -545,6 +545,7 @@ footer, header, hgroup, menu, nav, section {
         #error p {width:70%;margin:60px auto 0;}
         .button.delete {background-position:-687px -153px;}
         .button.delete:active {background-position:0 -2178px;}
+        .validation-error {font-size:22px;}
         
 		#container {width:1470px;margin:0 auto;position:absolute;top:50%;margin-top:-378px;left:50%;margin-left:-735px;}
     #expbar{
@@ -603,7 +604,7 @@ footer, header, hgroup, menu, nav, section {
 
 		#healthbar {height:39px;background-position:0 -51px;width:306px;top:9px;background-size:1440px;z-index:20;}
 		#hitpoints {width:0px;height:33px;top:12px;left:33px;z-index:10;position:absolute;}
-		#hpguide {left: 33x; top: 12px; width: 2px; height: 33px; z-index: 30; }
+		#hpguide {left: 33px; top: 12px; width: 2px; height: 33px; z-index: 30; }
 
         #armor, #weapon {width:48px;height:48px;position:absolute;background-size:288px;background-position:-96px;}
         #weapon {left:312px;top:3px;background-size:288px;}
@@ -704,11 +705,13 @@ footer, header, hgroup, menu, nav, section {
         #character div {height:42px;width:24px;position:absolute;top:0;left:0;background-position:-732px -24px;opacity:1;}
         #character.disabled div {opacity:0;pointer-events:none;}
         #parchment input {margin-top:20px; padding:0 10px; border:2px dashed #b2af9b; font-size:20px;border-radius:6px;height:41px;}
+        #parchment.createcharacter input {margin-top:15px;height:30px;}
+        #createcharacter .play {margin: 8px auto 8px auto;}
         .button {height:102px;width:250px;background-position:-458px -204px;margin:20px auto 0 auto;position:relative;}
         .play div {height:102px;width:250px;background-position:-458px 0px;}
         .play div:active {background-position:-458px -306px;}
         .play.loading div {background-position:-454px -1452px;}
-        .play.loading img {margin-top:-12px;margin-left:-12px;height:24px;width:24px;}
+        .play.loading img {height:16px;width:16px;}
         .stroke, .achievement-name {text-shadow:2px 2px 0 #373737, 2px -2px 0 #373737, 0 2px 0 #373737, 2px 0 0 #373737, -2px 2px 0 #373737, -2px -2px 0 #373737, 0 -2px 0 #373737, 0 2px 0 #373737, -2px 0 0 #373737;}
         
         #loadcharacter h1, #confirmation h1, #error h1, #legal h1 {margin-top:20px;}
@@ -719,6 +722,8 @@ footer, header, hgroup, menu, nav, section {
         #error p {width:70%;margin:40px auto 0;}
         .button.delete {background-position:-458px -102px;}
         .button.delete:active {background-position:0 -1452px;}
+        .validation-summary {margin:0 auto .5em auto;}
+        .validation-error {font-size:16px;}
         
 		#container {width:980px;margin:0 auto;position:absolute;top:50%;margin-top:-252px;left:50%;margin-left:-490px;}
     #expbar{
@@ -779,7 +784,7 @@ footer, header, hgroup, menu, nav, section {
 
 		#healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
 		#hitpoints {width:0px;height:22px;top:8px;left:22px;z-index:10;position:absolute;}
-		#hpguide {left: 22x; top: 8px; width: 2px; height: 22px; z-index: 30; }
+		#hpguide {left: 22px; top: 8px; width: 2px; height: 22px; z-index: 30; }
 
         #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
         #weapon {left:208px;top:2px;}
@@ -897,11 +902,12 @@ footer, header, hgroup, menu, nav, section {
         #character div {height:21px;width:12px;position:absolute;top:0;left:0;background-position:-366px -12px;opacity:1;}
         #character.disabled div {opacity:0;pointer-events:none;}
         #parchment input {margin-top:10px; padding:0 5px; border:1px dashed #b2af9b; font-size:10px;border-radius:3px;height:21px;}
+        #parchment.createcharacter input {margin-top:4px;height:15px;}
         .button {height:51px;width:125px;background-position:-229px -102px;margin:10px auto 0 auto;position:relative;}
         .play div {height:51px;width:125px;background-position:-229px 0px;}
         .play div:active {background-position:-229px -153px;}
         .play.loading div {background-position:-227px -726px;}
-        .play.loading img {margin-top:-8px;margin-left:-8px;height:16px;width:16px;}
+        .play.loading img {height:11px;width:11px;}
         .stroke, .achievement-name {text-shadow:1px 1px 0 #373737, 1px -1px 0 #373737, 0 1px 0 #373737, 1px 0 0 #373737, -1px 1px 0 #373737, -1px -1px 0 #373737, 0 -1px 0 #373737, 0 1px 0 #373737, -1px 0 0 #373737;}
         
         #loadcharacter h1, #confirmation h1, #error h1, #legal h1 {margin-top:20px;}
@@ -912,6 +918,7 @@ footer, header, hgroup, menu, nav, section {
         #error p {width:70%;margin:40px auto 0;}
         .button.delete {background-position:-229px -51px;}
         .button.delete:active {background-position:0 -726px;}
+        .validation-error {font-size:11px;}
         
 		#container {width:490px;margin:0 auto;position:absolute;top:50%;margin-top:-126px;left:50%;margin-left:-245px;}
 		#canvasborder {padding:5px;background:url('../img/1/border.png') no-repeat;}
@@ -961,7 +968,7 @@ footer, header, hgroup, menu, nav, section {
 
 		#healthbar {height:13px;background-position:0 -17px;width:102px;top:3px;background-size:480px;z-index:20;}
 		#hitpoints {width:0px;height:11px;top:4px;left:11px;z-index:10;position:absolute;}
-		#hpguide {left: 11x; top: 4px; width: 1px; height: 11px; z-index: 30; }
+		#hpguide {left: 11px; top: 4px; width: 1px; height: 11px; z-index: 30; }
         #armor, #weapon {width:16px;height:16px;position:absolute;background-size:96px;background-position:-32px;}
         #weapon {left:104px;top:1px;}
         #armor {left:121px;top:1px;}
@@ -1083,10 +1090,14 @@ footer, header, hgroup, menu, nav, section {
         #character div {height:21px;width:12px;position:absolute;top:0;left:0;background-position:-366px -12px;opacity:1;}
         #character.disabled div {opacity:0;pointer-events:none;}
         #parchment input {margin-top:10px; padding-bottom:5px; border-bottom:1px dashed #b2af9b; font-size:20px;-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;color:#eee;}
+        #parchment.createcharacter input {margin-top:4px;height:15px;}
         .button {height:54px;width:204px;background-position:-500px -952px;margin:20px auto 0 auto;position:relative;background-size:844px;}
+        .play, #create-new {font-size:16px;}
         .play div {height:54px;width:204px;background-position:-458px -512px; background-size:844px;}
         .play div:active {background-position:0px -1398px;}
+        #create-new {margin-top:0;}
         .stroke {text-shadow:1px 1px 0 #373737, 1px -1px 0 #373737, 0 1px 0 #373737, 1px 0 0 #373737, -1px 1px 0 #373737, -1px -1px 0 #373737, 0 -1px 0 #373737, 0 1px 0 #373737, -1px 0 0 #373737;}
+        .validation-error {color:#ffc2c2;}
 		
 		#instructions {height:172px;width:417px;background-position:0 -527px;margin-left:-208px;margin-top:-93px;color:#373737;}
 		#instructions h1 {font-size:20px;text-align:center;margin-bottom:0;}
@@ -1111,14 +1122,12 @@ footer, header, hgroup, menu, nav, section {
 	    #loadcharacter h1, #confirmation h1, #createcharacter h1, #error h1, #legal h1 {font-size:12px;}
 	    #createcharacter{padding-bottom:20px;}
 		#playername {font-size:20px;margin:10px 0px;}
-		#create-new {margin:20px 0px;font-size:16px;}
-		#playbutton {margin:20px 0px;font-size:16px;}
 		#continue {margin:20px 0px;font-size:16px;}
+		#cancel {margin:20px 0;font-size:16px;}
 		.button.delete {background-position:-612px -1398px;}
 		.button.delete:active {background-position:-250px -1452px;}
 		#confirmation, #error {top:70%;}
 		#confirmation p, #error p {margin:10px 0;line-height:12px;font-size:12px;}
-		#cancel {font-size:20px;margin:20px 0;}
 		
 		#playerimage {display:none;}
 		
@@ -1127,7 +1136,7 @@ footer, header, hgroup, menu, nav, section {
 
 		#healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
 		#hitpoints {width:0px;height:22px;top:8px;left:22px;z-index:10;position:absolute;}
-		#hpguide {left: 22x; top: 8px; width: 2px; height: 22px; z-index: 30; }
+		#hpguide {left: 22px; top: 8px; width: 2px; height: 22px; z-index: 30; }
 
         #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
         #weapon {left:208px;top:2px;}

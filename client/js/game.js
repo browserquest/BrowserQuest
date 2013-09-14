@@ -746,7 +746,11 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 
             this.client = new GameClient(this.host, this.port);
             this.client.wrongpw_callback = function(){
-                self.textWindowHandler.setHtml("<center><h1>Wrong Password</h1></center>");
+                started_callback({
+                    success: false,
+                    reason: 'wrongpw'
+                });
+                self.started = false;
             };
 
             //>>excludeStart("prodHost", pragmas.prodHost);
@@ -1607,7 +1611,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 
                 if(self.hasNeverStarted) {
                     self.start();
-                    started_callback();
+                    started_callback({success: true});
                 }
             });
         },

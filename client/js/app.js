@@ -28,9 +28,12 @@ define(['jquery', 'storage'], function($, Storage) {
         },
 
         initFormFields: function() {
+            var self = this;
+
             // Play button
-            this.$playButton = $('.play'),
-            this.$playDiv = $('.play div');
+            this.$play = $('.play');
+            this.getPlayButton = function() { return this.getActiveForm().find('.play span') };
+            this.setPlayButtonState(true);
 
             // Login form fields
             this.$loginnameinput = $('#loginnameinput');
@@ -64,57 +67,34 @@ define(['jquery', 'storage'], function($, Storage) {
 
         tryStartingGame: function() {
             var self = this;
-            var $play = this.$playButton;
-
             var username = this.getUsernameField().attr('value');
             var userpw = this.getPasswordField().attr('value');
             var email = '';
             var userpw2;
+
             if(this.createNewCharacterFormActive()) {
                 email = this.$email.attr('value');
                 userpw2 = this.$pwinput2.attr('value');
             }
 
             if(!this.validateFormFields(username, userpw, userpw2, email)) return;
+            
+            this.setPlayButtonState(false);
 
             if(!this.ready || !this.canStartGame()) {
-                if(!this.isMobile) {
-                    // on desktop and tablets, add a spinner to the play button
-                    $play.addClass('loading');
-                }
-                this.$playDiv.unbind('click');
                 var watchCanStart = setInterval(function() {
                     log.debug("waiting...");
                     if(self.canStartGame()) {
-                        setTimeout(function() {
-                            if(!self.isMobile) {
-                                $play.removeClass('loading');
-                            }
-                        }, 1500);
                         clearInterval(watchCanStart);
                         self.startGame(username, userpw, email);
                     }
                 }, 100);
             } else {
-                this.$playDiv.unbind('click');
                 this.startGame(username, userpw, email);
             }
         },
 
         startGame: function(username, userpw, email) {
-            var self = this;
-
-            this.hideIntro(function() {
-                if(!self.isDesktop) {
-                    // On mobile and tablet we load the map after the player has clicked
-                    // on the PLAY button instead of loading it in a web worker.
-                    self.game.loadMap();
-                }
-                self.start(username, userpw, email);
-            });
-        },
-
-        start: function(username, userpw, email) {
             var self = this,
                 firstTimePlaying = !self.storage.hasAlreadyPlayed();
 
@@ -141,13 +121,58 @@ define(['jquery', 'storage'], function($, Storage) {
                 //>>includeEnd("prodHost");
 
                 this.center();
-                this.game.run(function() {
-                    $('body').addClass('started');
-                    if(firstTimePlaying) {
-                        self.toggleInstructions();
+                this.game.run(function(result) {
+                    if(result.success === true) {
+                        self.start();
+                    } else {
+                        if(result.reason === 'wrongpw') {
+                            self.addValidationError(self.getPasswordField(), 'The password you entered is incorrect.');
+                        } else {
+                            self.addValidationError(null, 'Failed to launch the game: ' + (result.reason ? result.reason : '(reason unknown)'));
+                        }
+                        self.setPlayButtonState(true);
                     }
                 });
             }
+        },
+
+        start: function() {
+            this.hideIntro(function() {
+                if(!self.isDesktop) {
+                    // On mobile and tablet we load the map after the player has clicked
+                    // on the PLAY button instead of loading it in a web worker.
+                    self.game.loadMap();
+                }
+            });
+            $('body').addClass('started');
+            if(firstTimePlaying) {
+                this.toggleInstructions();
+            }
+        },
+        
+        setPlayButtonState: function(enabled) {
+            var self = this;
+            var $playButton = this.getPlayButton();
+
+            if(enabled) {
+                this.$play.removeClass('loading');
+                $playButton.click(function () { self.tryStartingGame(); });
+                if(this.playButtonRestoreText) {
+                    $playButton.text(this.playButtonRestoreText);
+                }
+            } else {
+                // Loading state
+                this.$play.addClass('loading');
+                $playButton.unbind('click');
+                this.playButtonRestoreText = $playButton.text();
+                $playButton.text('Loading...');
+            }
+        },
+
+        getActiveForm: function() { 
+            if(this.loginFormActive()) return $('#loadcharacter');
+            else if(this.createNewCharacterFormActive()) return $('#createcharacter');
+            else return null;
         },
 
         loginFormActive: function() {
@@ -159,51 +184,37 @@ define(['jquery', 'storage'], function($, Storage) {
         },
 
         /**
-         * Handles the Enter key in the Login / Create New Character forms. (Assumes one of these forms is
-         * currently active.)
-         */
-        handleEnter: function() {
-            var fields = this.loginFormActive() ? this.loginFormFields : this.createNewCharacterFormFields;
-            
-            var isFieldEmpty = function (field) { return $.trim(field.val()) == 0; };
-            var isEmpty = function () { return isFieldEmpty($(this)); };
-            var allFieldsFilledOut = function (fields) {
-                return $.map(fields, isFieldEmpty).every(function (v) { return !v; });
-            };
-
-            if (allFieldsFilledOut(fields)) {
-                // If all fields have been filled out, then the Enter key should start the game.
-                this.tryStartingGame();
-            } else {
-                // Otherwise, pressing Enter should switch focus to the first missing field
-                var firstMissingField = $.grep(fields, isFieldEmpty)[0];
-                if (firstMissingField !== undefined) {
-                    firstMissingField.focus();
-                }
-            }
-        },
-
-        /**
          * Performs some basic validation on the login / create new character forms (required fields are filled
          * out, passwords match, email looks valid). Assumes either the login or the create new character form
          * is currently active.
          */
         validateFormFields: function(username, userpw, userpw2, email) {
-            if(!username || !userpw) {
+            this.clearValidationErrors();
+
+            if(!username) {
+                this.addValidationError(this.getUsernameField(), 'Please enter a username.');
+                return false;
+            }
+
+            if(!userpw) {
+                this.addValidationError(this.getPasswordField(), 'Please enter a password.');
                 return false;
             }
 
             if(this.createNewCharacterFormActive()) {     // In Create New Character form (rather than login form)
+                if(!userpw2) {
+                    this.addValidationError(this.$pwinput2, 'Please confirm your password by typing it again.');
+                    return false;
+                }
+
                 if(userpw !== userpw2) {
-                    alert('The passwords you entered do not match. Please make sure you typed the password correctly.');
-                    this.$pwinput.select();
+                    this.addValidationError(this.$pwinput2, 'The passwords you entered do not match. Please make sure you typed the password correctly.');
                     return false;
                 }
 
                 // Email field is not required, but if it's filled out, then it should look like a valid email.
                 if(email && !this.validateEmail(email)) {
-                    alert('The email you entered appears to be invalid. Please enter a valid email (or leave the email blank).');
-                    this.$email.select();
+                    this.addValidationError(this.$email, 'The email you entered appears to be invalid. Please enter a valid email (or leave the email blank).');
                     return false;
                 }
             }
@@ -215,6 +226,30 @@ define(['jquery', 'storage'], function($, Storage) {
             // Regex borrowed from http://stackoverflow.com/a/46181/393005
             var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             return re.test(email);
+        },
+
+        addValidationError: function(field, errorText) {
+            $('<span/>', {
+                'class': 'validation-error blink',
+                text: errorText
+            }).appendTo('.validation-summary');
+
+            if(field) {
+                field.addClass('field-error').select();
+                field.bind('keypress', function (event) {
+                    field.removeClass('field-error');
+                    $('.validation-error').remove();
+                    $(this).unbind(event);
+                });
+            }
+        },
+
+        clearValidationErrors: function() {
+            var fields = this.loginFormActive() ? this.loginFormFields : this.createNewCharacterFormFields;
+            $.each(fields, function(i, field) {
+                field.removeClass('field-error');
+            });
+            $('.validation-error').remove();
         },
 
         setMouseCoordinates: function(event) {
@@ -329,7 +364,7 @@ define(['jquery', 'storage'], function($, Storage) {
             setTimeout(function() {
                 $('body').addClass('game');
                 hidden_callback();
-            }, 1000);
+            }, 500);
         },
 
         showChat: function() {

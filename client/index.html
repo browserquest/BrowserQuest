@@ -86,14 +86,15 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
           	               <span class="right-ornament"></span>
                          </h1>
                          <form action="none" method="get" accept-charset="utf-8">
-                             <input type="text" id="nameinput" class="stroke" name="player-name" placeholder="Character Name" maxlength=8">
+                             <input type="text" id="nameinput" class="stroke" name="player-name" placeholder="Character Name" maxlength="8">
                              <input type="password" id="pwinput" class="stroke" name="player-pw" placeholder="Password" maxlength="15">
                              <input type="password" id="pwinput2" class="stroke" name="player-pw2" placeholder="Confirm Password" maxlength="15">
-                             <input type="text" id="emailinput" class="stroke" name="player-email" placeholder="Email address" maxlength="48">
+                             <input type="email" id="emailinput" class="stroke" name="player-email" placeholder="Email address" maxlength="48">
                          </form>
-                         <div id="playbutton">
-                           <span>Create</span>
+                         <div class="play">
+                           <span class="link">Create</span>
                          </div>
+                         <div class="validation-summary"></div>
                     </article>
                     <article id="loadcharacter">
           	           <h1>
@@ -105,16 +106,13 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                              <input type="text" id="loginnameinput" class="stroke" name="player-name" placeholder="Character Name" maxlength="8" autofocus>
                              <input type="password" id="loginpwinput" class="stroke" name="player-loginpw" placeholder="Password" maxlength="15">
                          </form>
-                         <br>
-                         <div id="playbutton">
-                           <span>Login</span>
+                         <div class="play">
+                           <span class="link">Login</span>
+                           <img src="img/common/spinner2.gif">
                          </div>
-                          <br>
-                          <br>
-                          <br>
-                          <br>
+                         <div class="validation-summary"></div>
                          <div id="create-new">
-                            <span>New Character</span>
+                            <span class="link">New Character</span>
                          </div>
                     </article>
                     <article id="confirmation">
@@ -125,10 +123,10 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
           	               <span class="right-ornament"></span>
                          </h1>
                          <div id="continue">
-                         <span>Continue</span>
+                         <span class="link">Continue</span>
                          </div>
                          <div id="cancel">
-                            <span>Cancel</span>
+                            <span class="link">Cancel</span>
                          </div>
                     </article>
     	            <article id="credits">

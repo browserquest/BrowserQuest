@@ -104,6 +104,7 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
                 app.storage.clear();
                 app.animateParchment('confirmation', 'createcharacter');
                 $('body').removeClass('returning');
+                app.clearValidationErrors();
             });
 
             $('#cancel span').click(function() {
@@ -179,7 +180,7 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
                 }
             }
 
-            $('#playbutton span').click(function(event) {
+            $('.play span').click(function(event) {
                 app.tryStartingGame();
             });
 
@@ -533,13 +534,13 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
                     $chat = $('#chatinput');
 
                 if(key === 13) { // Enter
-                    if(game.ready) {
+                    if(game.started) {
                         $chat.focus();
                         return false;
                     } else {
                         if(app.loginFormActive() || app.createNewCharacterFormActive()) {
                             $('input').blur();      // exit keyboard on mobile
-                            app.handleEnter();
+                            app.tryStartingGame();
                             return false;           // prevent form submit
                         }
                     }
@@ -556,11 +557,11 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
 
                     // The following may be uncommented for debugging purposes.
                     //
-                    // if(key === 32 && game.ready) { // Space
+                    // if(key === 32 && game.started) { // Space
                     //     game.togglePathingGrid();
                     //     return false;
                     // }
-                    // if(key === 70 && game.ready) { // F
+                    // if(key === 70 && game.started) { // F
                     //     game.toggleDebugInfo();
                     //     return false;
                     // }
