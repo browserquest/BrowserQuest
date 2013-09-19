@@ -1089,7 +1089,7 @@ footer, header, hgroup, menu, nav, section {
         #character {height:21px;width:12px;margin:0 auto;background-position:-354px -12px;margin-top:15px;position:relative;display:none;}
         #character div {height:21px;width:12px;position:absolute;top:0;left:0;background-position:-366px -12px;opacity:1;}
         #character.disabled div {opacity:0;pointer-events:none;}
-        #parchment input {margin-top:10px; padding-bottom:5px; border-bottom:1px dashed #b2af9b; font-size:20px;-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;color:#eee;}
+        #parchment input {margin-top:10px; padding-bottom:5px; border-bottom:1px dashed #b2af9b; font-size:14px;-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;color:#eee;}
         #parchment.createcharacter input {margin-top:4px;height:15px;}
         .button {height:54px;width:204px;background-position:-500px -952px;margin:20px auto 0 auto;position:relative;background-size:844px;}
         .play, #create-new {font-size:16px;}
@@ -1189,7 +1189,7 @@ footer, header, hgroup, menu, nav, section {
         #bubbles {overflow:hidden;}
         
         .intro footer, .intro footer {display:block;}
-        footer {display:none;position:absolute;top:260px;left:0;z-index:9000;height:30px;width:100%;bottom:auto;}
+        footer {display:none;position:absolute;top:290px;left:0;z-index:9000;height:30px;width:100%;bottom:auto;}
         .returning footer, .returning footer {top:300px;}
         #close-legal {display:none;}
         
