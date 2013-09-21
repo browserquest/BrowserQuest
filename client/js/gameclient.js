@@ -11,7 +11,7 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
             this.spawn_callback = null;
             this.movement_callback = null;
 
-            this.wrongpw_callback = null;
+            this.fail_callback = null;
 
             this.notify_callback = null;
 
@@ -90,9 +90,9 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                         self.isTimeout = true;
                         return;
                     }
-                    if(e.data === 'wrongpw'){
-                        if(self.wrongpw_callback){
-                            self.wrongpw_callback();
+                    if(e.data === 'invalidlogin' || e.data === 'userexists' || e.data === 'loggedin'){
+                        if(self.fail_callback){
+                            self.fail_callback(e.data);
                         }
                         return;
                     }
@@ -581,11 +581,17 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
 			this.guildpopulation_callback = callback;
 		},
 
-        sendHello: function(player) {
-            this.sendMessage([Types.Messages.HELLO,
+        sendCreate: function(player) {
+            this.sendMessage([Types.Messages.CREATE,
                               player.name,
                               player.pw,
                               player.email]);
+        },
+
+        sendLogin: function(player) {
+            this.sendMessage([Types.Messages.LOGIN,
+                              player.name,
+                              player.pw]);
         },
 
       //  sendHello: function(player) {

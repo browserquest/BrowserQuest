@@ -66,13 +66,16 @@ define(['jquery', 'storage'], function($, Storage) {
         },
 
         tryStartingGame: function() {
+            if(this.starting) return;        // Already loading
+
             var self = this;
+            var action = this.createNewCharacterFormActive() ? 'create' : 'login';
             var username = this.getUsernameField().attr('value');
             var userpw = this.getPasswordField().attr('value');
             var email = '';
             var userpw2;
 
-            if(this.createNewCharacterFormActive()) {
+            if(action === 'create') {
                 email = this.$email.attr('value');
                 userpw2 = this.$pwinput2.attr('value');
             }
@@ -86,15 +89,15 @@ define(['jquery', 'storage'], function($, Storage) {
                     log.debug("waiting...");
                     if(self.canStartGame()) {
                         clearInterval(watchCanStart);
-                        self.startGame(username, userpw, email);
+                        self.startGame(action, username, userpw, email);
                     }
                 }, 100);
             } else {
-                this.startGame(username, userpw, email);
+                this.startGame(action, username, userpw, email);
             }
         },
 
-        startGame: function(username, userpw, email) {
+        startGame: function(action, username, userpw, email) {
             var self = this,
                 firstTimePlaying = !self.storage.hasAlreadyPlayed();
 
@@ -121,16 +124,30 @@ define(['jquery', 'storage'], function($, Storage) {
                 //>>includeEnd("prodHost");
 
                 this.center();
-                this.game.run(function(result) {
+                this.game.run(action, function(result) {
                     if(result.success === true) {
                         self.start();
                     } else {
-                        if(result.reason === 'wrongpw') {
-                            self.addValidationError(self.getPasswordField(), 'The password you entered is incorrect.');
-                        } else {
-                            self.addValidationError(null, 'Failed to launch the game: ' + (result.reason ? result.reason : '(reason unknown)'));
-                        }
                         self.setPlayButtonState(true);
+
+                        switch(result.reason) {
+                            case 'invalidlogin':
+                                // Login information was not correct (either username or password)
+                                self.addValidationError(null, 'The username or password you entered is incorrect.');
+                                self.getUsernameField().focus();
+                                break;
+                            case 'userexists':
+                                // Attempted to create a new user, but the username was taken
+                                self.addValidationError(self.getUsernameField(), 'The username you entered is not available.');
+                                break;
+                            case 'loggedin':
+                                // Attempted to log in with the same user multiple times simultaneously
+                                self.addValidationError(self.getUsernameField(), 'A player with the specified username is already logged in.');
+                                break;
+                            default:
+                                self.addValidationError(null, 'Failed to launch the game: ' + (result.reason ? result.reason : '(reason unknown)'));
+                                break;
+                        }
                     }
                 });
             }
@@ -155,6 +172,7 @@ define(['jquery', 'storage'], function($, Storage) {
             var $playButton = this.getPlayButton();
 
             if(enabled) {
+                this.starting = false;
                 this.$play.removeClass('loading');
                 $playButton.click(function () { self.tryStartingGame(); });
                 if(this.playButtonRestoreText) {
@@ -162,6 +180,7 @@ define(['jquery', 'storage'], function($, Storage) {
                 }
             } else {
                 // Loading state
+                this.starting = true;
                 this.$play.addClass('loading');
                 $playButton.unbind('click');
                 this.playButtonRestoreText = $playButton.text();

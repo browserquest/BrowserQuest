@@ -5,7 +5,8 @@ var Types = require('../../shared/js/gametypes');
     FormatChecker = Class.extend({
         init: function () {
             this.formats = [];
-            this.formats[Types.Messages.HELLO] = ['s', 's', 's'],
+            this.formats[Types.Messages.CREATE] = ['s', 's', 's'],
+            this.formats[Types.Messages.LOGIN] = ['s', 's'],
             this.formats[Types.Messages.MOVE] = ['n', 'n'],
             this.formats[Types.Messages.LOOTMOVE] = ['n', 'n', 'n'],
             this.formats[Types.Messages.AGGRO] = ['n'],
@@ -46,8 +47,8 @@ var Types = require('../../shared/js/gametypes');
                 // WHO messages have a variable amount of params, all of which must be numbers.
                 return message.length > 0 && _.all(message, function (param) { return _.isNumber(param); });
             }
-            else if (type === Types.Messages.HELLO) {
-				// HELLO with or without guild
+            else if (type === Types.Messages.LOGIN) {
+				// LOGIN with or without guild
 				return _.isString(message[0]) && _.isNumber(message[1]) && _.isNumber(message[2]) && (message.length == 3 || (_.isNumber(message[3]) && _.isString(message[4]) && message.length == 5) );
 			}
             else if (type === Types.Messages.GUILD) {

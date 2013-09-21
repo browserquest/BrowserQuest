@@ -656,7 +656,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
             });
         },
 
-        run: function(started_callback) {
+        run: function(action, started_callback) {
             var self = this;
 
             this.loadSprites();
@@ -695,7 +695,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     self.initPlayer();
                     self.setCursor("hand");
 
-                    self.connect(started_callback);
+                    self.connect(action, started_callback);
 
                     clearInterval(wait);
                 }
@@ -740,15 +740,15 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
             }
         },
 
-        connect: function(started_callback) {
+        connect: function(action, started_callback) {
             var self = this,
                 connecting = false; // always in dispatcher mode in the build version
 
             this.client = new GameClient(this.host, this.port);
-            this.client.wrongpw_callback = function(){
+            this.client.fail_callback = function(reason){
                 started_callback({
                     success: false,
-                    reason: 'wrongpw'
+                    reason: reason
                 });
                 self.started = false;
             };
@@ -783,7 +783,11 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 self.player.email = self.email;
                 self.started = true;
 
-                self.sendHello(self.player);
+                if(action === 'create') {
+                    self.client.sendCreate(self.player);
+                } else {
+                    self.client.sendLogin(self.player);
+                }
             });
 
             this.client.onEntityList(function(list) {
@@ -1632,14 +1636,6 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
             if(attacker.id !== this.playerId) {
                 target.addAttacker(attacker);
             }
-        },
-
-        /**
-         * Sends a "hello" message to the server, as a way of initiating the player connection handshake.
-         * @see GameClient.sendHello
-         */
-        sendHello: function() {
-            this.client.sendHello(this.player);
         },
 
         /**
@@ -2517,8 +2513,8 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
             }
         },
 
-        restart: function() {
-            log.debug("Beginning restart");
+        respawn: function() {
+            log.debug("Beginning respawn");
 
             this.entities = {};
             this.initEntityGrid();
@@ -2533,7 +2529,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 
             this.started = true;
             this.client.enable();
-            this.sendHello(this.player);
+            this.client.sendLogin(this.player);
 
             this.storage.incrementRevives();
 
@@ -2541,7 +2537,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 this.renderer.clearScreen(this.renderer.context);
             }
 
-            log.debug("Finished restart");
+            log.debug("Finished respawn");
         },
 
         onGameStart: function(callback) {

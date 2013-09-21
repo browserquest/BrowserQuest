@@ -353,7 +353,7 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
 
             $('#respawn').click(function(event) {
                 game.audioManager.playSound("revive");
-                game.restart();
+                game.respawn();
                 $('body').removeClass('death');
             });
 

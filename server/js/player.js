@@ -48,23 +48,20 @@ module.exports = Player = Character.extend({
                 return;
             }
 
-            if(!self.hasEnteredGame && action !== Types.Messages.HELLO) { // HELLO must be the first message
+            if(!self.hasEnteredGame && action !== Types.Messages.CREATE && action !== Types.Messages.LOGIN) { // CREATE or LOGIN must be the first message
                 self.connection.close("Invalid handshake message: "+message);
                 return;
             }
-            if(self.hasEnteredGame && !self.isDead && action === Types.Messages.HELLO) { // HELLO can be sent only once
+            if(self.hasEnteredGame && !self.isDead && (action === Types.Messages.CREATE || action === Types.Messages.LOGIN)) { // CREATE/LOGIN can be sent only once
                 self.connection.close("Cannot initiate handshake twice: "+message);
                 return;
             }
 
             self.resetTimeout();
 
-            if(action === Types.Messages.HELLO) {
+            if(action === Types.Messages.CREATE || action === Types.Messages.LOGIN) {
                 var name = Utils.sanitize(message[1]);
                 var pw = Utils.sanitize(message[2]);
-                var email = Utils.sanitize(message[3]);
-
-                log.info("HELLO: " + name);
 
                 // If name was cleared by the sanitizer, give a default name.
                 // Always ensure that the name is not longer than a maximum length.
@@ -75,14 +72,21 @@ module.exports = Player = Character.extend({
                     return;
                 }
                 self.pw = pw.substr(0, 15);
-                self.email = email;
 
-                if(self.server.loggedInPlayer(self.name)){
-                    self.connection.close("Already logged in " + self.name);
-                    return;
+                if(action === Types.Messages.CREATE) {
+                    log.info("CREATE: " + self.name);
+                    self.email = Utils.sanitize(message[3]);
+                    databaseHandler.createPlayer(self);
+                } else {
+                    log.info("LOGIN: " + self.name);
+                    if(self.server.loggedInPlayer(self.name)) {
+                        self.connection.sendUTF8("loggedin");
+                        self.connection.close("Already logged in " + self.name);
+                        return;
+                    }
+                    databaseHandler.checkBan(self);
+                    databaseHandler.loadPlayer(self);
                 }
-                databaseHandler.checkBan(self);
-                databaseHandler.loadPlayer(self);
 //              self.kind = Types.Entities.WARRIOR;
 //              self.equipArmor(message[2]);
 //              self.equipWeapon(message[3]);

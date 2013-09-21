@@ -100,7 +100,7 @@ module.exports = DatabaseHandler = cls.Class.extend({
 
                             // Check Password
                             if(pw !== player.pw){
-                                player.connection.sendUTF8("wrongpw");
+                                player.connection.sendUTF8("invalidlogin");
                                 player.connection.close("Wrong Password: " + player.name);
                                 return;
                             }
@@ -176,27 +176,49 @@ module.exports = DatabaseHandler = cls.Class.extend({
                     return;
                 }
             }
-            client.multi()
-                .sadd("usr", player.name)
-                .hset(userKey, "pw", player.pw)
-                .hset(userKey, "email", player.email)
-                .hset(userKey, "armor", "clotharmor")
-                .hset(userKey, "avatar", "clotharmor")
-                .hset(userKey, "weapon", "sword1")
-                .hset(userKey, "exp", 0)
-                .hset("b:" + player.connection._connection.remoteAddress, "loginTime", curTime)
-                .exec(function(err, replies){
-                    log.info("New User: " + player.name);
-                    player.sendWelcome(
-                        "clotharmor", "sword1", "clotharmor", "sword1", 0,
-                         null, 0, 0,
-                         [null, null], [0, 0],
-                         [false, false, false, false, false, false],
-                         [0, 0, 0, 0, 0, 0],
-                         player.x, player.y, 0);
-                });
+
+            // Could not find the user
+            player.connection.sendUTF8("invalidlogin");
+            player.connection.close("User does not exist: " + player.name);
+            return;
         });
     },
+
+    createPlayer: function(player) {
+        var userKey = "u:" + player.name;
+        var curTime = new Date().getTime();
+
+        // Check if username is taken
+        client.sismember('usr', player.name, function(err, reply) {
+            if(reply === 1) {
+                player.connection.sendUTF8("userexists");
+                player.connection.close("Username not available: " + player.name);
+                return;
+            } else {
+                // Add the player
+                client.multi()
+                    .sadd("usr", player.name)
+                    .hset(userKey, "pw", player.pw)
+                    .hset(userKey, "email", player.email)
+                    .hset(userKey, "armor", "clotharmor")
+                    .hset(userKey, "avatar", "clotharmor")
+                    .hset(userKey, "weapon", "sword1")
+                    .hset(userKey, "exp", 0)
+                    .hset("b:" + player.connection._connection.remoteAddress, "loginTime", curTime)
+                    .exec(function(err, replies){
+                        log.info("New User: " + player.name);
+                        player.sendWelcome(
+                            "clotharmor", "sword1", "clotharmor", "sword1", 0,
+                             null, 0, 0,
+                             [null, null], [0, 0],
+                             [false, false, false, false, false, false],
+                             [0, 0, 0, 0, 0, 0],
+                             player.x, player.y, 0);
+                    });
+            }
+        });
+    },
+
     checkBan: function(player){
         client.smembers("ipban", function(err, replies){
             for(var index = 0; index < replies.length; index++){
