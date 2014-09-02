@@ -1,20 +1,24 @@
-var _ = require('underscore');
-var cls = require('./lib/class');
+var _ = require('underscore'),
+    cls = require('./lib/class'),
+    redis = require('redis');
+
 var Metrics = {};
 
 
 Metrics = cls.Class.extend({
     init: function(config) {
         var self = this;
-
         this.config = config;
-        this.client = new (require('memcache')).Client(config.memcached_port, config.memcached_host);
-        this.client.connect();
+        var client = redis.createClient(process.env.OPENSHIFT_REDIS_PORT || process.env.OPENSHIFT_REDIS_DB_PORT || config.redis_port,
+            process.env.OPENSHIFT_REDIS_HOST || process.env.OPENSHIFT_REDIS_DB_HOST || config.redis_host,
+          {socket_nodelay: true});
+        client.auth(process.env.REDIS_PASSWORD || "")
 
+        this.client = client;
         this.isReady = false;
 
-        this.client.on('connect', function () {
-            log.info('Metrics enabled: memcached client connected to ' + config.memcached_host + ':' + config.memcached_port);
+        client.on('connect', function () {
+            log.info('Metrics enabled: Redis client connected to ' + config.redis_host + ':' + config.redis_port);
             self.isReady = true;
             if (self.readyCallback) {
                 self.readyCallback();
@@ -55,7 +59,7 @@ Metrics = cls.Class.extend({
                 });
             });
         } else {
-            log.error('Memcached client not connected');
+            log.error('Redis client not connected');
         }
     },
 
