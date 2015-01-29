@@ -52,7 +52,7 @@ Then install the Node.js dependencies by running:
 
     $ npm config set registry http://registry.npmjs.org/
     $ npm install -d
-    
+
 Before starting the BrowserQuest server, you must start Redis. In Windows, you can simply run `redis-server.exe` in your `redis\bin\release` directory.
 
 Then start the server by running:
@@ -176,11 +176,11 @@ Currently, BrowserQuest can run on the following PAAS (Platform as a Service) pr
         $ git remote add github https://github.com/browserquest/BrowserQuest.git
         $ git fetch github
         $ git reset --hard github/master
-        
+
 5. Copy the BrowserQuest config file with the following command:
 
         $ cp server/config.json server/config_local.json
-    
+
 6. Open `server/config_local.json` in a text editor such as Gedit (Linux), TextEdit (OS X), or Vim.
 On the line that reads `"production": "heroku",`, change `"heroku"` to `"openshift"`.
 
@@ -201,7 +201,7 @@ Congratulations! You have now deployed BrowserQuest to Openshift! You can see th
 Visit the url shown by the above command to see BrowserQuest running. You will need to add ":8000" to the end. Use the url below as a guide:
 
     http://your_openshift_browserquest_url.rhcloud.com:8000/
-    
+
 ### Instructions for Heroku ###
 
 1. Install the Heroku toolbelt from [here](https://toolbelt.herokuapp.com/).
@@ -209,7 +209,7 @@ Visit the url shown by the above command to see BrowserQuest running. You will n
 2. Create a new application by running the following command:
 
         $ heroku create [NAME]
-    
+
 Where [NAME] is an optional name for your application (Heroku will automatically create one otherwise).
 
 3. Sign up for a Redis provider, such as [Redis To Go](https://redistogo.com), or host a Redis instance yourself.
@@ -220,24 +220,24 @@ Where [NAME] is an optional name for your application (Heroku will automatically
         $ heroku config:add HEROKU_REDIS_HOST=[REDIS_HOST]
         $ heroku config:add HEROKU_REDIS_PORT=[REDIS_PORT]
         $ heroku config:add HEROKU_REDIS_PASSWORD=[REDIS_PASSWORD]
-    
+
 Where [REDIS_HOST], [REDIS_PORT], and [REDIS_PASSOWRD] are your Redis hostname, port, and password, respectively.
 If you Redis instance is configued without a password, omit the last command.
 
 Note: If you use RedisToGo, you will be provided with a URL that looks something like this:
 
     redis://redistogo:12345678901234567890@something.redistogo.com:9023/
-    
+
 In this case, your REDIS_HOST is `something.redistogo.com`, your REDIS_PORT is `9023`, and your REDIS_PASSWORD is `12345678901234567890`.
 
 5. Deploy to Heroku by running the following command:
 
         $ git push heroku master
-    
+
 6. Enable the Heroku WebSockets lab (needed for communication between the browser and the BrowserQuest server) with the following command:
 
         $ heroku labs:enable websockets
-    
+
 
 Congratulations! You have now deployed BrowserQuest to Heroku! To open BrowserQuest in your browser, run `heroku open`.
 
@@ -246,6 +246,20 @@ Documentation
 -------------
 
 Lots of useful info on the [wiki](https://github.com/browserquest/BrowserQuest/wiki).
+
+Running Tests
+-------------
+
+To run all tests:
+
+```no-highlight
+npm test
+```
+
+For individual tests, client or server:
+
+* `npm run test-client`
+* `npm run test-server`
 
 Mailing List
 ------------
