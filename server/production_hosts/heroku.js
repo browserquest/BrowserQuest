@@ -1,12 +1,14 @@
-var config = {}
+'use strict';
 
-config.port = process.env.PORT;
-config.redis_port = process.env.HEROKU_REDIS_PORT
-config.redis_host = process.env.HEROKU_REDIS_HOST
-config.redis_password = process.env.HEROKU_REDIS_PASSWORD
+var env = process.env;
 
-config.isActive = function() {
-  return process.env.HEROKU !== undefined;
-}
+module.exports = {
+  port: env.PORT,
+  redis_port: env.HEROKU_REDIS_PORT,
+  redis_host: env.HEROKU_REDIS_HOST,
+  redis_password: env.HEROKU_REDIS_PASSWORD,
 
-module.exports = config;
+  isActive: function () {
+    return env.HEROKU !== undefined;
+  }
+};

@@ -1,14 +1,15 @@
-var config = {}
+'use strict';
 
+var env = process.env;
 
-config.ip = process.env.OPENSHIFT_NODEJS_IP;
-config.port = process.env.OPENSHIFT_NODEJS_PORT;
-config.redis_port = process.env.OPENSHIFT_REDIS_PORT || process.env.OPENSHIFT_REDIS_DB_PORT
-config.redis_host = process.env.OPENSHIFT_REDIS_HOST || process.env.OPENSHIFT_REDIS_DB_HOST
-config.redis_password = process.env.REDIS_PASSWORD
+module.exports = {
+  ip: env.OPENSHIFT_NODEJS_IP,
+  port: env.OPENSHIFT_NODEJS_PORT,
+  redis_port: env.OPENSHIFT_REDIS_PORT || env.OPENSHIFT_REDIS_DB_PORT,
+  redis_host: env.OPENSHIFT_REDIS_HOST || env.OPENSHIFT_REDIS_DB_HOST,
+  redis_password: env.REDIS_PASSWORD,
 
-config.isActive = function() {
-  return process.env.OPENSHIFT_NODEJS_IP !== undefined;
-}
-
-module.exports = config;
+  isActive: function () {
+    return env.OPENSHIFT_NODEJS_IP !== undefined;
+  }
+};
