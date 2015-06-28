@@ -115,6 +115,7 @@ WS.WebsocketServer = Server.extend({
             // Generate (on the fly) the pages needing special treatment
             app.use(function handleDynamicPageRequests(request, response) {
                 var path = url.parse(request.url).pathname;
+                console.log("DEY WANT A PATH: ", path);
                 switch (path) {
                     case '/status':
                         // The server status page
@@ -210,7 +211,9 @@ WS.WebsocketServer = Server.extend({
             });
         }
 
-        this._ioServer = new socketio(this._httpServer);
+console.log(socketio);
+
+        this._ioServer = new socketio(this._httpServer, {path: '/browserquest'});
         this._ioServer.on('connection', function webSocketListener(socket) {
             log.info('Client socket connected from ' + socket.conn.remoteAddress);
             // Add remoteAddress property

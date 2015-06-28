@@ -1,8 +1,9 @@
 
+
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite',
         'tile', 'warrior', 'gameclient', 'audio', 'updater', 'transition',
         'pathfinder', 'item', 'mob', 'npc', 'player', 'character', 'chest',
-        'mobs', 'exceptions', 'config', 'guild', '../../shared/js/gametypes'],
+        'mobs', 'exceptions', 'config', 'guild', '../shared/js/gametypes'],
 function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedTile,
          Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
          Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config,
@@ -69,7 +70,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 
             // debug
             this.debugPathing = false;
-            
+
             // pvp
             this.pvpFlag = false;
 
@@ -393,7 +394,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
             else {
                 this.targetColor = "rgba(255, 255, 255, 0.5)";
             }
-            
+
             if(this.hoveringPlayer && this.started) {
                 if(this.pvpFlag)
                     this.setCursor("sword");
@@ -407,7 +408,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 this.hoveringTarget = false;
                 this.hoveringPlayer = false;
                 this.targetCellVisible = false;
- 
+
             }
             else if(this.hoveringNpc && this.started) {
                 this.setCursor("talk");
@@ -644,7 +645,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
             this.userpw = userpw;
             this.email = email;
         },
- 
+
         loadAudio: function() {
             this.audioManager = new AudioManager(this);
         },
@@ -1296,7 +1297,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         item.blink(150);
                     }
                 });
-                
+
                 self.client.onGuildError(function(errorType, info) {
 					if(errorType === Types.Messages.GUILDERRORTYPE.BADNAME){
 						self.showNotification(info + " seems to be an inappropriate guild name…");
@@ -1314,21 +1315,21 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 						self.showNotification(info+" is ALREADY a member of “"+self.player.getGuild().name+"”");
 					}
 				});
-				
+
 				self.client.onGuildCreate(function(guildId, guildName) {
 					self.player.setGuild(new Guild(guildId, guildName));
 					self.storage.setPlayerGuild(self.player.getGuild());
 					self.showNotification("You successfully created and joined…");
 					setTimeout(function(){self.showNotification("…" + self.player.getGuild().name)},2500);
 				});
-				
+
 				self.client.onGuildInvite(function(guildId, guildName, invitorName) {
 					self.showNotification(invitorName + " invited you to join “"+guildName+"”.");
 					self.player.addInvite(guildId);
 					setTimeout(function(){$("#chatinput").attr("placeholder", "Do you want to join "+guildName+" ? Type /guild accept yes or /guild accept no");
 					self.app.showChat();},2500);
 				});
-				
+
 				self.client.onGuildJoin(function(playerName, id, guildId, guildName) {
 					if(typeof id === "undefined"){
 						self.showNotification(playerName + " failed to answer to your invitation in time.");
@@ -1347,7 +1348,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 						self.showNotification(playerName+" is now a jolly member of “"+guildName+"”.");//#updateguild
 					}
 				});
-				
+
 				self.client.onGuildLeave(function(name, playerId, guildName) {
 					if(self.player.id===playerId){
 						if(self.player.hasGuild()){
@@ -1363,7 +1364,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 						self.showNotification(name + " has left “"+guildName+"”.");//#updateguild
 					}
 				});
-				
+
 				self.client.onGuildTalk(function(name, id, message) {
 					if(id===self.player.id){
 						self.showNotification("YOU: "+message);
@@ -1376,11 +1377,11 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 				self.client.onMemberConnect(function(name) {
 					self.showNotification(name + " connected to your world.");//#updateguild
 				});
-				
+
 				self.client.onMemberDisconnect(function(name) {
 					self.showNotification(name + " lost connection with your world.");
 				});
-				
+
 				self.client.onReceiveGuildMembers(function(memberNames) {
 					self.showNotification(memberNames.join(", ") + ((memberNames.length===1) ? " is " : " are ") +"currently online.");//#updateguild
 				});
@@ -1459,7 +1460,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     self.player.level = level;
                     self.player.experience = exp;
                     self.updateExpBar();
-                    
+
                     self.infoManager.addDamageInfo("+"+mobExp+" exp", self.player.x, self.player.y - 15, "exp", 3000);
 
                     var expInThisLevel = self.player.experience - Types.expForLevel[self.player.level-1];
@@ -1595,7 +1596,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         self.nbplayers_callback(worldPlayers, totalPlayers);
                     }
                 });
-                
+
                 self.client.onGuildPopulation(function(guildName, guildPopulation) {
 					if(self.nbguildplayers_callback) {
 						self.nbguildplayers_callback(guildName, guildPopulation);
@@ -2255,7 +2256,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
         onCharacterUpdate: function(character) {
             var time = this.currentTime,
                 self = this;
-            
+
             // If mob has finished moving to a different tile in order to avoid stacking, attack again from the new position.
             if(character.previousTarget && !character.isMoving() && character instanceof Mob) {
                 var t = character.previousTarget;
@@ -2467,7 +2468,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 							this.showNotification("“guild accept” is a YES or NO question!!");
 						}
 						break;
-				}	
+				}
 			}
             this.client.sendChat(message);
         },
@@ -2574,7 +2575,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
         onNbPlayersChange: function(callback) {
             this.nbplayers_callback = callback;
         },
-        
+
         onGuildPopulationChange: function(callback) {
 			this.nbguildplayers_callback = callback;
 		},
@@ -2622,7 +2623,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 this.updatetarget_callback(target);
             }
         },
-    
+
         getDeadMobPosition: function(mobId) {
             var position;
 

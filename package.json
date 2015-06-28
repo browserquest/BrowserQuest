@@ -4,6 +4,7 @@
     "type": "git",
     "url": "https://github.com/browserquest/BrowserQuest.git"
   },
+  "license": "LicenseRef-LICENSE",
   "version": "0.0.1",
   "dependencies": {
     "bcrypt": ">=0",
