@@ -39,9 +39,9 @@ Ubuntu
 
     $ sudo apt-get update
     $ sudo apt-get upgrade
-    $ sudo apt-get install g++ make memcached libncurses5 redis-server git -y
+    $ sudo apt-get install g++ make memcached libncurses5 redis-server git curl -y
     $ curl -sL https://deb.nodesource.com/setup | sudo bash -
-    $ sudo apt-get install nodejs
+    $ sudo apt-get install nodejs -y
 
 Clone the git repo:
 
