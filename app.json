@@ -1,0 +1,12 @@
+{
+  "name": "BrowserQuest",
+  "description": "HTML5/JavaScript multiplayer game experiment",
+  "website": "https://github.com/shvelo/BrowserQuest",
+  "success_url": "/",
+  "addons": ["heroku-redis:hobby-dev"],
+  "env": {
+    "HEROKU": "true"
+  },
+  "scripts": {
+  }
+}
