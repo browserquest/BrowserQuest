@@ -70,14 +70,14 @@ define(['jquery', 'storage'], function($, Storage) {
 
             var self = this;
             var action = this.createNewCharacterFormActive() ? 'create' : 'login';
-            var username = this.getUsernameField().attr('value');
-            var userpw = this.getPasswordField().attr('value');
+            var username = this.getUsernameField().val();
+            var userpw = this.getPasswordField().val();
             var email = '';
             var userpw2;
 
             if(action === 'create') {
-                email = this.$email.attr('value');
-                userpw2 = this.$pwinput2.attr('value');
+                email = this.$email.val();
+                userpw2 = this.$pwinput2.val();
             }
 
             if(!this.validateFormFields(username, userpw, userpw2, email)) return;
