@@ -4,21 +4,21 @@
     "type": "git",
     "url": "https://github.com/browserquest/BrowserQuest.git"
   },
-  "version": "0.0.1",
+  "version": "0.0.2",
   "dependencies": {
-    "bcrypt": ">=0",
+    "bcrypt": "~1.0.2",
     "bison": "~1.1.1",
-    "connect": "~3.3.3",
+    "connect": "~3.5.0",
     "log": "~1.4.0",
     "memcache": "~0.3.0",
-    "morgan": "^1.5.0",
-    "redis": ">=0",
-    "requirejs": ">=2",
-    "sanitizer": "~0.1.2",
-    "semver": ">=0",
-    "serve-static": "^1.7.1",
-    "socket.io": "^1.3.2",
-    "underscore": "~1.7.0"
+    "morgan": "^1.7.0",
+    "redis": "~2.6.5",
+    "requirejs": "~2.3.2",
+    "sanitizer": "~0.1.3",
+    "semver": "*",
+    "serve-static": "~1.11.1",
+    "socket.io": "~1.7.2",
+    "underscore": "~1.8.3"
   },
   "devDependencies": {
     "mocha": ">=1",
