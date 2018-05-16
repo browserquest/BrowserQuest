@@ -959,12 +959,21 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 
                     if(!self.player.hasTarget() && self.map.isDoor(x, y)) {
                         var dest = self.map.getDoorDestination(x, y);
+                        var desty = dest.y;
 
-                        self.player.setGridPosition(dest.x, dest.y);
+                        //push them off the door spot so they can use the
+                        //arrow keys and mouse to walk back in or out
+                        if (dest.orientation === Types.Orientations.UP) {
+                            desty--;
+                        } else if (dest.orientation === Types.Orientations.DOWN) {
+                            desty++;
+                        }
+
+                        self.player.setGridPosition(dest.x, desty);
                         self.player.nextGridX = dest.x;
-                        self.player.nextGridY = dest.y;
+                        self.player.nextGridY = desty;
                         self.player.turnTo(dest.orientation);
-                        self.client.sendTeleport(dest.x, dest.y);
+                        self.client.sendTeleport(dest.x, desty);
 
                         if(self.renderer.mobile && dest.cameraX && dest.cameraY) {
                             self.camera.setGridPosition(dest.cameraX, dest.cameraY);
