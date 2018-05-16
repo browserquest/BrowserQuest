@@ -10,7 +10,6 @@
     "bison": "~1.1.1",
     "connect": "~3.3.3",
     "log": "~1.4.0",
-    "memcache": "~0.3.0",
     "morgan": "^1.5.0",
     "redis": ">=0",
     "requirejs": ">=2",
