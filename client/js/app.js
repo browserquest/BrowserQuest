@@ -579,6 +579,16 @@ define(['jquery'], function($) {
             $el.find('.achievement-description').html(desc);
         },
 
+        displayUnhiddenAchievement: function(achievement){
+            var $achievement = $('#achievements li.achievement' + achievement.id);
+
+            if(achievement && achievement.hidden){
+                this.setAchievementData($achievement, achievement.name, achievement.desc);
+                this.showAchievementNotification(achievement.id, achievement.name, "퀘스트 발견!");
+                this.game.client.sendAchievement(achievement.id, "found");
+            }
+        },
+
         toggleScrollContent: function(content) {
             var currentState = $('#parchment').attr('class');
 

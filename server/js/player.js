@@ -14,7 +14,6 @@ var cls = require("./lib/class"),
 
 module.exports = Player = Character.extend({
     init: function(connection, worldServer, databaseHandler) {
-        console.log('databaseHandler')
         var self = this;
 
         this.server = worldServer;
@@ -223,32 +222,32 @@ module.exports = Player = Character.extend({
                         mob.receiveDamage(dmg, self.id);
                         if(mob.hitPoints <= 0) {
                             if(mob.kind === Types.Entities.RAT) {
-                                if(self.achievement[2].found && self.achievement[2].progress !== 999){
-                                    if(isNaN(self.achievement[2].progress)) {
-                                        self.achievement[2].progress = 0;
+                                if(self.achievementFound[2].found && self.achievementProgress[2] !== 999){
+                                    if(isNaN(self.achievementProgress[2])) {
+                                        self.achievementProgress[2] = 0;
                                     } else {
-                                        self.achievement[2].progress++;
+                                        self.achievementProgress[2]++;
                                     }
-                                    if(self.achievement[2].progress >= 10){
+                                    if(self.achievementProgress[2] >= 10){
                                         self.send([Types.Messages.ACHIEVEMENT, 2, "complete"]);
-                                        self.achievement[2].progress = 999;
+                                        self.achievementProgress[2] = 999;
                                         self.incExp(50);
                                     }
-                                    databaseHandler.progressAchievement(self.name, 2, self.achievement[2].progress);
+                                    databaseHandler.progressAchievement(self.name, 2, self.achievementProgress[2]);
                                 }
                             } else if(mob.kind === Types.Entities.CRAB){
-                                if(self.achievement[18].found && self.achievement[18].progress !== 999){
-                                    if(isNaN(self.achievement[18].progress)){
-                                        self.achievement[18].progress = 0;
+                                if(self.achievementFound[18] && self.achievementProgress[18] !== 999){
+                                    if(isNaN(self.achievementProgress[18])){
+                                        self.achievementProgress[18] = 0;
                                     } else{
-                                        self.achievement[18].progress++;
+                                        self.achievementProgress[18]++;
                                     }
-                                    if(self.achievement[18].progress >= 5){
+                                    if(self.achievementProgress[18] >= 5){
                                         self.send([Types.Messages.ACHIEVEMENT, 18, "complete"]);
-                                        self.achievement[18].progress = 999;
+                                        self.achievementProgress[18] = 999;
                                         self.incExp(50);
                                     }
-                                    databaseHandler.progressAchievement(self.name, 4, self.achievement[4].progress);
+                                    databaseHandler.progressAchievement(self.name, 4, self.achievementProgress[4]);
                                 }
                             } else if(mob.kind === Types.Entities.SKELETON){
                                 if(self.achievement[21].found && self.achievement[21].progress !== 999){
@@ -866,14 +865,9 @@ module.exports = Player = Character.extend({
         self.inventory[1] = Types.getKindFromString(inventory[1]);
         self.inventoryCount[0] = inventoryNumber[0];
         self.inventoryCount[1] = inventoryNumber[1];
-        self.achievement[1] = {found: achievementFound[0], progress: achievementProgress[0]};
-        self.achievement[2] = {found: achievementFound[1], progress: achievementProgress[1]};
-        self.achievement[3] = {found: achievementFound[2], progress: achievementProgress[2]};
-        self.achievement[4] = {found: achievementFound[3], progress: achievementProgress[3]};
-        self.achievement[5] = {found: achievementFound[4], progress: achievementProgress[4]};
-        self.achievement[6] = {found: achievementFound[5], progress: achievementProgress[5]};
-        self.achievement[7] = {found: achievementFound[6], progress: achievementProgress[6]};
-        self.achievement[8] = {found: achievementFound[7], progress: achievementProgress[7]};
+        self.achievementFound = achievementFound;
+        self.achievementProgress = achievementProgress;
+        
         self.bannedTime = bannedTime;
         self.banUseTime = banUseTime;
         self.experience = exp;

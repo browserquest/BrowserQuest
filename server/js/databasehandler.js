@@ -54,6 +54,31 @@ loadPlayer: function(player){
                     .hget(userKey, "achievement8:found") // 33
                     .hget(userKey, "achievement8:progress") // 34
                     .hget("cb:" + player.connection._connection.remoteAddress, "etime") // 35
+                    .hget(userKey, "achievement9:found") // 36
+                    .hget(userKey, "achievement9:progress") // 37
+                    .hget(userKey, "achievement10:found") // 38
+                    .hget(userKey, "achievement10:progress") // 39
+                    .hget(userKey, "achievement11:found") // 40
+                    .hget(userKey, "achievement11:progress") // 41
+                    .hget(userKey, "achievement12:found") // 42
+                    .hget(userKey, "achievement12:progress") // 43
+                    .hget(userKey, "achievement13:found") // 44
+                    .hget(userKey, "achievement13:progress") // 45
+                    .hget(userKey, "achievement14:found") // 46
+                    .hget(userKey, "achievement14:progress") // 47
+                    .hget(userKey, "achievement15:found") // 48
+                    .hget(userKey, "achievement15:progress") // 49
+                    .hget(userKey, "achievement16:found") // 50
+                    .hget(userKey, "achievement16:progress") // 51
+                    .hget(userKey, "achievement17:found") // 52
+                    .hget(userKey, "achievement17:progress") // 53
+                    .hget(userKey, "achievement18:found") // 54
+                    .hget(userKey, "achievement18:progress") // 55
+                    .hget(userKey, "achievement19:found") // 56
+                    .hget(userKey, "achievement19:progress") // 57
+                    .hget(userKey, "achievement20:found") // 58
+                    .hget(userKey, "achievement20:progress") // 59
+                
                     .exec(function(err, replies){
                         var pw = replies[0];
                         var armor = replies[1];
@@ -78,6 +103,19 @@ loadPlayer: function(player){
                           Utils.trueFalse(replies[24]),
                           Utils.trueFalse(replies[31]),
                           Utils.trueFalse(replies[33]),
+                          
+                          Utils.trueFalse(replies[36]),
+                          Utils.trueFalse(replies[38]),
+                          Utils.trueFalse(replies[40]),
+                          Utils.trueFalse(replies[42]),
+                          Utils.trueFalse(replies[44]),
+                          Utils.trueFalse(replies[46]),
+                          Utils.trueFalse(replies[48]),
+                          Utils.trueFalse(replies[50]),
+                          Utils.trueFalse(replies[52]),
+                          Utils.trueFalse(replies[54]),
+                          Utils.trueFalse(replies[56]),
+                          Utils.trueFalse(replies[58])
                         ];
                         var achievementProgress = [
                           Utils.NaN2Zero(replies[15]),
@@ -88,6 +126,19 @@ loadPlayer: function(player){
                           Utils.NaN2Zero(replies[25]),
                           Utils.NaN2Zero(replies[32]),
                           Utils.NaN2Zero(replies[34]),
+
+                          Utils.trueFalse(replies[37]),
+                          Utils.trueFalse(replies[39]),
+                          Utils.trueFalse(replies[41]),
+                          Utils.trueFalse(replies[43]),
+                          Utils.trueFalse(replies[45]),
+                          Utils.trueFalse(replies[47]),
+                          Utils.trueFalse(replies[49]),
+                          Utils.trueFalse(replies[51]),
+                          Utils.trueFalse(replies[53]),
+                          Utils.trueFalse(replies[55]),
+                          Utils.trueFalse(replies[57]),
+                          Utils.trueFalse(replies[59])
                         ];
                         var adminnames = replies[26];
                         var pubPoint =  Utils.NaN2Zero(replies[27]);
@@ -197,15 +248,14 @@ createPlayer: function(player) {
                 .hset(userKey, "weapon", "sword1")
                 .hset(userKey, "exp", 0)
                 .hset("b:" + player.connection._connection.remoteAddress, "loginTime", curTime)
-                .hset(userKey, "achievements", JSON.stringify({"unlocked":[],"ratCount":0,"skeletonCount":0,"totalKills":0,"totalDmg":0,"totalRevives":0}))
                 .exec(function(err, replies){
                     log.info("New User: " + player.name);
                     player.sendWelcome(
                         "clotharmor", "sword1", "clotharmor", "sword1", 0,
                          null, 0, 0,
                          [null, null], [0, 0],
-                         [false, false, false, false, false, false],
-                         [0, 0, 0, 0, 0, 0],
+                         Array.apply(null, Array(20)).map(Boolean.prototype.valueOf,false),
+                         Array.apply(null, Array(20)).map(Number.prototype.valueOf,0),
                          player.x, player.y, 0);
                 });
         }
