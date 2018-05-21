@@ -2,6 +2,8 @@
 Types = {
     Messages: {
         HELLO: 0,
+        CREATE: 0,
+        LOGIN: 0,
         WELCOME: 1,
         SPAWN: 2,
         DESPAWN: 3,
