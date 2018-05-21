@@ -78,6 +78,7 @@ define(['jquery'], function($) {
 
         tryStartingGame: function(username, userpw, email, starting_callback) {
             var self = this,
+                action = this.createNewCharacterFormActive() ? 'create' : 'login';
                 $play = this.$playButton;
             
             if(username !== '') {
@@ -96,12 +97,12 @@ define(['jquery'], function($) {
                                 }
                             }, 1500);
                             clearInterval(watchCanStart);
-                            self.startGame(username, userpw, email, starting_callback);
+                            self.startGame(action, username, userpw, email, starting_callback);
                         }
                     }, 100);
                 } else {
                     this.$playDiv.unbind('click');
-                    this.startGame(username, userpw, email, starting_callback);
+                    this.startGame(action, username, userpw, email, starting_callback);
                 }      
             }
         },
@@ -122,12 +123,12 @@ define(['jquery'], function($) {
                         // on the PLAY button instead of loading it in a web worker.
                         self.game.loadMap();
                     }
-                    self.start(username, userpw, email);
+                    self.start(action, username, userpw, email);
                 });
             }
         },
 
-        start: function(username, userpw, email) {
+        start: function(action, username, userpw, email) {
             var self = this;
             
             if(username && !this.game.started) {
@@ -153,7 +154,7 @@ define(['jquery'], function($) {
                 //>>includeEnd("prodHost");
 
                 this.center();
-                this.game.run(function() {
+                this.game.run(action, function() {
                     $('body').addClass('started');
             	});
             }

@@ -32,7 +32,6 @@ var Types = require('../../shared/js/gametypes');
             var message = msg.slice(0),
                 type = message[0],
                 format = this.formats[type];
-
             message.shift();
 
             if (format) {

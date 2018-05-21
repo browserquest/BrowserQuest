@@ -940,7 +940,6 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 self.player.pw = self.userpw;
                 self.player.email = self.email;
                 self.started = true;
-
                 if(action === 'create') {
                     self.client.sendCreate(self.player);
                 } else {
