@@ -200,6 +200,7 @@ module.exports = Player = Character.extend({
                         mob.receiveDamage(dmg, self.id);
                         console.log("killed mob kind " + mob.kind);
                         console.log(Types.Entities.CRAB);
+                        console.log(self.achievementFound);
                         if(mob.hitPoints <= 0) {
                             if(mob.kind === Types.Entities.RAT) {
                                 if(self.achievementFound[2].found && self.achievementProgress[2] !== 999){
@@ -216,26 +217,26 @@ module.exports = Player = Character.extend({
                                     databaseHandler.progressAchievement(self.name, 2, self.achievementProgress[2]);
                                 }
                             } else if(mob.kind === Types.Entities.CRAB){
-                                console.log(self.achievementFound[18]);
-                                console.log(self.achievementProgress[18]);
-                                if(self.achievementFound[18] && self.achievementProgress[18] !== 999){
-                                    if(isNaN(self.achievementProgress[18])){
-                                        self.achievementProgress[18] = 0;
+                                const achievementId = 18;
+                                if(self.achievementFound[achievementId] && self.achievementProgress[achievementId] !== 999){
+                                    if(isNaN(self.achievementProgress[achievementId])){
+                                        self.achievementProgress[achievementId] = 0;
                                     } else{
-                                        self.achievementProgress[18]++;
+                                        self.achievementProgress[achievementId]++;
                                     }
-                                    if(self.achievementProgress[18] >= 5){
-                                        self.send([Types.Messages.ACHIEVEMENT, 18, "complete"]);
-                                        self.achievementProgress[18] = 999;
+                                    if(self.achievementProgress[achievementId] >= 5){
+                                        self.send([Types.Messages.ACHIEVEMENT, achievementId, "complete"]);
+                                        self.achievementProgress[achievementId] = 999;
                                         self.incExp(50);
                                     }
                                     console.log('kill crab king');
-                                    console.log(self.achievementProgress[18]);
-                                    databaseHandler.progressAchievement(self.name, 4, self.achievementProgress[4]);
+                                    console.log(self.achievementProgress[achievementId]);
+                                    databaseHandler.progressAchievement(self.name, achievementId, self.achievementProgress[achievementId]);
                                 }
                             } else if(mob.kind === Types.Entities.SKELETON){
-                                if(self.achievementFound && self.achievement[21].progress !== 999){
-                                    const achievementId = 21;
+                                const achievementId = 21;
+                                if(self.achievementFound && self.achievement[achievementId].progress !== 999){
+                                    
                                     if(isNaN(self.achievementProgress[achievementId])){
                                         self.achievementProgress[achievementId] = 0;
                                     } else{
@@ -246,7 +247,7 @@ module.exports = Player = Character.extend({
                                         self.achievementProgress[achievementId] = 999;
                                         self.incExp(200);
                                     }
-                                    databaseHandler.progressAchievement(self.name, 7, self.achievementProgress[achievementId]);
+                                    databaseHandler.progressAchievement(self.name, achievementId, self.achievementProgress[achievementId]);
                                 }
                             }
                         }
@@ -324,6 +325,9 @@ module.exports = Player = Character.extend({
                         } else if(Types.isWeapon(kind)) {
                             self.equipItem(item.kind);
                             self.broadcast(self.equip(kind));
+
+                            
+                            
                         } else if(Types.isArmor(kind)) {
                             if(self.level < 100){
                                 self.equipItem(item.kind);
@@ -728,6 +732,7 @@ module.exports = Player = Character.extend({
     },
 
     equipItem: function(itemKind, isAvatar) {
+        var self = this;
         if(itemKind) {
             log.debug(this.name + " equips " + Types.getKindAsString(itemKind));
 
@@ -747,6 +752,13 @@ module.exports = Player = Character.extend({
             } else if(Types.isWeapon(itemKind)) {
                 this.databaseHandler.equipWeapon(this.name, Types.getKindAsString(itemKind));
                 this.equipWeapon(itemKind);
+
+                const achievementId = 1;
+                if(self.achievementProgress[achievementId] < 999) {
+                    self.achievementProgress[achievementId] = 999;
+                    self.send([Types.Messages.ACHIEVEMENT, achievementId, "complete"]);
+                    self.databaseHandler.progressAchievement(self.name, achievementId, self.achievementProgress[achievementId]);
+                }
             }
         }
     },

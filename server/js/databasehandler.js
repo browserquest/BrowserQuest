@@ -107,63 +107,66 @@ loadPlayer: function(player){
                           Utils.NaN2Zero(replies[11]),
                           Utils.NaN2Zero(replies[13])];
                         var achievementFound = [
-                          Utils.trueFalse(replies[14]),
-                          Utils.trueFalse(replies[16]),
-                          Utils.trueFalse(replies[18]),
-                          Utils.trueFalse(replies[20]),
-                          Utils.trueFalse(replies[22]),
-                          Utils.trueFalse(replies[24]),
-                          Utils.trueFalse(replies[31]),
-                          Utils.trueFalse(replies[33]),
-                          
-                          Utils.trueFalse(replies[36]),
-                          Utils.trueFalse(replies[38]),
-                          Utils.trueFalse(replies[40]),
-                          Utils.trueFalse(replies[42]),
-                          Utils.trueFalse(replies[44]),
-                          Utils.trueFalse(replies[46]),
-                          Utils.trueFalse(replies[48]),
-                          Utils.trueFalse(replies[50]),
-                          Utils.trueFalse(replies[52]),
-                          Utils.trueFalse(replies[54]),
-                          Utils.trueFalse(replies[56]),
-                          Utils.trueFalse(replies[58]),
+                            null,
+                            Utils.trueFalse(replies[14]),
+                            Utils.trueFalse(replies[16]),
+                            Utils.trueFalse(replies[18]),
+                            Utils.trueFalse(replies[20]),
+                            Utils.trueFalse(replies[22]),
+                            Utils.trueFalse(replies[24]),
+                            Utils.trueFalse(replies[31]),
+                            Utils.trueFalse(replies[33]),
+                            
+                            Utils.trueFalse(replies[36]),
+                            Utils.trueFalse(replies[38]),
+                            Utils.trueFalse(replies[40]),
+                            Utils.trueFalse(replies[42]),
+                            Utils.trueFalse(replies[44]),
+                            Utils.trueFalse(replies[46]),
+                            Utils.trueFalse(replies[48]),
+                            Utils.trueFalse(replies[50]),
+                            Utils.trueFalse(replies[52]),
+                            Utils.trueFalse(replies[54]),
+                            Utils.trueFalse(replies[56]),
+                            Utils.trueFalse(replies[58]),
 
-                          Utils.trueFalse(replies[60]),
-                          Utils.trueFalse(replies[62]),
-                          Utils.trueFalse(replies[64]),
-                          Utils.trueFalse(replies[66]),
-                          Utils.trueFalse(replies[68])
+                            Utils.trueFalse(replies[60]),
+                            Utils.trueFalse(replies[62]),
+                            Utils.trueFalse(replies[64]),
+                            Utils.trueFalse(replies[66]),
+                            Utils.trueFalse(replies[68])
                         ];
                         var achievementProgress = [
-                          Utils.NaN2Zero(replies[15]),
-                          Utils.NaN2Zero(replies[17]),
-                          Utils.NaN2Zero(replies[19]),
-                          Utils.NaN2Zero(replies[21]),
-                          Utils.NaN2Zero(replies[23]),
-                          Utils.NaN2Zero(replies[25]),
-                          Utils.NaN2Zero(replies[32]),
-                          Utils.NaN2Zero(replies[34]),
+                            null,
+                            Utils.NaN2Zero(replies[15]),
+                            Utils.NaN2Zero(replies[17]),
+                            Utils.NaN2Zero(replies[19]),
+                            Utils.NaN2Zero(replies[21]),
+                            Utils.NaN2Zero(replies[23]),
+                            Utils.NaN2Zero(replies[25]),
+                            Utils.NaN2Zero(replies[32]),
+                            Utils.NaN2Zero(replies[34]),
 
-                          Utils.trueFalse(replies[37]),
-                          Utils.trueFalse(replies[39]),
-                          Utils.trueFalse(replies[41]),
-                          Utils.trueFalse(replies[43]),
-                          Utils.trueFalse(replies[45]),
-                          Utils.trueFalse(replies[47]),
-                          Utils.trueFalse(replies[49]),
-                          Utils.trueFalse(replies[51]),
-                          Utils.trueFalse(replies[53]),
-                          Utils.trueFalse(replies[55]),
-                          Utils.trueFalse(replies[57]),
-                          Utils.trueFalse(replies[59]),
+                            Utils.NaN2Zero(replies[37]),
+                            Utils.NaN2Zero(replies[39]),
+                            Utils.NaN2Zero(replies[41]),
+                            Utils.NaN2Zero(replies[43]),
+                            Utils.NaN2Zero(replies[45]),
+                            Utils.NaN2Zero(replies[47]),
+                            Utils.NaN2Zero(replies[49]),
+                            Utils.NaN2Zero(replies[51]),
+                            Utils.NaN2Zero(replies[53]),
+                            Utils.NaN2Zero(replies[55]),
+                            Utils.NaN2Zero(replies[57]),
+                            Utils.NaN2Zero(replies[59]),
 
-                          Utils.trueFalse(replies[61]),
-                          Utils.trueFalse(replies[63]),
-                          Utils.trueFalse(replies[65]),
-                          Utils.trueFalse(replies[67]),
-                          Utils.trueFalse(replies[69])
+                            Utils.NaN2Zero(replies[61]),
+                            Utils.NaN2Zero(replies[63]),
+                            Utils.NaN2Zero(replies[65]),
+                            Utils.NaN2Zero(replies[67]),
+                            Utils.NaN2Zero(replies[69])
                         ];
+                        console.log(replies);
                         var adminnames = replies[26];
                         var pubPoint =  Utils.NaN2Zero(replies[27]);
                         var weaponAvatar = replies[28] ? replies[28] : weapon;
@@ -399,6 +402,7 @@ makeEmptyInventory: function(name, number){
 },
 foundAchievement: function(name, number){
     log.info("Found Achievement: " + name + " " + number);
+    console.log("achievement" + number + ":found");
     client.hset("u:" + name, "achievement" + number + ":found", "true");
 },
 progressAchievement: function(name, number, progress){

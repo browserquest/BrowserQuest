@@ -254,7 +254,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 1,
                     name: "A True Warrior",
                     desc: "Find a new weapon",
-                    completed: achievementProgress[0] === 999 ? true : false,
+                    completed: achievementProgress[1] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -263,8 +263,8 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 2,
                     name: "Angry Rats",
                     desc: "Kill 10 rats",
-                    hidden: !achievementFound[1],
-                    completed: achievementProgress[1] === 999 ? true : false,
+                    hidden: !achievementFound[2],
+                    completed: achievementProgress[2] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -273,7 +273,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 3,
                     name: "Small Talk",
                     desc: "Talk to a non-player character",
-                    completed: achievementProgress[2] === 999 ? true : false,
+                    completed: achievementProgress[3] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -282,7 +282,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 4,
                     name: "Fat Loot",
                     desc: "Get a new armor set",
-                    completed: achievementProgress[3] === 999 ? true : false,
+                    completed: achievementProgress[4] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -291,7 +291,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 5,
                     name: "Underground",
                     desc: "Explore at least one cave",
-                    completed: achievementProgress[4] === 999 ? true : false,
+                    completed: achievementProgress[5] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -300,7 +300,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 6,
                     name: "Coward",
                     desc: "Successfully escape an enemy",
-                    completed: achievementProgress[5] === 999 ? true : false,
+                    completed: achievementProgress[6] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -309,7 +309,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 7,
                     name: "Skull Collector",
                     desc: "Kill 10 skeletons",
-                    completed: achievementProgress[6] === 999 ? true : false,
+                    completed: achievementProgress[7] === 999 ? true : false,
                     isCompleted: function() {
                         // return self.storage.getSkeletonCount() >= 10;
                         return this.completed;
@@ -319,7 +319,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 8,
                     name: "Ninja Loot",
                     desc: "Get hold of an item you didn't fight for",
-                    completed: achievementProgress[7] === 999 ? true : false,
+                    completed: achievementProgress[8] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -328,7 +328,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 9,
                     name: "Hunter",
                     desc: "Kill 50 enemies",
-                    completed: achievementProgress[8] === 999 ? true : false,
+                    completed: achievementProgress[9] === 999 ? true : false,
                     isCompleted: function() {
                         // return self.storage.getTotalKills() >= 50;
                         return this.completed;
@@ -338,7 +338,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 10,
                     name: "Still Alive",
                     desc: "Revive your character five times",
-                    completed: achievementProgress[9] === 999 ? true : false,
+                    completed: achievementProgress[10] === 999 ? true : false,
                     isCompleted: function() {
                         // return self.storage.getTotalRevives() >= 5;
                         return this.completed;
@@ -348,7 +348,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 11,
                     name: "Meatshield",
                     desc: "Take 5,000 points of damage",
-                    completed: achievementProgress[10] === 999 ? true : false,
+                    completed: achievementProgress[11] === 999 ? true : false,
                     isCompleted: function() {
                         // return self.storage.getTotalDamageTaken() >= 5000;
                         return this.completed;
@@ -358,7 +358,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 12,
                     name: "Hero",
                     desc: "Defeat the final boss",
-                    completed: achievementProgress[11] === 999 ? true : false,
+                    completed: achievementProgress[12] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -368,7 +368,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     name: "Foxy",
                     desc: "Find the Firefox costume",
                     hidden: true,
-                    completed: achievementProgress[12] === 999 ? true : false,
+                    completed: achievementProgress[13] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -378,7 +378,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     name: "For Science",
                     desc: "Enter into a portal",
                     hidden: true,
-                    completed: achievementProgress[13] === 999 ? true : false,
+                    completed: achievementProgress[14] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -388,7 +388,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     name: "Rickroll'd",
                     desc: "Take some singing lessons",
                     hidden: true,
-                    completed: achievementProgress[14] === 999 ? true : false,
+                    completed: achievementProgress[15] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -397,8 +397,8 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 16,
                     name: "Save Princess",
                     desc: "Save the princess",
-                    hidden: !achievementFound[15],
-                    completed: achievementProgress[15] === 999 ? true : false,
+                    hidden: !achievementFound[16],
+                    completed: achievementProgress[16] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -407,8 +407,8 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 17,
                     name: "Bring Leatherarmor",
                     desc: "Bring the leatherarmor",
-                    hidden: !achievementFound[16],
-                    completed: achievementProgress[16] === 999 ? true : false,
+                    hidden: !achievementFound[17],
+                    completed: achievementProgress[17] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -417,8 +417,8 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 18,
                     name: "Kill Crab",
                     desc: "Kill 5 Crabs",
-                    hidden: !achievementFound[17],
-                    completed: achievementProgress[17] === 999 ? true : false,
+                    hidden: !achievementFound[18],
+                    completed: achievementProgress[18] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -427,8 +427,8 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 19,
                     name: "Find Cake",
                     desc: "Fine Cate",
-                    hidden: !achievementFound[18],
-                    completed: achievementProgress[18] === 999 ? true : false,
+                    hidden: !achievementFound[19],
+                    completed: achievementProgress[19] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -437,8 +437,8 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 20,
                     name: "Find CD",
                     desc: "Find CD",
-                    hidden: !achievementFound[19],
-                    completed: achievementProgress[19] === 999 ? true : false,
+                    hidden: !achievementFound[20],
+                    completed: achievementProgress[20] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -447,8 +447,8 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 21,
                     name: "Kill Skeleton",
                     desc: "Kill 10 Skeletons",
-                    hidden: !achievementFound[20],
-                    completed: achievementProgress[20] === 999 ? true : false,
+                    hidden: !achievementFound[21],
+                    completed: achievementProgress[21] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -457,8 +457,8 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     id: 22,
                     name: "Bring axe",
                     desc: "Please, bring axe",
-                    hidden: !achievementFound[21],
-                    completed: achievementProgress[21] === 999 ? true : false,
+                    hidden: !achievementFound[22],
+                    completed: achievementProgress[22] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -1718,31 +1718,38 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     console.log('onAchievement!!')
                     console.log(id === self.achievements['KILL_CRAB'])
                     console.log(type)
-                    var achievement = null;
+                    var key = null;
+                    _.each(self.achievements, function(value, _key) { 
+                        if(value.id === id) {
+                            key = _key;
+                            return -1;
+                        }
+                    });
+                    console.log(key);
+                    var achievement = self.achievements[key];
 
-                    if(type === "complete" && id === self.achievements['ANGRY_RATS'].id){
-                        achievement = self.achievements['ANGRY_RATS'];
+                    if(!achievement) {
+                        console.log('no achievement:' + id );
+                        return;
+                    }
+                    if(type === "complete") {
                         achievement.completed = true;
                         self.app.displayUnlockedAchievement(achievement);
                         self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed!");
+                    } else {
+                        return;
+                    }
+
+                    if(key === 'ANGRY_RATS'){
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+50 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
-                    } else if(type === "complete" && id === self.achievements['BRING_LEATHERARMOR'].id){
-                        achievement = self.achievements['BRING_LEATHERARMOR'];
-                        achievement.completed = true;
-                        self.app.displayUnlockedAchievement(achievement);
-                        self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed !");
+                    } else if(key === 'BRING_LEATHERARMOR'){
                         self.player.switchArmor("clotharmor", self.sprites["clotharmor"]);
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+50 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
-                    } else if(type === "complete" && id === self.achievements['KILL_CRAB'].id){
-                        console.log('blahahahahahah');
-                        achievement = self.achievements['KILL_CRAB'];
-                        achievement.completed = true;
-                        self.app.displayUnlockedAchievement(achievement);
-                        self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed !");
+                    } else if(key === 'KILL_CRAB'){
                         if(self.player.inventory[0] === Types.Entities.CAKE){
                             self.player.inventory[0] = null;
                         } else if(self.player.inventory[1] === Types.Entities.CAKE){
@@ -1751,11 +1758,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+50 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
-                    } else if(type === "complete" && id === self.achievements['FIND_CAKE'].id){
-                        achievement = self.achievements['FIND_CAKE'];
-                        achievement.completed = true;
-                        self.app.displayUnlockedAchievement(achievement);
-                        self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed !");
+                    } else if(key === 'FIND_CAKE'){
                         if(self.player.inventory[0] === Types.Entities.CAKE){
                             self.player.inventory[0] = null;
                         } else if(self.player.inventory[1] === Types.Entities.CAKE){
@@ -1764,11 +1767,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+100 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
-                    } else if(type === "complete" && id === self.achievements['FIND_CD'].id){
-                        achievement = self.achievements['FIND_CD'];
-                        achievement.completed = true;
-                        self.app.displayUnlockedAchievement(achievement);
-                        self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed !");
+                    } else if(key === 'FIND_CD'){
                         if(self.player.inventory[0] === Types.Entities.CD){
                             self.player.inventory[0] = null;
                         } else if(self.player.inventory[1] === Types.Entities.CD){
@@ -1777,19 +1776,11 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+100 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
-                    } else if(type === "complete" && id === self.achievements['KILL_SKELETON'].id){
-                        achievement = self.achievements['KILL_SKELETON'];
-                        achievement.completed = true;
-                        self.app.displayUnlockedAchievement(achievement);
-                        self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed !");
+                    } else if(key === 'KILL_SKELETON'){
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+200 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
-                    } else if(type === "complete" && id === self.achievements['BRING_AXE'].id){
-                        achievement = self.achievements['BRING_AXE'];
-                        achievement.completed = true;
-                        self.app.displayUnlockedAchievement(achievement);
-                        self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed !");
+                    } else if(key === 'BRING_AXE'){
                         self.player.switchWeapon("sword2");
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+200 exp", self.player.x, self.player.y - 15, "exp", 3000);
