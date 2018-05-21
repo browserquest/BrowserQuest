@@ -15,8 +15,8 @@ Formulas.dmg = function(attacker, defender) {
     }
 };
 
-Formulas.hp = function (armorLevel, entityLevel) {
-    var hp = 200 + ((armorLevel + entityLevel) * 8);;
+Formulas.hp = function (entityLevel) {
+    var hp = 200 + entityLevel * 8;
     return hp;
 };
 
