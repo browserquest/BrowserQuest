@@ -9,14 +9,17 @@ var cls = require("./lib/class"),
     Formulas = require("./formulas"),
     check = require("./format").check,
     Types = require("../../shared/js/gametypes")
+    Mob = require("./mob");
     bcrypt = require('bcrypt');
 
 module.exports = Player = Character.extend({
     init: function(connection, worldServer, databaseHandler) {
+        console.log('databaseHandler')
         var self = this;
 
         this.server = worldServer;
         this.connection = connection;
+        this.databaseHandler = databaseHandler;
 
         this._super(this.connection.id, "player", Types.Entities.WARRIOR, 0, 0, "");
 
@@ -744,19 +747,19 @@ module.exports = Player = Character.extend({
 
             if(Types.isArmor(itemKind)) {
                 if(isAvatar) {
-                    databaseHandler.equipAvatar(this.name, Types.getKindAsString(itemKind));
+                    this.databaseHandler.equipAvatar(this.name, Types.getKindAsString(itemKind));
                     this.equipAvatar(itemKind);
                 } else {
-                    databaseHandler.equipAvatar(this.name, Types.getKindAsString(itemKind));
+                    this.databaseHandler.equipAvatar(this.name, Types.getKindAsString(itemKind));
                     this.equipAvatar(itemKind);
 
-                    databaseHandler.equipArmor(this.name, Types.getKindAsString(itemKind));
+                    this.databaseHandler.equipArmor(this.name, Types.getKindAsString(itemKind));
                     this.equipArmor(itemKind);
                 }
                 this.updateHitPoints();
                 this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
             } else if(Types.isWeapon(itemKind)) {
-                databaseHandler.equipWeapon(this.name, Types.getKindAsString(itemKind));
+                this.databaseHandler.equipWeapon(this.name, Types.getKindAsString(itemKind));
                 this.equipWeapon(itemKind);
             }
         }
@@ -789,7 +792,7 @@ module.exports = Player = Character.extend({
 
     incExp: function(gotexp){
         this.experience = parseInt(this.experience) + (parseInt(gotexp));
-        databaseHandler.setExp(this.name, this.experience);
+        this.databaseHandler.setExp(this.name, this.experience);
         var origLevel = this.level;
         this.level = Types.getLevel(this.experience);
         if(origLevel !== this.level) {
@@ -907,10 +910,10 @@ module.exports = Player = Character.extend({
         if(Types.isHealingItem(item.kind)){
             if(this.inventory[0] === item.kind){
                 this.inventoryCount[0] += item.count;
-                databaseHandler.setInventory(this.name, item.kind, 0, this.inventoryCount[0]);
+                this.databaseHandler.setInventory(this.name, item.kind, 0, this.inventoryCount[0]);
             } else if(this.inventory[1] === item.kind){
                 this.inventoryCount[1] += item.count;
-                databaseHandler.setInventory(this.name, item.kind, 1, this.inventoryCount[1]);
+                this.databaseHandler.setInventory(this.name, item.kind, 1, this.inventoryCount[1]);
             } else{
                 this._putInventory(item);
             }
@@ -922,11 +925,11 @@ module.exports = Player = Character.extend({
         if(!this.inventory[0]){
             this.inventory[0] = item.kind;
             this.inventoryCount[0] = item.count;
-            databaseHandler.setInventory(this.name, item.kind, 0, item.count);
+            this.databaseHandler.setInventory(this.name, item.kind, 0, item.count);
         } else if(!this.inventory[1]){
             this.inventory[1] = item.kind;
             this.inventoryCount[1] = item.count;
-            databaseHandler.setInventory(this.name, item.kind, 1, item.count);
+            this.databaseHandler.setInventory(this.name, item.kind, 1, item.count);
         }
     },
 });
