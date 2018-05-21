@@ -84,12 +84,12 @@ module.exports = World = cls.Class.extend({
                 log.debug(player.name + " is moving to (" + x + ", " + y + ").");
                  var isPVP = self.map.isPVP(x, y);
                 player.flagPVP(isPVP); 
-               player.forEachAttacker(function(mob) {
+                player.forEachAttacker(function(mob) {
                      if(mob.target === null){
                         player.removeAttacker(mob);
                         return;
                     }
-                   var target = self.getEntityById(mob.target);
+                    var target = self.getEntityById(mob.target);
                     if(target) {
                         var pos = self.findPositionNextTo(mob, target);
                         if(mob.distanceToSpawningPoint(pos.x, pos.y) > 50) {

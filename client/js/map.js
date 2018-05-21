@@ -116,6 +116,7 @@ define(['jquery', 'area'], function($, Area) {
                     cameraX: door.tcx,
                     cameraY: door.tcy,
                     portal: door.p === 1,
+                    level: door.l,
                 };
             });
 

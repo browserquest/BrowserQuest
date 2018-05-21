@@ -1,8 +1,8 @@
 {
     "port": 8000,
-    "debug_level": "info",
+    "debug_level": "debug",
     "nb_players_per_world": 200,
-    "nb_worlds": 5,
+    "nb_worlds": 1,
     "map_filepath": "./server/maps/world_server.json",
     "metrics_enabled": false,
     "use_one_port": true,

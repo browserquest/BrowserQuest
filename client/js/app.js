@@ -306,17 +306,21 @@ define(['jquery', 'storage'], function($, Storage) {
                 timeout;
 
             this.game.player.onSetTarget(function(target, name, mouseover){
-                var el = '#inspector';
+                var el = '#target'
+                if(mouseover) el = '#inspector';
                 var sprite = target.sprite,
                     x = ((sprite.animationData.idle_down.length-1)*sprite.width),
                     y = ((sprite.animationData.idle_down.row)*sprite.height);
                 $(el+' .name').text(name);
+                $(el+' .headshot div').height(sprite.height).width(sprite.width);
+                $(el+' .headshot div').css('margin-left', -sprite.width/2).css('margin-top', -sprite.height/2);
+                $(el+' .headshot div').css('background', 'url(img/1/'+name+'.png) no-repeat -'+x+'px -'+y+'px');
 
                 //Show how much Health creature has left. Currently does not work. The reason health doesn't currently go down has to do with the lines below down to initExpBar...
                 if(target.healthPoints){
                     $(el+" .health").css('width', Math.round(target.healthPoints/target.maxHp*100)+'%');
                 } else{
-                    $(el+" .health").css('width', '0%');
+                    $(el+" .health").css('width', '100%');
                 }
                 var level = Types.getMobLevel(Types.getKindFromString(name));
                 if(level !== undefined) {
@@ -327,19 +331,33 @@ define(['jquery', 'storage'], function($, Storage) {
                 }
 
                 $(el).fadeIn('fast');
+                if(mouseover){
+                    clearTimeout(timeout);
+                    timeout = null;
+                    timeout = setTimeout(function(){
+                        $('#inspector').fadeOut('fast');
+                        self.game.player.inspecting = null;
+                    }, 2000);
+                }
             });
 
             self.game.onUpdateTarget(function(target){
-                $("#inspector .health").css('width', Math.round(target.healthPoints/target.maxHp*100) + "%");
+                $("#target .health").css('width', Math.round(target.healthPoints/target.maxHp*100) + "%");
+                if(self.game.player.inspecting && self.game.player.inspecting.id === target.id){
+                    $("#inspector .health").css('width', Math.round(target.healthPoints/target.maxHp*100) + "%");
+                }
             });
 
             self.game.player.onRemoveTarget(function(targetId){
-                $('#inspector').fadeOut('fast');
-                $('#inspector .level').text('');
-                self.game.player.inspecting = null;
+                $('#target').fadeOut('fast');
+                if(self.game.player.inspecting && self.game.player.inspecting.id === targetId){
+                    $('#inspector').fadeOut('fast');
+                    $('#inspector .level').text('');
+                    self.game.player.inspecting = null;
+                }
             });
         },
-         initExpBar: function(){
+        initExpBar: function(){
             var maxHeight = $("#expbar").height();
 
             this.game.onPlayerExpChange(function(expInThisLevel, expForLevelUp){
@@ -393,6 +411,7 @@ define(['jquery', 'storage'], function($, Storage) {
         showChat: function() {
             if(this.game.started) {
                 $('#chatbox').addClass('active');
+                $('#chatbox .legend').fadeIn('fast');
                 $('#chatinput').focus();
                 $('#chatbutton').addClass('active');
             }
@@ -401,39 +420,18 @@ define(['jquery', 'storage'], function($, Storage) {
         hideChat: function() {
             if(this.game.started) {
                 $('#chatbox').removeClass('active');
+                $('#chatbox .legend').fadeOut('fast');
                 $('#chatinput').blur();
                 $('#chatbutton').removeClass('active');
             }
         },
 
-        toggleInstructions: function() {
-            if($('#achievements').hasClass('active')) {
-                this.toggleAchievements();
-                $('#achievementsbutton').removeClass('active');
-            }
-            $('#instructions').toggleClass('active');
-        },
-
         toggleAchievements: function() {
-            if($('#instructions').hasClass('active')) {
-                this.toggleInstructions();
-                $('#helpbutton').removeClass('active');
+            if(this.game.textWindowHandler.textWindowOn){
+                this.game.textWindowHandler.close();
+                this.game.closeItemInfo();
             }
-            this.resetPage();
             $('#achievements').toggleClass('active');
-        },
-
-        resetPage: function() {
-            var self = this,
-                $achievements = $('#achievements');
-
-            if($achievements.hasClass('active')) {
-                $achievements.bind(TRANSITIONEND, function() {
-                    $achievements.removeClass('page' + self.currentPage).addClass('page1');
-                    self.currentPage = 1;
-                    $achievements.unbind(TRANSITIONEND);
-                });
-            }
         },
 
         initEquipmentIcons: function() {
@@ -442,14 +440,12 @@ define(['jquery', 'storage'], function($, Storage) {
                     return 'img/'+ scale +'/item-' + spriteName + '.png';
                 },
                 weapon = this.game.player.getWeaponName(),
-                armor = this.game.player.getSpriteName(),
+                armor = this.game.player.getArmorName(),
                 weaponPath = getIconPath(weapon),
                 armorPath = getIconPath(armor);
 
             $('#weapon').css('background-image', 'url("' + weaponPath + '")');
-            if(armor !== 'firefox') {
-                $('#armor').css('background-image', 'url("' + armorPath + '")');
-            }
+            $('#armor').css('background-image', 'url("' + armorPath + '")');
         },
 
         hideWindows: function() {
@@ -470,15 +466,20 @@ define(['jquery', 'storage'], function($, Storage) {
             if($('body').hasClass('about')) {
                 this.closeInGameScroll('about');
             }
+
+            this.game.textWindowHandler.close();
+            this.game.closeItemInfo();
         },
 
-        showAchievementNotification: function(id, name) {
+        showAchievementNotification: function(id, name, title) {
             var $notif = $('#achievement-notification'),
                 $name = $notif.find('.name'),
+                $title = $notif.find('.title'),
                 $button = $('#achievementsbutton');
 
             $notif.removeClass().addClass('active achievement' + id);
             $name.text(name);
+            $title.text(title);
             if(this.game.storage.getAchievementCount() === 1) {
                 this.blinkInterval = setInterval(function() {
                     $button.toggleClass('blink');
@@ -490,22 +491,15 @@ define(['jquery', 'storage'], function($, Storage) {
             }, 5000);
         },
 
-        displayUnlockedAchievement: function(id) {
-            var $achievement = $('#achievements li.achievement' + id),
-                achievement = this.game.getAchievementById(id);
+        displayUnlockedAchievement: function(achievement) {
+            var $achievement = $('#achievements li.achievement' + achievement.id);
 
             if(achievement && achievement.hidden) {
                 this.setAchievementData($achievement, achievement.name, achievement.desc);
             }
             $achievement.addClass('unlocked');
-        },
-
-        unlockAchievement: function(id, name) {
-            this.showAchievementNotification(id, name);
-            this.displayUnlockedAchievement(id);
-
             var nb = parseInt($('#unlocked-achievements').text());
-            $('#unlocked-achievements').text(nb + 1);
+            $('#unlocked-achievements').text(nb+1);
         },
 
         initAchievementList: function(achievements) {
@@ -548,13 +542,17 @@ define(['jquery', 'storage'], function($, Storage) {
             $('#total-achievements').text($('#achievements').find('li').length);
         },
 
-        initUnlockedAchievements: function(ids) {
-            var self = this;
+        initUnlockedAchievements: function(achievements) {
+            var self = this,
+                count = 0;
 
-            _.each(ids, function(id) {
-                self.displayUnlockedAchievement(id);
+            _.each(achievements, function(achievement) {
+                if(achievement.completed) {
+                    self.displayUnlockedAchievement(achievement);
+                    count++;
+                }
             });
-            $('#unlocked-achievements').text(ids.length);
+            $('#unlocked-achievements').text(count);
         },
 
         setAchievementData: function($el, name, desc) {

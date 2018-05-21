@@ -11,6 +11,9 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
             this.spawn_callback = null;
             this.movement_callback = null;
 
+            this.wrongpw_callback = null;
+            this.ban_callback = null;
+
             this.fail_callback = null;
 
             this.notify_callback = null;
@@ -38,6 +41,8 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
             this.handlers[Types.Messages.GUILDERROR] = this.receiveGuildError;
             this.handlers[Types.Messages.GUILD] = this.receiveGuild;
             this.handlers[Types.Messages.PVP] = this.receivePVP;
+            this.handlers[Types.Messages.ACHIEVEMENT] = this.receiveAchievement;
+
             this.useBison = false;
             this.enable();
         },
@@ -47,7 +52,7 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
         },
 
         disable: function() {
-            this.isListening = false;
+        this.isListening = false;
         },
 
         connect: function(dispatcherMode) {
@@ -81,12 +86,19 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                             self.connected_callback();
                         }
                         return;
-                    }
-                    if(e === 'timeout') {
+                    } else if(e === 'timeout') {
                         self.isTimeout = true;
                         return;
-                    }
-                    if(e === 'invalidlogin' || e === 'userexists' || e === 'loggedin' || e === 'invalidusername'){
+                    } else if(e === 'wrongpw'){
+                        if(self.wrongpw_callback) {
+                            self.wrongpw_callback();
+                        }
+                        return ;
+                    } else if(e === 'ban') {
+                        if(self.ban_callback) {
+                            self.ban_callback();
+                        }
+                    } else if(e === 'invalidlogin' || e === 'userexists' || e === 'loggedin' || e === 'invalidusername'){
                         if(self.fail_callback){
                             self.fail_callback(e);
                         }
@@ -177,12 +189,16 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                 hp = data[5],
                 armor = data[6],
                 weapon = data[7],
-                avatar = data[8],
-                weaponAvatar = data[9],
-                experience = data[10];
+                experience = data[8],
+                avatar = data[9],
+                inventory0 = data[10],
+                inventory1 = data[11],
+                achievementFound = [data[12], data[14], data[15]],
+                achievementProgress = [data[13], data[15], data[17]];
+                
 
             if(this.welcome_callback) {
-                this.welcome_callback(id, name, x, y, hp, armor, weapon, avatar, weaponAvatar, experience);
+                this.welcome_callback(id, name, x, y, hp, armor, weapon, experience, avatar, inventory0, inventory1, achievementFound, achievementProgress);
             }
         },
 
@@ -388,10 +404,19 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                 this.blink_callback(id);
             }
         },
-         receivePVP: function(data){
+
+        receivePVP: function(data){
             var pvp = data[1];
             if(this.pvp_callback){
                 this.pvp_callback(pvp);
+            }
+        },
+
+        receiveAchievement: function(data){
+            var id = data[1],
+                type = data[2];
+            if(this.achievement_callback) {
+                this.achievement_callback(id, type);
             }
         },
        
@@ -537,6 +562,9 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
         onPVPChange: function(callback){
             this.pvp_callback = callback;
         },
+        onAchievement: function(callback) {
+            this.achievement_callback = callback;
+        },
         onGuildError: function(callback) {
 			this.guilderror_callback = callback;
 		},
@@ -590,25 +618,13 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                               player.pw]);
         },
 
-      //  sendHello: function(player) {
-			//if(player.hasGuild()){
-			//	this.sendMessage([Types.Messages.HELLO,
-			//					  player.name,
-      //            player.pw,
-       //           player.email,
-			//					  Types.getKindFromString(player.getSpriteName()),
-			//					  Types.getKindFromString(player.getWeaponName()),
-			//					  player.guild.id, player.guild.name]);
-			//}
-			//else{
-				//this.sendMessage([Types.Messages.HELLO,
-								  //player.name,
-                  //player.pw,
-                  //player.email,
-								  //Types.getKindFromString(player.getSpriteName()),
-								  //Types.getKindFromString(player.getWeaponName())]);
-			//}
-       // },
+       sendHello: function(player) {
+			if(player.hasGuild()){
+				this.sendMessage([Types.Messages.HELLO, player.name, player.pw, player.email, player.guild.id, player.guild.name]);
+			} else{
+                this.sendMessage([Types.Messages.HELLO, player.name, player.pw, player.email]);
+            }
+       },
 
         sendMove: function(x, y) {
             this.sendMessage([Types.Messages.MOVE,
@@ -671,6 +687,15 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
         sendCheck: function(id) {
             this.sendMessage([Types.Messages.CHECK,
                               id]);
+        },
+        sendInventory: function(type, inventoryNumber) {
+            this.sendMessage([Types.Messages.INVENTORY, type, inventoryNumber]);
+        },
+        sendAchievement: function(id, type) {
+            this.sendMessage([Types.Messages.ACHIEVEMENT, id, type]);
+        },
+        sendTalkToNPC: function(kind) {
+            this.sendMessage([Types.Messages.TALKTONPC, kind]);
         },
         
         sendWho: function(ids) {

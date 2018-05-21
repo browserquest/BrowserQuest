@@ -22,12 +22,18 @@ define(['character', 'exceptions'], function(Character, Exceptions) {
             this.armorName = "clotharmor";
             this.weaponName = "sword1";
 
+            // Inventory
+            this.inventory = [];
+
             // modes
             this.isLootMoving = false;
             this.isSwitchingWeapon = true;
 
             // PVP Flag
-            this.pvpFlag = true;
+            this.pvpFlag = false;
+
+            // Benef
+            this.invincible = false; // Fire Benef
         },
 
         getGuild: function() {
@@ -77,16 +83,13 @@ define(['character', 'exceptions'], function(Character, Exceptions) {
             if(item) {
                 var rank, currentRank, msg, currentArmorName;
 
-                if(this.currentArmorSprite) {
-                    currentArmorName = this.currentArmorSprite.name;
-                } else {
-                    currentArmorName = this.spriteName;
-                }
+                currentArmorName = this.spriteName;
 
                 if(item.type === "armor") {
-                    rank = Types.getArmorRank(item.kind);
-                    currentRank = Types.getArmorRank(Types.getKindFromString(currentArmorName));
-                    msg = "You are wearing a better armor";
+                    // rank = Types.getArmorRank(item.kind);
+                    // currentRank = Types.getArmorRank(Types.getKindFromString(currentArmorName));
+                    // msg = "You are wearing a better armor";
+                    this.setInventory(item.kind, 0);
                 } else if(item.type === "weapon") {
                     rank = Types.getWeaponRank(item.kind);
                     currentRank = Types.getWeaponRank(Types.getKindFromString(this.weaponName));
@@ -109,6 +112,23 @@ define(['character', 'exceptions'], function(Character, Exceptions) {
             }
         },
 
+        setInventory: function(itemKind, inventoryNumber){
+            if(inventoryNumber === 0){
+                if(this.inventory[0]){
+                    this.inventory[1] = itemKind;
+                } else{
+                    this.inventory[0] = itemKind;
+                }
+            } else if(inventoryNumber === 1){
+                this.inventory[1] = itemKind;
+            }
+        },
+        makeEmptyInventory: function(inventoryNumber){
+            if(inventoryNumber === 0 || inventoryNumber === 1){
+                this.inventory[inventoryNumber] = null;
+            }
+        },
+
         /**
          * Returns true if the character is currently walking towards an item in order to loot it.
          */
@@ -121,23 +141,22 @@ define(['character', 'exceptions'], function(Character, Exceptions) {
         },
 
         setSpriteName: function(name) {
-            this.spriteName = name;
+            if(name) {
+                this.spriteName = name;
+            }
         },
 
         getArmorName: function() {
-            var sprite = this.getArmorSprite();
-            return sprite.id;
+            return this.armorName;
         },
 
         getArmorSprite: function() {
-            if(this.invincible) {
-                return this.currentArmorSprite;
-            } else {
-                return this.sprite;
-            }
+            return this.sprite;
         },
         setArmorName: function(name){
-            this.armorName = name;
+            if(name) {
+                this.armorName = name;
+            }
         },
 
         getWeaponName: function() {
@@ -145,11 +164,20 @@ define(['character', 'exceptions'], function(Character, Exceptions) {
         },
         
         setWeaponName: function(name) {
-            this.weaponName = name;
+            if(name) {
+                this.weaponName = name;
+            }
         },
 
         hasWeapon: function() {
             return this.weaponName !== null;
+        },
+        setBenef: function() {
+            if(itemKind === Types.Entities.FIREBENEF){
+                this.startInvincibility();
+            } else{
+                this.stopInvincibility();
+            }
         },
         equipFromInventory: function(type, inventoryNumber, sprites){
             var itemString = Types.getKindAsString(this.inventory[inventoryNumber]);
@@ -214,44 +242,6 @@ define(['character', 'exceptions'], function(Character, Exceptions) {
             }
         },
 
-        switchArmor: function(newArmorSprite) {
-            var count = 14,
-                value = false,
-                self = this;
-
-            var toggle = function() {
-                value = !value;
-                return value;
-            };
-
-            if(newArmorSprite && newArmorSprite.id !== this.getSpriteName()) {
-                if(this.isSwitchingArmor) {
-                    clearInterval(blanking);
-                }
-
-                this.isSwitchingArmor = true;
-                self.setSprite(newArmorSprite);
-                self.setSpriteName(newArmorSprite.id);
-                var blanking = setInterval(function() {
-                    self.setVisible(toggle());
-
-                    count -= 1;
-                    if(count === 1) {
-                        clearInterval(blanking);
-                        self.isSwitchingArmor = false;
-
-                        if(self.switch_callback) {
-                            self.switch_callback();
-                        }
-                    }
-                }, 90);
-            }
-        },
-
-        onArmorLoot: function(callback) {
-            this.armorloot_callback = callback;
-        },
-
         onSwitchItem: function(callback) {
             this.switch_callback = callback;
         },
@@ -264,9 +254,10 @@ define(['character', 'exceptions'], function(Character, Exceptions) {
             var self = this;
 
             if(!this.invincible) {
-                this.currentArmorSprite = this.getSprite();
                 this.invincible = true;
-                this.invincible_callback();
+                if(this.invincible_callback){
+                    this.invincible_callback();
+                }
             } else {
                 // If the player already has invincibility, just reset its duration.
                 if(this.invincibleTimeout) {
@@ -281,14 +272,11 @@ define(['character', 'exceptions'], function(Character, Exceptions) {
         },
 
         stopInvincibility: function() {
-            this.invincible_callback();
-            this.invincible = false;
-
-            if(this.currentArmorSprite) {
-                this.setSprite(this.currentArmorSprite);
-                this.setSpriteName(this.currentArmorSprite.id);
-                this.currentArmorSprite = null;
+            if(this.invincible_callback) {
+                this.invincible_callback();
             }
+            this.invincible = false;
+            
             if(this.invincibleTimeout) {
                 clearTimeout(this.invincibleTimeout);
             }

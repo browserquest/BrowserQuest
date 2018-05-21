@@ -63,6 +63,7 @@ module.exports = Player = Character.extend({
             if(action === Types.Messages.CREATE || action === Types.Messages.LOGIN) {
                 var name = Utils.sanitize(message[1]);
                 var pw = Utils.sanitize(message[2]);
+                var email = Utils.sanitize(message[3]);
 
                 // Always ensure that the name is not longer than a maximum length.
                 // (also enforced by the maxlength attribute of the name input element).
@@ -75,6 +76,7 @@ module.exports = Player = Character.extend({
                     return;
                 }
                 self.pw = pw.substr(0, 15);
+                self.email = email;
 
                 if(action === Types.Messages.CREATE) {
                     bcrypt.genSalt(10, function(err, salt) {
@@ -133,6 +135,25 @@ module.exports = Player = Character.extend({
                 if(msg && msg !== "") {
                     msg = msg.substr(0, 60); // Enforce maxlength of chat input
                     // CHAD COMMAND HANDLING IN ASKY VERSION HAPPENS HERE!
+                    if(key === "/1 "){
+                        // var curMinutes = (new Date()).getMinutes();
+                        // if(curMinutes !== self.lastWorldChatMinutes){
+                        self.server.pushBroadcast(new Messages.Chat(self, msg));
+                        // self.lastWorldChatMinutes = curMinutes;
+                        // }
+                    } else if(key === "/b "){
+                        var banPlayer = self.server.getPlayerByName(msg.split(' ')[2]);
+                        var days = (msg.split(' ')[1])*1;
+                        if(banPlayer){
+                            databaseHandler.banPlayer(self, banPlayer, days);
+                        }
+                    } else if(key === "/i "){
+                        var banPlayer = self.server.getPlayerByName(msg.split(' ')[1]);
+                        if(banPlayer)
+                            databaseHandler.newBanPlayer(self, banPlayer);
+                    } else {
+                        self.broadcastToZone(new Messages.Chat(self, msg), false);
+                    }
                     self.broadcastToZone(new Messages.Chat(self, msg), false);
                 }
             }
@@ -183,22 +204,38 @@ module.exports = Player = Character.extend({
             else if(action === Types.Messages.HIT) {
                 log.info("HIT: " + self.name + " " + message[1]);
                 var mob = self.server.getEntityById(message[1]);
-                if(mob) {
-                    var dmg = Formulas.dmg(self.weaponLevel, mob.armorLevel);
+                if(mob && self.id) {
+                    var dmg = Formulas.dmg(self.weaponLevel, self.level, mob.armorLevel, mob.type === "player" ? mob.level : 0);
 
                     if(dmg > 0) {
                       if(mob.type !== "player"){
                         mob.receiveDamage(dmg, self.id);
+                        if(mob.hitPoints <= 0) {
+                            if(mob.kind === Types.Entities.RAT) {
+                                if(self.achievement[2].found && self.achievement[2].progress !== 999){
+                                    self.achievement[2].progress++;
+                                    if(self.achievement[2].progress >= 10){
+                                        self.send([Types.Messages.ACHIEVEMENT, 2, "complete"]);
+                                        self.achievement[2].progress = 999;
+                                        self.incExp(50);
+                                    }
+                                    databaseHandler.progressAchievement(self.name, 2, self.achievement[2].progress);
+                                }
+                            }
+                        }
                         self.server.handleMobHate(mob.id, self.id, dmg);
                         self.server.handleHurtEntity(mob, self, dmg);
-                      }
-                    }
-                     else {
-                      mob.hitPoints -= dmg;
-                      self.server.handleHurtEntity(mob);
-                        if(mob.hitPoints <= 0){
-                          mob.isDead = true;
-                          self.server.pushBroadcast(new Messages.Chat(self, self.name + "M-M-M-MONSTER KILLED" + mob.name));
+                      } else {
+                            mob.hitPoints -= dmg;
+                            self.server.handleHurtEntity(mob);
+                            if(mob.hitPoints <= 0){
+                                mob.isDead = true;
+                                if(mob.firepotionTimeout) {
+                                    clearTimeout(mob.firepotionTimeout);
+                                }
+                                self.server.pushBroadcast(new Messages.Chat(self, self.name + "M-M-M-MONSTER KILLED" + mob.name));
+                                self.server.pushBroadcast(new Messages.Chat(self, "/1 " + self.name + "kill " + mob.name + " -PK"));
+                            }
                         }
                     }
                 }
@@ -206,8 +243,8 @@ module.exports = Player = Character.extend({
             else if(action === Types.Messages.HURT) {
                 log.info("HURT: " + self.name + " " + message[1]);
                 var mob = self.server.getEntityById(message[1]);
-                if(mob && self.hitPoints > 0) {
-                    self.hitPoints -= Formulas.dmg(mob.weaponLevel, self.armorLevel);
+                if(mob && self.hitPoints > 0 && mob instanceof Mob) {
+                    self.hitPoints -= Formulas.dmg(mob.weaponLevel, 0, self.armorLevel, self.level);
                     self.server.handleHurtEntity(self);
 
                     if(self.hitPoints <= 0) {
@@ -231,9 +268,9 @@ module.exports = Player = Character.extend({
 
                         if(kind === Types.Entities.FIREPOTION) {
                             self.updateHitPoints();
-                            self.broadcast(self.equip(Types.Entities.FIREFOX));
+                            self.broadcast(self.equip(Types.Entities.FIREBENEF));
                             self.firepotionTimeout = setTimeout(function() {
-                                self.broadcast(self.equip(self.armor)); // return to normal after 15 sec
+                                self.broadcast(self.equip(Types.Entities.DEBENEF)); // return to normal after 15 sec
                                 self.firepotionTimeout = null;
                             }, 15000);
                             self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
@@ -242,10 +279,10 @@ module.exports = Player = Character.extend({
 
                             switch(kind) {
                                 case Types.Entities.FLASK:
-                                    amount = 40;
+                                    amount = 80;
                                     break;
                                 case Types.Entities.BURGER:
-                                    amount = 100;
+                                    amount = 200;
                                     break;
                             }
 
@@ -253,9 +290,11 @@ module.exports = Player = Character.extend({
                                 self.regenHealthBy(amount);
                                 self.server.pushToPlayer(self, self.health());
                             }
-                        } else if(Types.isArmor(kind) || Types.isWeapon(kind)) {
+                        } else if(Types.isWeapon(kind)) {
                             self.equipItem(item.kind);
                             self.broadcast(self.equip(kind));
+                        } else if(Types.isArmor(kind)) {
+                            self.pushToInventory(item);
                         }
                     }
                 }
@@ -273,6 +312,7 @@ module.exports = Player = Character.extend({
 
                     self.server.handlePlayerVanish(self);
                     self.server.pushRelevantEntityListTo(self);
+                    self.broadcast(new Messages.Teleport(self));
                 }
             }
             else if(action === Types.Messages.OPEN) {
@@ -369,6 +409,26 @@ module.exports = Player = Character.extend({
                     self.achievement[message[1]].found = true;
                     databaseHandler.foundAchievement(self.name, message[1]);
                 }
+            } else if(action === Types.Messages.TALKTONPC){
+                if(message[1] === Types.Entities.VILLAGER){
+                    if((self.inventory[0] === Types.Entities.LEATHERARMOR
+                     || self.inventory[1] === Types.Entities.LEATHERARMOR)
+                    && self.achievement[3].found === true
+                    && self.achievement[3].progress !== 999){
+                        if(self.inventory[0] === Types.Entities.LEATHERARMOR){
+                            self.inventory[0] = null;
+                            databaseHandler.makeEmptyInventory(self.name, 0);
+                        } else {
+                            self.inventory[1] = null;
+                            databaseHandler.makeEmptyInventory(self.name, 1);
+                        }
+
+                        self.send([Types.Messages.ACHIEVEMENT, 3, "complete"]);
+                        self.achievement[3].progress = 999;
+                        self.incExp(50);
+                        databaseHandler.progressAchievement(self.name, 3, self.achievement[3].progress);
+                    }
+                }
             }
             else if(action === Types.Messages.GUILD) {
                 if(message[1] === Types.Messages.GUILDACTION.CREATE) {
@@ -441,7 +501,7 @@ module.exports = Player = Character.extend({
 
     getState: function() {
         var basestate = this._getBaseState(),
-            state = [this.name, this.orientation, this.armor, this.weapon, this.level];
+            state = [this.name, this.orientation, this.avatar, this.weapon, this.level];
 
         if(this.target) {
             state.push(this.target);
@@ -572,7 +632,7 @@ module.exports = Player = Character.extend({
     },
 
     updateHitPoints: function() {
-        this.resetHitPoints(Formulas.hp(this.armorLevel));
+        this.resetHitPoints(Formulas.hp(this.armorLevel, this.level));
     },
 
     updatePosition: function() {
@@ -715,5 +775,13 @@ module.exports = Player = Character.extend({
         // self.server.addPlayer(self, aGuildId);
 
     },
-
+    pushToInventory: function(item){
+        if(this.inventory[0]){
+            this.inventory[1] = item.kind;
+            databaseHandler.setInventory(this.name, item.kind, 1);
+        } else{
+            this.inventory[0] = item.kind;
+            databaseHandler.setInventory(this.name, item.kind, 0);
+        }
+    }
 });

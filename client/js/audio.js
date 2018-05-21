@@ -11,7 +11,7 @@ define(['area'], function(Area) {
             this.game = game;
             this.currentMusic = null;
             this.areas = [];
-            this.musicNames = ["village", "beach", "forest", "cave", "desert", "lavaland", "boss"];
+            this.musicNames = ["village", "beach", "forest", "cave", "desert", "lavaland", "boss", "dungeon", "underthesea1", "underthesea2"];
             this.soundNames = ["loot", "hit1", "hit2", "hurt", "heal", "chat", "revive", "death", "firefox", "achievement", "kill1", "kill2", "noloot", "teleport", "chest", "npc", "npc-end"];
 
             var loadSoundFiles = function() {

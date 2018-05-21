@@ -1,0 +1,13 @@
+{
+	"id": "item-cd",
+	"width": 16,
+	"height": 16,
+	"animations": {
+		"idle": {
+			"length": 4,
+			"row": 0
+		}
+	},
+	"offset_x": 0,
+	"offset_y": 0
+}
