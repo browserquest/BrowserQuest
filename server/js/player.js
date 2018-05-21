@@ -118,15 +118,12 @@ module.exports = Player = Character.extend({
                 if(msg && msg !== "") {
                     msg = msg.substr(0, 60); // Enforce maxlength of chat input
                     // CHAD COMMAND HANDLING IN ASKY VERSION HAPPENS HERE!
+                    var key = msg.substr(0, 3);
                     if(key === "/1 "){
                         if((new Date()).getTime() > self.chatBanEndTime)
                             self.server.pushBroadcast(new Messages.Chat(self, msg));
                         else
                             self.send([Types.Messages.NOTIFY, "Block chat"]);
-                        // var curMinutes = (new Date()).getMinutes();
-                        // if(curMinutes !== self.lastWorldChatMinutes){
-                        // self.lastWorldChatMinutes = curMinutes;
-                        // }
                     } else if(key === "/b "){
                         var banPlayer = self.server.getPlayerByName(msg.split(' ')[2]);
                         var days = (msg.split(' ')[1])*1;
@@ -140,11 +137,12 @@ module.exports = Player = Character.extend({
                         }
                     } else if((key === "/c ") || (key === '/ㅊ ')) {
                         var targetPalyer = self.server.getPlayerByName(msg.split(' ')[1]);
-                        databaseHandler.chatBan(self, targetPalyer);
+                        if(targetPalyer) {
+                            databaseHandler.chatBan(self, targetPalyer);
+                        }
                     } else {
                         self.broadcastToZone(new Messages.Chat(self, msg), false);
                     }
-                    self.broadcastToZone(new Messages.Chat(self, msg), false);
                 }
             }
             else if(action === Types.Messages.MOVE) {
