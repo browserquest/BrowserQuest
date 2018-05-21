@@ -435,7 +435,7 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
                 var key = e.which,
                     $chat = $('#chatinput');
 
-                if(key === Types.Keys.ENTER) {
+                if(key === 13) {
                     if($('#chatbox').hasClass('active')) {
                         app.hideChat();
                     } else {
@@ -446,51 +446,6 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
                     game.pvpFlag = true;
                 else if(key === 27)
                     app.hideDropDialog();
-                if (game.started && !$('#chatbox').hasClass('active')) {
-                    pos = {
-                        x: game.player.gridX,
-                        y: game.player.gridY
-                    };
-                    switch(key) {
-                        case Types.Keys.LEFT:
-                        case Types.Keys.A:
-                        case Types.Keys.KEYPAD_4:
-                            game.player.moveLeft = true;
-                            break;
-                        case Types.Keys.RIGHT:
-                        case Types.Keys.D:
-                        case Types.Keys.KEYPAD_6:
-                            game.player.moveRight = true;
-                            break;
-                        case Types.Keys.UP:
-                        case Types.Keys.W:
-                        case Types.Keys.KEYPAD_8:
-                            game.player.moveUp = true;
-                            break;
-                        case Types.Keys.DOWN:
-                        case Types.Keys.S:
-                        case Types.Keys.KEYPAD_2:
-                            game.player.moveDown = true;
-                            break;
-                        case Types.Keys.SPACE:
-                            game.makePlayerAttackNext();
-                            break;
-                        case Types.Keys.I:
-                            $('#achievementsbutton').click();
-                            break;
-                        case Types.Keys.H:
-                            $('#helpbutton').click();
-                            break;
-                        case Types.Keys.M:
-                            $('#mutebutton').click();
-                            break;
-                        case Types.Keys.P:
-                            $('#playercount').click();
-                            break;
-                        default:
-                            break;
-                    }
-                }
             });
 
              $(document).keyup(function(e) {
@@ -646,44 +601,25 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
                 var key = e.which,
                     $chat = $('#chatinput');
 
-                if(key === 13) { // Enter
-                    if(game.started) {
-                        $chat.focus();
-                        return false;
-                    } else {
-                        if(app.loginFormActive() || app.createNewCharacterFormActive()) {
-                            $('input').blur();      // exit keyboard on mobile
-                            app.tryStartingGame();
-                            return false;           // prevent form submit
-                        }
-                    }
-                }
-
                 if($('#chatinput:focus').size() == 0 && $('#nameinput:focus').size() == 0 && game.ready && !app.dropDialogPopuped) {
                     if(key === 13) { // Enter
                         $chat.focus();
-                        return false
+                        return false;
                     } else if(key === 8) { // BackSpace
                         return false;
                     } else if(key === 49 || key === 50){ // 1,2,6
                         game.keyDown(key);
                         return false;
-                    } else if(key === 107) { // +
+                    } else if(key === 107){ // +
                         game.chathandler.incChatWindow();
-                    } else if(key === 109) { // -
+                    } else if(key === 109){ // -
                         game.chathandler.decChatWindow();
                     }
-
-                    // The following may be uncommented for debugging purposes.
-                    //
-                    // if(key === 32 && game.started) { // Space
-                    //     game.togglePathingGrid();
-                    //     return false;
-                    // }
-                    // if(key === 70 && game.started) { // F
-                    //     game.toggleDebugInfo();
-                    //     return false;
-                    // }
+                } else {
+                    if(key === 13 && game.ready) {
+                        $chat.focus();
+                        return false;
+                    }
                 }
             });
 
