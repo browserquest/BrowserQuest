@@ -165,20 +165,7 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
             });
 
             $('.play span').click(function(event) {
-                var name = $('#nameinput').attr('value');
-                var pw = $('#pwinput').attr('value');
-                var pw2 = $('#pwinput2').attr('value');
-                var email = $('#emailinput').attr('value');
-                var loginname = $('#loginnameinput').attr('value');
-                var loginpw = $('#loginpwinput').attr('value');
-
-                if(loginpw === undefined || loginpw === ''){
-                    if(pw2 !== '' && pw2 !== undefined && pw === pw2){
-                        app.tryStartingGame(name, pw, email);
-                    }
-                } else{
-                    app.tryStartingGame(loginname, loginpw, email);
-                }
+                app.tryStartingGame();
             });
 
             $('#dropAccept').click(function(event) {

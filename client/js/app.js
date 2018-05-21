@@ -77,34 +77,42 @@ define(['jquery'], function($) {
         },
 
         tryStartingGame: function(username, userpw, email, starting_callback) {
-            var self = this,
-                action = this.createNewCharacterFormActive() ? 'create' : 'login';
-                $play = this.$playButton;
-            
-            if(username !== '') {
-                if(!this.ready || !this.canStartGame()) {
-                    if(!this.isMobile) {
-                        // on desktop and tablets, add a spinner to the play button
-                        $play.addClass('loading');
-                    }
-                    this.$playDiv.unbind('click');
-                    var watchCanStart = setInterval(function() {
-                        log.debug("waiting...");
-                        if(self.canStartGame()) {
-                            setTimeout(function() {
-                                if(!self.isMobile) {
-                                    $play.removeClass('loading');
-                                }
-                            }, 1500);
-                            clearInterval(watchCanStart);
-                            self.startGame(action, username, userpw, email, starting_callback);
-                        }
-                    }, 100);
-                } else {
-                    this.$playDiv.unbind('click');
-                    this.startGame(action, username, userpw, email, starting_callback);
-                }      
+            var self = this;
+            var action = this.createNewCharacterFormActive() ? 'create' : 'login';
+            var username = this.getUsernameField().attr('value');
+            var userpw = this.getPasswordField().attr('value');
+            var email = '';
+            var userpw2;
+
+            if(action === 'create') {
+                email = this.$email.attr('value');
+                userpw2 = this.$pwinput2.attr('value');
             }
+
+            if(!this.validateFormFields(username, userpw, userpw2, email)) return;
+            
+            if(!this.ready || !this.canStartGame()) {
+                if(!this.isMobile) {
+                    // on desktop and tablets, add a spinner to the play button
+                    $play.addClass('loading');
+                }
+                this.$playDiv.unbind('click');
+                var watchCanStart = setInterval(function() {
+                    log.debug("waiting...");
+                    if(self.canStartGame()) {
+                        setTimeout(function() {
+                            if(!self.isMobile) {
+                                $play.removeClass('loading');
+                            }
+                        }, 1500);
+                        clearInterval(watchCanStart);
+                        self.startGame(action, username, userpw, email, starting_callback);
+                    }
+                }, 100);
+            } else {
+                this.$playDiv.unbind('click');
+                this.startGame(action, username, userpw, email, starting_callback);
+            }      
         },
 
         startGame: function(action, username, userpw, email, starting_callback) {
