@@ -78,7 +78,19 @@ loadPlayer: function(player){
                     .hget(userKey, "achievement19:progress") // 57
                     .hget(userKey, "achievement20:found") // 58
                     .hget(userKey, "achievement20:progress") // 59
-                
+                    .hget(userKey, "achievement21:found") // 58
+                    .hget(userKey, "achievement21:progress") // 59
+                    
+                    .hget(userKey, "achievement22:found") // 60
+                    .hget(userKey, "achievement22:progress") // 61
+                    .hget(userKey, "achievement23:found") // 62
+                    .hget(userKey, "achievement23:progress") // 63
+                    .hget(userKey, "achievement24:found") // 64
+                    .hget(userKey, "achievement24:progress") // 65
+                    .hget(userKey, "achievement25:found") // 66
+                    .hget(userKey, "achievement25:progress") // 67
+                    .hget(userKey, "achievement26:found") // 68
+                    .hget(userKey, "achievement26:progress") // 69
                     .exec(function(err, replies){
                         var pw = replies[0];
                         var armor = replies[1];
@@ -115,7 +127,13 @@ loadPlayer: function(player){
                           Utils.trueFalse(replies[52]),
                           Utils.trueFalse(replies[54]),
                           Utils.trueFalse(replies[56]),
-                          Utils.trueFalse(replies[58])
+                          Utils.trueFalse(replies[58]),
+
+                          Utils.trueFalse(replies[60]),
+                          Utils.trueFalse(replies[62]),
+                          Utils.trueFalse(replies[64]),
+                          Utils.trueFalse(replies[66]),
+                          Utils.trueFalse(replies[68])
                         ];
                         var achievementProgress = [
                           Utils.NaN2Zero(replies[15]),
@@ -138,7 +156,13 @@ loadPlayer: function(player){
                           Utils.trueFalse(replies[53]),
                           Utils.trueFalse(replies[55]),
                           Utils.trueFalse(replies[57]),
-                          Utils.trueFalse(replies[59])
+                          Utils.trueFalse(replies[59]),
+
+                          Utils.trueFalse(replies[61]),
+                          Utils.trueFalse(replies[63]),
+                          Utils.trueFalse(replies[65]),
+                          Utils.trueFalse(replies[67]),
+                          Utils.trueFalse(replies[69])
                         ];
                         var adminnames = replies[26];
                         var pubPoint =  Utils.NaN2Zero(replies[27]);

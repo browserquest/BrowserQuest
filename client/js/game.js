@@ -1715,6 +1715,9 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 });
 
                 self.client.onAchievement(function(id, type) {
+                    console.log('onAchievement!!')
+                    console.log(id === self.achievements['KILL_CRAB'])
+                    console.log(type)
                     var achievement = null;
 
                     if(type === "complete" && id === self.achievements['ANGRY_RATS'].id){
@@ -1734,7 +1737,8 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+50 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
-                    } else if(type === "complete" && id === self.achievements['KILL_CRAB']){
+                    } else if(type === "complete" && id === self.achievements['KILL_CRAB'].id){
+                        console.log('blahahahahahah');
                         achievement = self.achievements['KILL_CRAB'];
                         achievement.completed = true;
                         self.app.displayUnlockedAchievement(achievement);
@@ -1747,7 +1751,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+50 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
-                    } else if(type === "complete" && id === self.achievements['FIND_CAKE']){
+                    } else if(type === "complete" && id === self.achievements['FIND_CAKE'].id){
                         achievement = self.achievements['FIND_CAKE'];
                         achievement.completed = true;
                         self.app.displayUnlockedAchievement(achievement);
@@ -1760,7 +1764,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+100 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
-                    } else if(type === "complete" && id === self.achievements['FIND_CD']){
+                    } else if(type === "complete" && id === self.achievements['FIND_CD'].id){
                         achievement = self.achievements['FIND_CD'];
                         achievement.completed = true;
                         self.app.displayUnlockedAchievement(achievement);
@@ -1773,7 +1777,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+100 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
-                    } else if(type === "complete" && id === self.achievements['KILL_SKELETON']){
+                    } else if(type === "complete" && id === self.achievements['KILL_SKELETON'].id){
                         achievement = self.achievements['KILL_SKELETON'];
                         achievement.completed = true;
                         self.app.displayUnlockedAchievement(achievement);
@@ -1781,7 +1785,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+200 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
-                    } else if(type === "complete" && id === self.achievements['BRING_AXE']){
+                    } else if(type === "complete" && id === self.achievements['BRING_AXE'].id){
                         achievement = self.achievements['BRING_AXE'];
                         achievement.completed = true;
                         self.app.displayUnlockedAchievement(achievement);
