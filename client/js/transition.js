@@ -24,7 +24,7 @@ define(function() {
             if(this.inProgress) {
                 if(this.count > 0) {
                     this.count -= 1;
-                    log.debug(currentTime + ": jumped frame");
+                    console.log(currentTime + ": jumped frame");
                 }
                 else {
                     var elapsed = currentTime - this.startTime;

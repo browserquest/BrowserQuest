@@ -91,7 +91,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                              <input type="password" id="pwinput2" class="stroke" name="player-pw2" placeholder="Confirm Password" maxlength="15">
                              <input type="email" id="emailinput" class="stroke" name="player-email" placeholder="Email address" maxlength="48">
                          </form>
-                         <div class="play">
+                         <div class="play button disabled">
                            <span class="link">Create</span>
                          </div>
                          <div class="validation-summary"></div>
@@ -106,7 +106,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                              <input type="text" id="loginnameinput" class="stroke" name="player-name" placeholder="Character Name" maxlength="12" autofocus>
                              <input type="password" id="loginpwinput" class="stroke" name="player-loginpw" placeholder="Password" maxlength="15">
                          </form>
-                         <div class="play">
+                         <div class="play button">
                            <span class="link">Login</span>
                            <img src="img/common/spinner2.gif">
                          </div>
@@ -228,6 +228,11 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 	        </section>
 	    </div>
 
+        <div id="chatLog"></div>
+        <div id="kungLog"></div>
+        <div id="board"></div>
+        <div id="gamebutton">G</div>
+        <div id="boardbutton">B</div>
 		<div id="container">
 		    <div id="canvasborder">
 		        <article id="instructions" class="clickable">
@@ -271,7 +276,14 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
     			</div>
     			<div id="bubbles"></div>
      			<div id="expbar"></div>
-     			<div id="textWindow"></div>
+                <div id="textWindow"></div>
+                <div id="target">
+                    <div class="headshot"><div></div></div>
+                    <div class="details">
+                        <div class="name"></div>
+                        <div class="health"></div>
+                    </div>
+                </div> 
     			<div id="inspector">
                     <div class="headshot"><div> </div></div>
                     <div class="details">
@@ -288,20 +300,21 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                         <span id="dropCancel">&nbsp;Cancel&nbsp;</span>
                     </div>
                 </div>
- 			<div id="achievement-notification">
-    			    <div class="coin">
-    			        <div id="coinsparks"></div>
-    			    </div>
-    			    <div id="achievement-info">
-        			    <div class="title">New Achievement Unlocked!</div>
-        			    <div class="name"></div>
-    			    </div>
-    			</div>
+                <div id="achievement-notification">
+                    <div class="coin">
+                        <div id="coinsparks"></div>
+                    </div>
+                    <div id="achievement-info">
+                        <div class="title">New Achievement Unlocked!</div>
+                        <div class="name"></div>
+                    </div>
+                </div>
     			<div id="bar-container">
 					<div id="healthbar">
 					</div>
 					<div id="hitpoints">
-					</div>
+                    </div>
+                    <div id="hpguide"></div>
 					<div id="weapon"></div>
 					<div id="armor"></div>
 					<div id="notifications">
@@ -316,7 +329,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                     <div id="barbuttons">
                         <div id="chatbutton" class="barbutton clickable"></div>
                         <div id="achievementsbutton" class="barbutton clickable"></div>
-                        <div id="helpbutton" class="barbutton clickable"></div>
+                        <div id="helpbutton" class="barbutton clickable active"></div>
                         <div id="mutebutton" class="barbutton clickable active"></div>
                     </div>
     			</div>
@@ -342,11 +355,6 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 		    </div>
 		</div>
 		<footer>
-		    <div id="sharing" class="clickable">
-		      Share this on
-              <a href="http://twitter.com/share?url=http%3A%2F%2Fbrowserquest.mozilla.org&amp;text=Mozilla%27s%20BrowserQuest%3A%20HTML5%20massively%20multiplayer%20adventure%20game%20%23demo%20%23websockets&amp;related=glecollinet:Creators%20of%20BrowserQuest%2Cwhatthefranck" class="twitter"></a>
-              <a href="http://www.facebook.com/share.php?u=http://browserquest.mozilla.org/" class="facebook"></a>
-		    </div>
 		    <div id="privacy-link" class="clickable">
 		      <span class="dash">&ndash;</span> <span id="toggle-legal">Privacy</span>
 		    </div>
@@ -366,7 +374,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                 <span class="achievement-name">???</span>
                 <span class="achievement-description">???</span>
                 <div class="achievement-sharing">
-                  <a href="" class="twitter"></a>
+                    <a href="" class="twitter"></a>
                 </div>
             </li>
         </ul>
@@ -396,6 +404,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
         <script>
                 var require = { waitSeconds: 60 };
         </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
         <script data-main="js/home" src="js/lib/require-jquery.js"></script>
 	</body>
 </html>

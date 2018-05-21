@@ -1,0 +1,49 @@
+{
+	"id": "regionhenchman",
+	"width": 64,
+	"height": 72,
+	"animations": {
+		"atk_right": {
+			"length": 6,
+			"row": 0
+		},
+		"walk_right": {
+			"length": 6,
+			"row": 1
+		},
+		"idle_right": {
+			"length": 2,
+			"row": 2
+		},
+		"atk_up": {
+			"length": 6,
+			"row": 3
+		},
+		"walk_up": {
+			"length": 6,
+			"row": 4
+		},
+		"idle_up": {
+			"length": 2,
+			"row": 5
+		},
+		"atk_down": {
+			"length": 6,
+			"row": 6
+		},
+		"walk_down": {
+			"length": 5,
+			"row": 7
+		},
+		"idle_down": {
+			"length": 2,
+			"row": 8
+		},
+		"Group 5": {
+			"length": 3,
+			"row": 9
+		}
+	},
+	"offset_x": -24,
+	"offset_y": -39
+}

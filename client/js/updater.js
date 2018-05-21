@@ -255,6 +255,11 @@ define(['character', 'timer'], function(Character, Timer) {
             if(target) {
                 target.update(t);
             }
+
+            var benef = this.game.benefAnimation;
+            if(benef) {
+                benef.update(t);
+            }
         },
 
         updateAnimatedTiles: function() {

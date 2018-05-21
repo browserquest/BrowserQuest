@@ -95,15 +95,15 @@ function(Camera, Item, Character, Player, Timer) {
 
             this.canvas.width = this.camera.gridW * this.tilesize * this.scale;
             this.canvas.height = this.camera.gridH * this.tilesize * this.scale;
-            log.debug("#entities set to "+this.canvas.width+" x "+this.canvas.height);
+            console.log("#entities set to "+this.canvas.width+" x "+this.canvas.height);
 
             this.backcanvas.width = this.canvas.width;
             this.backcanvas.height = this.canvas.height;
-            log.debug("#background set to "+this.backcanvas.width+" x "+this.backcanvas.height);
+            console.log("#background set to "+this.backcanvas.width+" x "+this.backcanvas.height);
 
             this.forecanvas.width = this.canvas.width;
             this.forecanvas.height = this.canvas.height;
-            log.debug("#foreground set to "+this.forecanvas.width+" x "+this.forecanvas.height);
+            console.log("#foreground set to "+this.forecanvas.width+" x "+this.forecanvas.height);
         },
 
         initFPS: function() {
@@ -388,6 +388,25 @@ function(Camera, Item, Character, Player, Timer) {
                                                entity.shadowOffsetY * ds,
                                                shadow.width * os * ds, shadow.height * os * ds);
                     }
+                    
+                    if(entity.invincible){
+                        var benef = this.game.sprites["firebenef"];
+                        if(benef){
+                            var benefAnimData = benef.animationData[anim.name];
+                            if(benefAnimData){
+                                var index = this.game.benefAnimation.currentFrame.index < benefAnimData.length ? this.game.benefAnimation.currentFrame.index : this.game.benefAnimation.currentFrame.index % benefAnimData.length,
+                                    bx = benef.width * index * os,
+                                    by = benef.height * benefAnimData.row * os,
+                                    bw = benef.width * os,
+                                    bh = benef.height * os;
+
+                                this.context.drawImage(benef.image, bx, by, bw, bh,
+                                                       benef.offsetX * s,
+                                                       benef.offsetY * s,
+                                                       bw * ds, bh * ds);
+                            }
+                        }
+                    }
 
                     this.context.drawImage(sprite.image, x, y, w, h, ox, oy, dw, dh);
 
@@ -426,6 +445,17 @@ function(Camera, Item, Character, Player, Timer) {
                 }
 
                 this.context.restore();
+
+                if(entity instanceof Item) {
+                    var item = entity;
+                    if(item.count > 1) {
+                        this.drawText(item.count,
+                                      (entity.x + 8) * this.scale,
+                                      (entity.y - 0.3) * this.scale,
+                                      true,
+                                      "white");
+                    }
+                }
 
                 if(entity.isFading) {
                     this.context.restore();
@@ -489,7 +519,7 @@ function(Camera, Item, Character, Player, Timer) {
             }
 
             if(count > 0) {
-                //log.debug("count:"+count);
+                //console.log("count:"+count);
             }
         },
 
@@ -568,7 +598,7 @@ function(Camera, Item, Character, Player, Timer) {
             if(entity.name && entity instanceof Player) {
                 var color = (entity.id === this.game.playerId) ? "#fcda5c" : "white";
                 var name = (entity.level) ? "lv." + entity.level + " " + entity.name : entity.name;
-                this.drawText(entity.name,
+                this.drawText(name,
                               (entity.x + 8) * this.scale,
                               (entity.y + entity.nameOffsetY) * this.scale,
                               true,
@@ -670,6 +700,183 @@ function(Camera, Item, Character, Player, Timer) {
             this.initFont();
         },
 
+        drawItemInfo: function(){
+            var self = this;
+            var s = this.scale;
+            var ds = this.upscaledRendering ? this.scale : 1;
+            var os = this.upscaledRendering ? 1 : this.scale;
+
+            this.context.save();
+            this.context.translate(this.camera.x*s, this.camera.y*s);
+            this.drawRectStroke(8, 8, 29, 4, "rgba(142, 214, 255, 0.8)");
+
+            Types.forEachArmorKind(function(kind, kindName){
+                var item = self.game.sprites[kindName];
+                if(item){
+                    var itemAnimData = item.animationData["idle_down"];
+                    if(itemAnimData){
+                        var ix = item.width * 0 * os,
+                            iy = item.height * itemAnimData.row * os,
+                            iw = item.width * os,
+                            ih = item.height * os,
+                            rank = Types.getArmorRank(kind);
+
+                        if(rank > Types.getArmorRank(Types.Entities.SEADRAGONARMOR)){
+                            return;
+                        }
+                        if(kind !== Types.Entities.ADMINARMOR){
+                            self.context.drawImage(item.image, ix, iy, iw, ih,
+                                item.offsetX * s + ((rank%19)*3+2)*self.tilesize,
+                                item.offsetY * s + (Math.floor(rank/19)*3+2)*self.tilesize,
+                                iw * ds, ih * ds);
+                        }
+                    }
+                }
+            });
+
+            Types.forEachWeaponKind(function(kind, kindName){
+                var item = self.game.sprites[kindName];
+                if(item){
+                    var itemAnimData = item.animationData["idle_down"];
+                    if(itemAnimData){
+                        var ix = item.width * 0 * os,
+                            iy = item.height * itemAnimData.row * os,
+                            iw = item.width * os,
+                            ih = item.height * os,
+                            rank = Types.getWeaponRank(kind);
+
+                        if(rank > Types.getWeaponRank(Types.Entities.SEARAGE)){
+                            return;
+                        }
+
+                        self.context.drawImage(item.image, ix, iy, iw, ih,
+                                               item.offsetX * s + ((rank%19)*3+2)*self.tilesize,
+                                               item.offsetY * s + (Math.floor(rank/19)*3+2)*self.tilesize,
+                                               iw * ds, ih * ds);
+
+                    }
+                }
+            });
+            this.context.restore();
+        },
+        drawInventory: function(){
+            var s = this.scale;
+
+            this.context.save();
+            this.context.translate(this.camera.x*s,
+                                   this.camera.y*s);
+
+            if(this.game.player && this.game.player.healingCoolTimeCallback === null){
+                this.drawRect((this.camera.gridW-2)*this.tilesize*s,
+                          (this.camera.gridH-1)*this.tilesize*s,
+                          2, 1, "rgba(0, 0, 0, 0.8)");
+            } else {
+                this.drawRect((this.camera.gridW-2)*this.tilesize*s,
+                          (this.camera.gridH-1)*this.tilesize*s,
+                          2, 1, "rgba(255, 0, 0, 0.8)");
+            }
+            
+            if(this.game.menu && this.game.menu.inventoryOn === "inventory0"){
+                this.drawRect((this.camera.gridW-2)*this.tilesize*s,
+                              (this.camera.gridH-1)*this.tilesize*s,
+                              1, 1, "rgba(0, 0, 255, 0.8)");
+            } else if(this.game.menu && this.game.menu.inventoryOn === "inventory1"){
+                this.drawRect((this.camera.gridW-1)*this.tilesize*s,
+                              (this.camera.gridH-1)*this.tilesize*s,
+                              1, 1, "rgba(0, 0, 255, 0.8)");
+            }
+            this._drawInventory(0);
+            this._drawInventory(1);
+
+            this.drawInventoryMenu();
+            this.context.restore();
+        },
+        _drawInventory: function(i){
+            var self = this;
+            var s = this.scale;
+            var ds = this.upscaledRendering ? this.scale : 1;
+            var os = this.upscaledRendering ? 1 : this.scale;
+            var inventory = null;
+
+            if(this.game.player){
+                inventory = this.game.player.inventory;
+            }
+            if(inventory && inventory[i]){
+                var itemKind = inventory[i];
+                var item = this.game.sprites["item-" + Types.getKindAsString(itemKind)];
+                if(item){
+                    var itemAnimData = item.animationData["idle"];
+                    if(itemAnimData){
+                        var ix = item.width * 0 * os,
+                            iy = item.height * itemAnimData.row * os,
+                            iw = item.width * os,
+                            ih = item.height * os;
+                        self.context.drawImage(item.image, ix, iy, iw, ih,
+                                               item.offsetX * s + (this.camera.gridW-2+i)*self.tilesize*s,
+                                               item.offsetY * s + (this.camera.gridH-1)*self.tilesize*s,
+                                               iw * ds, ih * ds);
+                        if(Types.isHealingItem(itemKind)){
+                            var color = "white";
+                            if(i === this.game.healShortCut)
+                                color = "lime";
+
+                            self.drawText(this.game.player.inventoryCount[i].toString(),
+                                (this.camera.gridW-2+i)*self.tilesize*s,
+                                (this.camera.gridH-1)*self.tilesize*s, false, color);
+                        }
+                    }
+                }
+            }
+        },
+        drawInventoryMenu: function(){
+            var s = this.scale;
+            if(this.game.menu && this.game.menu.inventoryOn){
+                var inventoryNumber = (this.game.menu.inventoryOn === "inventory0") ? 0 : 1;
+                if(this.game.player.inventory[inventoryNumber] === Types.Entities.CAKE
+                || this.game.player.inventory[inventoryNumber] === Types.Entities.CD){
+                    this.drawRect((this.camera.gridW-2)*this.tilesize*s,
+                                  (this.camera.gridH-2)*this.tilesize*s,
+                                  2, 1, "rgba(0, 0, 0, 0.8)");
+                    this.drawText("drop",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-1.4)*this.tilesize*s,
+                                  true, "white", "black");
+                } else if(Types.isHealingItem(this.game.player.inventory[inventoryNumber])){
+                    this.drawRect((this.camera.gridW-2)*this.tilesize*s,
+                                  (this.camera.gridH-4)*this.tilesize*s,
+                                  2, 3, "rgba(0, 0, 0, 0.8)");
+                    this.drawText("set hotkey",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-3.4)*this.tilesize*s,
+                                  true, "white", "black");
+                    this.drawText("eat",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-2.4)*this.tilesize*s,
+                                  true, "white", "black");
+                    this.drawText("drop",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-1.4)*this.tilesize*s,
+                                  true, "white", "black");
+                } else{
+                    this.drawRect((this.camera.gridW-2)*this.tilesize*s,
+                                  (this.camera.gridH-4)*this.tilesize*s,
+                                  2, 3, "rgba(0, 0, 0, 0.8)");
+                    this.drawText("equip",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-3.4)*this.tilesize*s,
+                                  true, "white", "black");
+                    this.drawText("change avatar",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-2.4)*this.tilesize*s,
+                                  true, "white", "black");
+                    this.drawText("drop",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-1.4)*this.tilesize*s,
+                                  true, "white", "black");
+                }
+            }
+        },
+
         setCameraView: function(ctx) {
             ctx.translate(-this.camera.x * this.scale, -this.camera.y * this.scale);
         },
@@ -717,15 +924,15 @@ function(Camera, Item, Character, Player, Timer) {
 
         renderStaticCanvases: function() {
             this.background.save();
-                this.setCameraView(this.background);
-                this.drawTerrain();
+            this.setCameraView(this.background);
+            this.drawTerrain();
             this.background.restore();
 
             if(this.mobile || this.tablet) {
                 this.clearScreen(this.foreground);
                 this.foreground.save();
-                    this.setCameraView(this.foreground);
-                    this.drawHighTiles(this.foreground);
+                this.setCameraView(this.foreground);
+                this.drawHighTiles(this.foreground);
                 this.foreground.restore();
             }
         },
@@ -743,19 +950,23 @@ function(Camera, Item, Character, Player, Timer) {
             this.clearScreen(this.context);
 
             this.context.save();
-                this.setCameraView(this.context);
-                this.drawAnimatedTiles();
+            this.setCameraView(this.context);
+            this.drawAnimatedTiles();
 
-                if(this.game.started && this.game.cursorVisible) {
-                    this.drawSelectedCell();
-                    this.drawTargetCell();
-                }
+            if(this.game.started && this.game.cursorVisible) {
+                this.drawSelectedCell();
+                this.drawTargetCell();
+            }
 
-                //this.drawOccupiedCells();
-                this.drawPathingCells();
-                this.drawEntities();
-                this.drawCombatInfo();
-                this.drawHighTiles(this.context);
+            //this.drawOccupiedCells();
+            this.drawPathingCells();
+            this.drawEntities();
+            this.drawCombatInfo();
+            this.drawHighTiles(this.context);
+            if(this.game.itemInfoOn) {
+                this.drawItemInfo();
+            }
+            this.drawInventory();
             this.context.restore();
 
             // Overlay UI elements

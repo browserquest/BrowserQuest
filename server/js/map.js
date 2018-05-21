@@ -4,6 +4,7 @@ var fs = require('fs');
 var file = require('../../shared/js/file');
 var path = require('path');
 var Utils = require('./utils');
+var Area = require('./area');
 var Checkpoint = require('./checkpoint');
 
 var Map = cls.Class.extend({

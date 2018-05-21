@@ -245,3 +245,12 @@ Messages.PVP = Message.extend({
     }
 });
 
+Messages.Kung = Message.extend({
+    init: function(message) {
+        this.message = message;
+    },
+    serialize: function() {
+        return [Types.Messages.KUNG,
+                this.message];
+    }
+});

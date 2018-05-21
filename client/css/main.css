@@ -169,6 +169,20 @@ footer, header, hgroup, menu, nav, section {
     #chatbox {background:url('../img/1/barsheet.png');image-rendering:-moz-crisp-edges;position:absolute;left:50%;z-index:5;-moz-transition:0.2s bottom ease;-webkit-transition:0.2s bottom ease;-o-transition:0.2s bottom ease;-ms-transition:0.2s bottom ease;transition:0.2s bottom ease;}
     #chatinput {color:#eee;}
     #chatinput.placeholder {color:#aaa;}
+    #chatbox .legend{
+      position: absolute;
+      top: -20px;
+      left: 10px;
+      padding: 4px 6px;
+      color: #FFF;
+      background: rgba(45,45,45,0.8);
+      z-index: 4;
+      border-radius: 3px 3px 0 0;
+      display: none;
+    }
+    #chatbox .legend p{
+      line-height: 1;
+    }
 
     div.clear{
       float: left;
@@ -176,32 +190,100 @@ footer, header, hgroup, menu, nav, section {
       width: 100%;
     }
 
-    #inspector {
+    #target{
       font-family:'GraphicPixel';
       color:#e3e3e3;
-      background-color:rgba(0, 0, 0, 0.43);
       position: absolute;
-      top: 15px;
-      left: 15px;
+      top: 10px;
+      left: 10px;
       width: 140px;
       margin-left: 0px;
       padding: 4px;
+      background: rgba(45,45,45,0.8);
       display: none;
+      border: 2px solid #000;
       border-radius: 0 0 6px 0;
-   }
-    #inspector .details {
+    }
+    #target .headshot {
+      float: left;
+      height: 32px;
+      width: 32px;
+      border: 2px solid #000;
+      margin-right: 3px;
+      background: #FFF;
+      overflow: hidden;
+    }
+    #target .headshot div {
+      position: relative;
+      top: 50%;
+      left: 50%;
+    }
+    #target .details {
+      float: left;
+      margin-bottom: 8px;
+      width: 100px;
+      text-transform: capitalize;
+    }
+    #target .name {
+      float: left;
       margin-bottom: 8px;
       text-transform: capitalize;
     }
-     #inspector .name {
+    #target .health {
+      float: left;
+      height: 10px;
+      width: 100%;
+      background: red;
+      clear: left;
+    }
+
+    #inspector {
+      font-family:'GraphicPixel';
+      color:#e3e3e3;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      width: 140px;
+      margin-left: -70px;
+      padding: 4px;
+      background: rgba(45,45,45,0.8);
+      display: none;
+      border-radius: 0 0 6px 6px;
+    }
+    #inspector .headshot {
+      float: left;
+      height: 32px;
+      width: 32px;
+      border: 2px solid #000;
+      margin-right: 3px;
+      background: #FFF;
+      overflow: hidden;
+    }
+    #inspector .headshot div {
+      position: relative;
+      top: 50%;
+      left: 50%;
+    }
+    #inspector .details {
+      float: left;
+      width: 100px;
+    }
+    #inspector .health {
+      float: left;
+      height: 10px;
+      width: 100%;
+      background: red;
+      clear: left;
+    }
+    #inspector .name {
       margin-bottom: 8px;
       text-transform: capitalize;
     }
 
-   #inspector .level {
+    #inspector .level {
       margin-bottom: 8px;
       text-transform: capitalize;
-   }
+    }
 
    #inspector .health {
       height: 10px;
@@ -260,7 +342,212 @@ footer, header, hgroup, menu, nav, section {
     #achievements li.unlocked:hover .achievement-sharing {display:block;}
     .achievement-sharing a {display:block;float:left;}
     
-	#bubbles a {pointer-events:auto;text-decoration:none;color:#fcda5c;}
+    #bubbles a {pointer-events:auto;text-decoration:none;color:#fcda5c;}
+    
+    #container{
+        width:1470px;
+        margin:0 auto;
+        position:absolute;
+        top:0px;
+        margin-top:0px;
+        left:50%;
+        margin-left:-735px;
+    }
+    #chatLog{
+        position: absolute; 
+        width: 1170px;
+        left: 50%;
+        margin-left: -735px;
+        top: 750px;
+        bottom: 10px;
+        border: 1px solid #9C9898;
+        background: rgba(45, 45, 45, 1);
+        padding: 5px;
+        overflow-y: scroll;
+        overflow-x: hide;
+        display: none;
+      }
+      #chatLog p{
+        margin-bottom: 3px;
+        padding: 0;
+        line-height: 1;
+        color: rgba(255,255,255,1);
+      }
+      #chatLog p .name{
+        font-weight: bold;
+      }
+      #kungLog{
+        position: absolute; 
+        width: 280px;
+        left: 50%;
+        margin-left: 455px;
+        top: 750px;
+        bottom: 10px;
+        border: 1px solid #9C9898;
+        background: rgba(45, 45, 45, 1);
+        padding: 5px;
+        overflow-y: scroll;
+        overflow-x: hide;
+        display: none;
+      }
+      #kungLog p{
+        margin-bottom: 3px;
+        padding: 0;
+        line-height: 1;
+        color: rgba(255,255,255,1);
+      }
+  
+      #board{
+        position: absolute; 
+        width: 1470px;
+        left: 50%;
+        margin-left: -735px;
+        top: 750px;
+        bottom: 10px;
+        border: 1px solid #9C9898;
+        background: rgba(255, 255, 2555, 1);
+        padding: 5px;
+        overflow-y: scroll;
+        overflow-x: hide;
+        display: none;
+      }
+  #board td, #board th
+  {
+    font-size:1.2em;
+    border:1px solid #98bf21;
+    padding:3px 7px 2px 7px;
+    margin:10px 10px 10px 10px;
+  }
+  #board th
+  {
+    font-size:1.4em;
+    text-align:left;
+    padding-top:5px;
+    padding-bottom:4px;
+    background-color:#A7C942;
+    color:#fff;
+  }
+  #board tr.alt td
+  {
+    color:#000;
+    background-color:#EAF2D3;
+  }
+  
+  
+  #gamebutton {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    left: 50%;
+    margin-left: -767px;
+    top: 750px;
+    border: 1px solid #9C9898;
+    background: rgba(0, 0, 0, 0.5);
+    color: rgba(255, 255, 255, 1);
+    text-align: center;
+    display: none;
+  }
+  
+  #boardbutton {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    left: 50%;
+    margin-left: -767px;
+    top: 780px;
+    border: 1px solid #9C9898;
+    background: rgba(0, 0, 0, 0.5);
+    color: rgba(255, 255, 255, 1);
+    text-align: center;
+    display: none;
+  }
+  #up {
+    position: relative;
+    top: 10px;
+    width: 100px;
+    height: 30px;
+    background: rgba(0, 0, 255, 0.7);
+    text-align: center;
+  }
+  #down {
+    position: relative;
+    top: -20px;
+    width: 100px;
+    height: 30px;
+    margin-left: 110px;
+    background: rgba(255, 0, 0, 0.7);
+    text-align: center;
+  }
+  #write {
+    position: relative;
+    width: 100px;
+    height: 30px;
+    background: rgba(0, 255, 0, 0.7);
+    text-align: center;
+  }
+  #prevpage {
+    background: rgba(255, 0, 255, 0.7);
+  }
+  #nextpage {
+    width: 100px;
+    height: 30px;
+    background: rgba(255, 0, 255, 0.7);
+  }
+  #viewreply {
+    position: relative;
+    width: 100px;
+    height: 30px;
+    background: rgba(255, 255, 0, 0.7);
+  }
+  
+  #boardlist1 {}
+  #boardlist2 {}
+  #boardlist3 {}
+  #boardlist4 {}
+  #boardlist5 {}
+  #boardlist6 {}
+  #boardlist7 {}
+  #boardlist8 {}
+  #boardlist9 {}
+  #boardlist10 {}
+  
+  tr:hover {
+    background: rgba(0, 128, 0, 0.5);
+  }
+  
+  #adsense {}
+      #expbar{
+        position: absolute;
+        bottom: 8.5%;
+        left: 98.6%;
+        width: 0.5%;
+        background: rgba(0,0,255,0.3);
+        height: 90%;
+        margin-left: 0px;
+        padding: 0px;
+        border: 0px;
+      }
+  
+      #textWindow{
+        position: absolute;
+        top: 30%;
+        left: 5%;
+        width: 88%;
+        height: 50%;
+        background: rgba(0,0,0,0.7);
+        color: rgba(255, 255, 255, 1);
+        margin-left: 0px;
+        padding: 1%;
+        border: 0px;
+      }
+      #textWindow h1 {font-size:64px;}
+      #textWindow h2 {font-size:48px;}
+      #textWindow h3 {font-size:32px;}
+      #textWindow h4 {font-size:24px;}
+      #textWindow h5 {font-size:16px;text-indent:16px;}
+      #textWindow h6 {font-size:12px;text-indent:32px;}
+      #textWindow p {font-size:12px;text-indent:32px;margin:2px 2px;}
+      #textWindow td {color: rgba(255, 255, 255, 1);}
 
     .link:hover {cursor:pointer;color:#d83939;}
     .play img {display:none;}
@@ -546,21 +833,8 @@ footer, header, hgroup, menu, nav, section {
         .button.delete {background-position:-687px -153px;}
         .button.delete:active {background-position:0 -2178px;}
         .validation-error {font-size:22px;}
-        
-		#container {width:1470px;margin:0 auto;position:absolute;top:50%;margin-top:-378px;left:50%;margin-left:-735px;}
-    #expbar{
-      position: absolute;
-      bottom: 8.5%;
-      left: 98%;
-      width: 1%;
-      background: rgba(0,0,255,0.3);
-      height: 90%;
-      margin-left: 0px;
-      padding: 0px;
-      border: 0px;
-    }
 
-    #canvasborder {padding:15px;background:url('../img/3/border.png') no-repeat;}
+        #canvasborder {padding:15px;background:url('../img/3/border.png') no-repeat;}
 		#canvas {width:100%;height:672px;}
 		#fade {width:1440px;height:672px;top:15px;left:15px;}
 		
@@ -725,21 +999,211 @@ footer, header, hgroup, menu, nav, section {
         .validation-summary {margin:0 auto .5em auto;}
         .validation-error {font-size:16px;}
         
-		#container {width:980px;margin:0 auto;position:absolute;top:50%;margin-top:-252px;left:50%;margin-left:-490px;}
-    #expbar{
-      position: absolute;
-      bottom: 8.5%;
-      left: 98.6%;
-      width: 0.5%;
-      background: rgba(0,0,255,0.3);
-      height: 90%;
-      margin-left: 0px;
-      padding: 0px;
-      border: 0px;
+		#container{
+            width:980px;
+            margin:0 auto;
+            position:absolute;
+            top:0px;
+            margin-top:0px;
+            left:50%;
+            margin-left:-490px;
+          }
+      #chatLog{
+        position: absolute; 
+        width: 660px;
+        left: 50%;
+        margin-left: -480px;
+        top: 500px;
+        bottom: 10px;
+        border: 1px solid #9C9898;
+        background: rgba(45, 45, 45, 1);
+        padding: 5px;
+        overflow-y: scroll;
+        overflow-x: hide;
+        display: none;
+      }
+      #chatLog p{
+        margin-bottom: 3px;
+        padding: 0;
+        line-height: 1;
+        color: rgba(255,255,255,1);
+      }
+      #chatLog p .name{
+        font-weight: bold;
+      }
+      #kungLog{
+        position: absolute; 
+        width: 280px;
+        left: 50%;
+        margin-left: 200px;
+        top: 500px;
+        bottom: 10px;
+        border: 1px solid #9C9898;
+        background: rgba(45, 45, 45, 1);
+        padding: 5px;
+        overflow-y: scroll;
+        overflow-x: hide;
+        display: none;
+      }
+      #kungLog p{
+        margin-bottom: 3px;
+        padding: 0;
+        line-height: 1;
+        color: rgba(255,255,255,1);
+      }
+  
+      #board{
+        position: absolute; 
+        width: 960px;
+        left: 50%;
+        margin-left: -480px;
+        top: 500px;
+        bottom: 10px;
+        border: 1px solid #9C9898;
+        background: rgba(255, 255, 2555, 1);
+        padding: 5px;
+        overflow-y: scroll;
+        overflow-x: hide;
+        display: none;
+      }
+    #board td, #board th
+    {
+        font-size:1.2em;
+        border:1px solid #98bf21;
+        padding:10px 10px 10px 10px;
     }
+    #board th
+    {
+        font-size:1.4em;
+        text-align:left;
+        padding-top:5px;
+        padding-bottom:4px;
+        background-color:#A7C942;
+        color:#fff;
+    }
+    #board tr.alt td
+    {
+        color:#000;
+        background-color:#EAF2D3;
+    }
+    
+    
+    #gamebutton {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        left: 50%;
+        margin-left: -512px;
+        top: 500px;
+        border: 1px solid #9C9898;
+        background: rgba(0, 0, 0, 0.5);
+        color: rgba(255, 255, 255, 1);
+        text-align: center;
+        display: none;
+    }
+    
+    #boardbutton {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        left: 50%;
+        margin-left: -512px;
+        top: 530px;
+        border: 1px solid #9C9898;
+        background: rgba(0, 0, 0, 0.5);
+        color: rgba(255, 255, 255, 1);
+        text-align: center;
+        display: none;
+    }
+    
+    #up {
+        position: relative;
+        top: 10px;
+        width: 100px;
+        height: 30px;
+        background: rgba(0, 0, 255, 0.7);
+        text-align: center;
+    }
+    #down {
+        position: relative;
+        top: -20px;
+        width: 100px;
+        height: 30px;
+        margin-left: 110px;
+        background: rgba(255, 0, 0, 0.7);
+        text-align: center;
+    }
+    #write {
+        position: relative;
+        width: 100px;
+        height: 30px;
+        background: rgba(0, 255, 0, 0.7);
+        text-align: center;
+    }
+    #prevpage {
+        background: rgba(255, 0, 255, 0.7);
+    }
+    #nextpage {
+        width: 100px;
+        height: 30px;
+        background: rgba(255, 0, 255, 0.7);
+    }
+    #viewreply {
+        position: relative;
+        width: 100px;
+        height: 30px;
+        background: rgba(255, 255, 0, 0.7);
+    }
+    
+    #boardlist1 {}
+    #boardlist2 {}
+    #boardlist3 {}
+    #boardlist4 {}
+    #boardlist5 {}
+    #boardlist6 {}
+    #boardlist7 {}
+    #boardlist8 {}
+    #boardlist9 {}
+    #boardlist10 {}
+    
+    tr:hover {
+        background: rgba(0, 128, 0, 0.5);
+    }
+  
+      #expbar{
+        position: absolute;
+        bottom: 8.5%;
+        left: 98.6%;
+        width: 0.5%;
+        background: rgba(0,0,255,0.3);
+        height: 90%;
+        margin-left: 0px;
+        padding: 0px;
+        border: 0px;
+      }
+  
+      #textWindow{
+        position: absolute;
+        top: 30%;
+        left: 5%;
+        width: 88%;
+        height: 50%;
+        background: rgba(0,0,0,0.7);
+        color: rgba(255, 255, 255, 1);
+        margin-left: 0px;
+        padding: 1%;
+        border: 0px;
+      }
+      #textWindow h1 {font-size:64px;}
+      #textWindow h2 {font-size:48px;}
+      #textWindow h3 {font-size:32px;}
+      #textWindow h4 {font-size:24px;}
+      #textWindow h5 {font-size:16px;text-indent:16px;}
+      #textWindow h6 {font-size:12px;text-indent:32px;}
+      #textWindow p {font-size:12px;text-indent:32px;margin:2px 2px;}
+      #textWindow td {color: rgba(255, 255, 255, 1);}
 
-
-    #canvasborder {padding:10px;background:url('../img/2/border.png') no-repeat;}
+        #canvasborder {padding:10px;background:url('../img/2/border.png') no-repeat;}
 		#canvas {width:100%;height:448px;}
 		#fade {width:960px;height:448px;top:10px;left:10px;}
 

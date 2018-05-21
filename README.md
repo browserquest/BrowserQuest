@@ -8,7 +8,7 @@ BrowserQuest
 It has three major parts:
 
 * the server side, which runs using Node.js
-* the client side, which runs using javascript in your browser
+* the client side, which runs using Javascript in your browser
 * the database side, which runs using Redis
 
 Browser Support
@@ -221,7 +221,7 @@ Where [NAME] is an optional name for your application (Heroku will automatically
         $ heroku config:add HEROKU_REDIS_PORT=[REDIS_PORT]
         $ heroku config:add HEROKU_REDIS_PASSWORD=[REDIS_PASSWORD]
     
-Where [REDIS_HOST], [REDIS_PORT], and [REDIS_PASSOWRD] are your Redis hostname, port, and password, respectively.
+Where [REDIS_HOST], [REDIS_PORT], and [REDIS_PASSWORD] are your Redis hostname, port, and password, respectively.
 If you Redis instance is configued without a password, omit the last command.
 
 Note: If you use RedisToGo, you will be provided with a URL that looks something like this:

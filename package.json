@@ -10,7 +10,6 @@
     "bison": "~1.1.1",
     "connect": "~3.3.3",
     "log": "~1.4.0",
-    "memcache": "~0.3.0",
     "morgan": "^1.5.0",
     "redis": ">=0",
     "requirejs": ">=2",
@@ -22,11 +21,13 @@
   },
   "devDependencies": {
     "mocha": ">=1",
+    "nodemon": "^1.17.4",
     "should": ">=1",
     "sinon": ">=1"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "dev": "nodemon ./server/js/main.js"
   },
   "engines": {
     "node": "0.10.x",

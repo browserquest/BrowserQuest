@@ -116,6 +116,8 @@ define(['jquery', 'area'], function($, Area) {
                     cameraX: door.tcx,
                     cameraY: door.tcy,
                     portal: door.p === 1,
+                    level: door.l,
+                    admin: door.a,
                 };
             });
 
@@ -139,7 +141,7 @@ define(['jquery', 'area'], function($, Area) {
 
                 self.tilesetCount -= 1;
                 if(self.tilesetCount === 0) {
-                    log.debug("All map tilesets loaded.")
+                    console.log("All map tilesets loaded.")
 
                     self.tilesetsLoaded = true;
                     self._checkReady();
@@ -186,7 +188,11 @@ define(['jquery', 'area'], function($, Area) {
             if(this.isOutOfBounds(x, y) || !this.plateauGrid) {
                 return false;
             }
-            return (this.plateauGrid[y][x] === 1);
+            if(this.plateauGrid && this.plateauGrid[y] && this.plateauGrid[y][x]){
+                return (this.plateauGrid[y][x] === 1);
+              } else {
+                  return false;
+              }  
         },
 
         _generateCollisionGrid: function() {
@@ -212,7 +218,7 @@ define(['jquery', 'area'], function($, Area) {
                     self.grid[pos.y][pos.x] = 1;
                 }
             });
-            log.debug("Collision grid generated.");
+            console.log("Collision grid generated.");
         },
 
         _generatePlateauGrid: function() {

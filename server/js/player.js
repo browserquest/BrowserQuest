@@ -8,7 +8,8 @@ var cls = require("./lib/class"),
     Properties = require("./properties"),
     Formulas = require("./formulas"),
     check = require("./format").check,
-    Types = require("../../shared/js/gametypes")
+    Types = require("../../shared/js/gametypes"),
+    Mob = require("./mob"),
     bcrypt = require('bcrypt');
 
 module.exports = Player = Character.extend({
@@ -17,6 +18,7 @@ module.exports = Player = Character.extend({
 
         this.server = worldServer;
         this.connection = connection;
+        this.databaseHandler = databaseHandler;
 
         this._super(this.connection.id, "player", Types.Entities.WARRIOR, 0, 0, "");
 
@@ -63,7 +65,9 @@ module.exports = Player = Character.extend({
             if(action === Types.Messages.CREATE || action === Types.Messages.LOGIN) {
                 var name = Utils.sanitize(message[1]);
                 var pw = Utils.sanitize(message[2]);
+                var email = Utils.sanitize(message[3]);
 
+                log.info("HELLO: " + name);
                 // Always ensure that the name is not longer than a maximum length.
                 // (also enforced by the maxlength attribute of the name input element).
                 self.name = name.substr(0, 12).trim()
@@ -75,6 +79,7 @@ module.exports = Player = Character.extend({
                     return;
                 }
                 self.pw = pw.substr(0, 15);
+                self.email = email;
 
                 if(action === Types.Messages.CREATE) {
                     bcrypt.genSalt(10, function(err, salt) {
@@ -95,26 +100,6 @@ module.exports = Player = Character.extend({
                     databaseHandler.checkBan(self);
                     databaseHandler.loadPlayer(self);
                 }
-
-                // self.kind = Types.Entities.WARRIOR;
-                // self.equipArmor(message[2]);
-                // self.equipWeapon(message[3]);
-                // if(typeof message[4] !== 'undefined') {
-                //     var aGuildId = self.server.reloadGuild(message[4],message[5]);
-                //     if( aGuildId !== message[4]) {
-                //         self.server.pushToPlayer(self, new Messages.GuildError(Types.Messages.GUILDERRORTYPE.IDWARNING,message[5]));
-                //     }
-                // }
-                // self.orientation = Utils.randomOrientation();
-                // self.updateHitPoints();
-                // self.updatePosition();
-                //
-                // self.server.addPlayer(self, aGuildId);
-                // self.server.enter_callback(self);
-                //
-                // self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints]);
-                // self.hasEnteredGame = true;
-                // self.isDead = false;
             }
             else if(action === Types.Messages.WHO) {
                 log.info("WHO: " + self.name);
@@ -133,7 +118,31 @@ module.exports = Player = Character.extend({
                 if(msg && msg !== "") {
                     msg = msg.substr(0, 60); // Enforce maxlength of chat input
                     // CHAD COMMAND HANDLING IN ASKY VERSION HAPPENS HERE!
-                    self.broadcastToZone(new Messages.Chat(self, msg), false);
+                    var key = msg.substr(0, 3);
+                    if(key === "/1 "){
+                        if((new Date()).getTime() > self.chatBanEndTime)
+                            self.server.pushBroadcast(new Messages.Chat(self, msg));
+                        else
+                            self.send([Types.Messages.NOTIFY, "Block chat"]);
+                    } else if(key === "/b "){
+                        var banPlayer = self.server.getPlayerByName(msg.split(' ')[2]);
+                        var days = (msg.split(' ')[1])*1;
+                        if(banPlayer){
+                            databaseHandler.banPlayer(self, banPlayer, days);
+                        }
+                    } else if(key === "/i "){
+                        var banPlayer = self.server.getPlayerByName(msg.split(' ')[1]);
+                        if(banPlayer) {
+                            databaseHandler.newBanPlayer(self, banPlayer);
+                        }
+                    } else if((key === "/c ") || (key === '/ㅊ ')) {
+                        var targetPalyer = self.server.getPlayerByName(msg.split(' ')[1]);
+                        if(targetPalyer) {
+                            databaseHandler.chatBan(self, targetPalyer);
+                        }
+                    } else {
+                        self.broadcastToZone(new Messages.Chat(self, msg), false);
+                    }
                 }
             }
             else if(action === Types.Messages.MOVE) {
@@ -183,22 +192,73 @@ module.exports = Player = Character.extend({
             else if(action === Types.Messages.HIT) {
                 log.info("HIT: " + self.name + " " + message[1]);
                 var mob = self.server.getEntityById(message[1]);
-                if(mob) {
-                    var dmg = Formulas.dmg(self.weaponLevel, mob.armorLevel);
+                if(mob && self.id) {
+                    var dmg = Formulas.dmg(self, mob);
 
                     if(dmg > 0) {
                       if(mob.type !== "player"){
                         mob.receiveDamage(dmg, self.id);
+                        if(mob.hitPoints <= 0) {
+                            if(mob.kind === Types.Entities.RAT) {
+                                if(self.achievementFound[2].found && self.achievementProgress[2] !== 999){
+                                    if(isNaN(self.achievementProgress[2])) {
+                                        self.achievementProgress[2] = 0;
+                                    } else {
+                                        self.achievementProgress[2]++;
+                                    }
+                                    if(self.achievementProgress[2] >= 10){
+                                        self.send([Types.Messages.ACHIEVEMENT, 2, "complete"]);
+                                        self.achievementProgress[2] = 999;
+                                        self.incExp(50);
+                                    }
+                                    databaseHandler.progressAchievement(self.name, 2, self.achievementProgress[2]);
+                                }
+                            } else if(mob.kind === Types.Entities.CRAB){
+                                const achievementId = 18;
+                                if(self.achievementFound[achievementId] && self.achievementProgress[achievementId] !== 999){
+                                    if(isNaN(self.achievementProgress[achievementId])){
+                                        self.achievementProgress[achievementId] = 0;
+                                    } else{
+                                        self.achievementProgress[achievementId]++;
+                                    }
+                                    if(self.achievementProgress[achievementId] >= 5){
+                                        self.send([Types.Messages.ACHIEVEMENT, achievementId, "complete"]);
+                                        self.achievementProgress[achievementId] = 999;
+                                        self.incExp(50);
+                                    }
+                                    databaseHandler.progressAchievement(self.name, achievementId, self.achievementProgress[achievementId]);
+                                }
+                            } else if(mob.kind === Types.Entities.SKELETON){
+                                const achievementId = 21;
+                                if(self.achievementFound && self.achievement[achievementId].progress !== 999){
+                                    
+                                    if(isNaN(self.achievementProgress[achievementId])){
+                                        self.achievementProgress[achievementId] = 0;
+                                    } else{
+                                        self.achievementProgress[achievementId]++;
+                                    }
+                                    if(self.achievementProgress[achievementId] >= 10){
+                                        self.send([Types.Messages.ACHIEVEMENT, 21, "complete"]);
+                                        self.achievementProgress[achievementId] = 999;
+                                        self.incExp(200);
+                                    }
+                                    databaseHandler.progressAchievement(self.name, achievementId, self.achievementProgress[achievementId]);
+                                }
+                            }
+                        }
                         self.server.handleMobHate(mob.id, self.id, dmg);
                         self.server.handleHurtEntity(mob, self, dmg);
-                      }
-                    }
-                     else {
-                      mob.hitPoints -= dmg;
-                      mob.server.handleHurtEntity(mob);
-                        if(mob.hitPoints <= 0){
-                          mob.isDead = true;
-                          self.server.pushBroadcast(new Messages.Chat(self, self.name + "M-M-M-MONSTER KILLED" + mob.name));
+                      } else {
+                            mob.hitPoints -= dmg;
+                            self.server.handleHurtEntity(mob);
+                            if(mob.hitPoints <= 0){
+                                mob.isDead = true;
+                                if(mob.firepotionTimeout) {
+                                    clearTimeout(mob.firepotionTimeout);
+                                }
+                                self.server.pushBroadcast(new Messages.Chat(self, self.name + "M-M-M-MONSTER KILLED" + mob.name));
+                                self.server.pushBroadcast(new Messages.Chat(self, "/1 " + self.name + "kill " + mob.name + " -PK"));
+                            }
                         }
                     }
                 }
@@ -206,12 +266,30 @@ module.exports = Player = Character.extend({
             else if(action === Types.Messages.HURT) {
                 log.info("HURT: " + self.name + " " + message[1]);
                 var mob = self.server.getEntityById(message[1]);
-                if(mob && self.hitPoints > 0) {
-                    self.hitPoints -= Formulas.dmg(mob.weaponLevel, self.armorLevel);
+                if(mob &&
+                    (mob.kind === Types.Entities.FORESTDRAGON
+                    || mob.kind == Types.Entities.SEADRAGON)) {
+                    var group = self.server.groups[self.group];
+                    if(group) {
+                        _.each(group.players, function(playerId){
+                            var attackedPlayer = self.server.getEntityById(playerId);
+                            if(attackedPlayer){
+                                attackedPlayer.hitPoints -= Formulas.dmg(mob, attackedPlayer);
+                                self.server.handleHurtEntity(attackedPlayer);
+                            }
+                        });
+                    }
+                }
+                if(mob && self.hitPoints > 0 && mob instanceof Mob) {
+                    self.hitPoints -= Formulas.dmg(mob, self);
                     self.server.handleHurtEntity(self);
+                    mob.addTanker(self.id);
 
                     if(self.hitPoints <= 0) {
                         self.isDead = true;
+                        if(self.level >= 50){
+                            self.incExp(Math.floor(self.level*self.level*(-2)));
+                        }
                         if(self.firepotionTimeout) {
                             clearTimeout(self.firepotionTimeout);
                         }
@@ -231,31 +309,29 @@ module.exports = Player = Character.extend({
 
                         if(kind === Types.Entities.FIREPOTION) {
                             self.updateHitPoints();
-                            self.broadcast(self.equip(Types.Entities.FIREFOX));
+                            self.broadcast(self.equip(Types.Entities.FIREBENEF));
                             self.firepotionTimeout = setTimeout(function() {
-                                self.broadcast(self.equip(self.armor)); // return to normal after 15 sec
+                                self.broadcast(self.equip(Types.Entities.DEBENEF)); // return to normal after 15 sec
                                 self.firepotionTimeout = null;
                             }, 15000);
                             self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
                         } else if(Types.isHealingItem(kind)) {
-                            var amount;
-
-                            switch(kind) {
-                                case Types.Entities.FLASK:
-                                    amount = 40;
-                                    break;
-                                case Types.Entities.BURGER:
-                                    amount = 100;
-                                    break;
-                            }
-
-                            if(!self.hasFullHealth()) {
-                                self.regenHealthBy(amount);
-                                self.server.pushToPlayer(self, self.health());
-                            }
-                        } else if(Types.isArmor(kind) || Types.isWeapon(kind)) {
+                            self.putInventory(item);
+                        } else if(Types.isWeapon(kind)) {
                             self.equipItem(item.kind);
                             self.broadcast(self.equip(kind));
+
+                            
+                            
+                        } else if(Types.isArmor(kind)) {
+                            if(self.level < 100){
+                                self.equipItem(item.kind);
+                                self.broadcast(self.equip(kind));
+                            } else {
+                                self.putInventory(item);
+                            }
+                        } else if(kind == Types.Entities.CAKE || kind === Types.Entities.CD){
+                            self.putInventory(item);
                         }
                     }
                 }
@@ -273,6 +349,7 @@ module.exports = Player = Character.extend({
 
                     self.server.handlePlayerVanish(self);
                     self.server.pushRelevantEntityListTo(self);
+                    self.broadcast(new Messages.Teleport(self));
                 }
             }
             else if(action === Types.Messages.OPEN) {
@@ -366,11 +443,113 @@ module.exports = Player = Character.extend({
             else if(action === Types.Messages.ACHIEVEMENT) {
                 log.info("ACHIEVEMENT: " + self.name + " " + message[1] + " " + message[2]);
                 if(message[2] === "found") {
-                    self.achievement[message[1]].found = true;
+                    self.achievementFound[message[1]] = true;
                     databaseHandler.foundAchievement(self.name, message[1]);
                 }
-            }
-            else if(action === Types.Messages.GUILD) {
+            } else if(action === Types.Messages.TALKTONPC){
+                log.info("TALKTONPC: " + self.name + " " + message[1]);
+                if(message[1] === Types.Entities.VILLAGER){
+                    if(self.armor === Types.Entities.LEATHERARMOR
+                    && self.achievementFound[17] === true
+                    && self.achievementProgress[17] !== 999){
+                        self.equipItem(Types.Entities.CLOTHARMOR);
+                        self.send([Types.Messages.ACHIEVEMENT, 17, "complete"]);
+                        self.achievementProgress[17] = 999;
+                        self.incExp(50);
+                        databaseHandler.progressAchievement(self.name, 17, self.achievementProgress[17]);
+                    }
+                } else if(message[1] === Types.Entities.AGENT){
+                    if((self.inventory[0] === Types.Entities.CAKE
+                    || self.inventory[1] === Types.Entities.CAKE)
+                    && self.achievementFound[19] === true
+                    && self.achievementProgress[19] !== 999) {
+                        if(self.inventory[0] === Types.Entities.CAKE){
+                            self.inventory[0] = null;
+                            databaseHandler.makeEmptyInventory(self.name, 0);
+                        } else {
+                            self.inventory[1] = null;
+                            databaseHandler.makeEmptyInventory(self.name, 1);
+                        }
+
+                        self.send([Types.Messages.ACHIEVEMENT, 19, "complete"]);
+                        self.achievementProgress[19] = 999;
+                        self.incExp(50);
+                        databaseHandler.progressAchievement(self.name, 19, self.achievementProgress[19]);
+                    }
+                } else if(message[1] === Types.Entities.NYAN){
+                    const achievementId = 20;
+                    if((self.inventory[0] === Types.Entities.CD
+                     || self.inventory[1] === Types.Entities.CD)
+                    && self.achievementFound[achievementId] === true
+                    && self.achievementProgress[achievementId] !== 999){
+                        if(self.inventory[0] === Types.Entities.CD){
+                            self.inventory[0] = null;
+                            databaseHandler.makeEmptyInventory(self.name, 0);
+                        } else {
+                            self.inventory[1] = null;
+                            databaseHandler.makeEmptyInventory(self.name, 1);
+                        }
+
+                        self.send([Types.Messages.ACHIEVEMENT, 20, "complete"]);
+                        self.achievementProgress[achievementId] = 999;
+                        self.incExp(100);
+                        databaseHandler.progressAchievement(self.name, 20, self.achievementProgress[achievementId]);
+                    }
+                } else if(message[1] === Types.Entities.DESERTNPC){
+                    const achievementId = 22;
+                    if(self.weapon === Types.Entities.AXE
+                    && self.achievementFound[achievementId] === true
+                    && self.achievementProgress[achievementId] !== 999){
+                        self.equipItem(Types.Entities.SWORD2);
+                        self.send([Types.Messages.ACHIEVEMENT, 22, "complete"]);
+                        self.achievementProgress[achievementId] = 999;
+                        self.incExp(200);
+                        databaseHandler.progressAchievement(self.name, 22, self.achievementProgress[achievementId]);
+                    }
+                }
+            } else if(action === Types.Messages.MAGIC){
+                log.info("MAGIC: " + self.name + " " + message[1] + " " + message[2]);
+                var magicName = message[1];
+                var magicTargetName = message[2];
+  
+                if(magicName === "setheal"){
+                  self.magicTarget = self.server.getPlayerByName(magicTargetName);
+                  if(self.magicTarget === self){
+                    self.magicTarget = null;
+                  }
+                } else if(magicName === "heal"){
+                  if(self.magicTarget){
+                    if(!self.magicTarget.hasFullHealth()) {
+                        self.magicTarget.regenHealthBy(50);
+                        self.server.pushToPlayer(self.magicTarget, self.magicTarget.health());
+                    }
+                  }
+                }
+            } else if(action === Types.Messages.BOARD){
+                log.info("BOARD: " + self.name + " " + message[1] + " " + message[2]);
+                var command = message[1];
+                var number = message[2];
+                var replyNumber = message[3];
+                databaseHandler.loadBoard(self, command, number, replyNumber);
+            } else if(action === Types.Messages.BOARDWRITE){
+                log.info("BOARDWRITE: " + self.name + " " + message[1] + " " + message[2] + " " + message[3]);
+                var command = message[1];
+                if(command === "board"){
+                  var title = message[2];
+                  var content = message[3];
+                  databaseHandler.writeBoard(self, title, content);
+                } else if(command === "reply"){
+                  var reply = message[2];
+                  var number = message[3]*1;
+                  if(number > 0){
+                    databaseHandler.writeReply(self, reply, number);
+                  }
+                }
+            } else if(action === Types.Messages.KUNG){
+                log.info("KUNG: " + self.name + " " + message[1]);
+                var word = message[1];
+                databaseHandler.pushKungWord(self, word);
+            } else if(action === Types.Messages.GUILD) {
                 if(message[1] === Types.Messages.GUILDACTION.CREATE) {
                     var guildname = Utils.sanitize(message[2]);
                     if(guildname === "") { //inaccurate name
@@ -441,7 +620,7 @@ module.exports = Player = Character.extend({
 
     getState: function() {
         var basestate = this._getBaseState(),
-            state = [this.name, this.orientation, this.armor, this.weapon, this.level];
+            state = [this.name, this.orientation, this.avatar, this.weapon, this.level];
 
         if(this.target) {
             state.push(this.target);
@@ -548,31 +727,39 @@ module.exports = Player = Character.extend({
     },
 
     equipItem: function(itemKind, isAvatar) {
+        var self = this;
         if(itemKind) {
             log.debug(this.name + " equips " + Types.getKindAsString(itemKind));
 
             if(Types.isArmor(itemKind)) {
                 if(isAvatar) {
-                    databaseHandler.equipAvatar(this.name, Types.getKindAsString(itemKind));
+                    this.databaseHandler.equipAvatar(this.name, Types.getKindAsString(itemKind));
                     this.equipAvatar(itemKind);
                 } else {
-                    databaseHandler.equipAvatar(this.name, Types.getKindAsString(itemKind));
+                    this.databaseHandler.equipAvatar(this.name, Types.getKindAsString(itemKind));
                     this.equipAvatar(itemKind);
 
-                    databaseHandler.equipArmor(this.name, Types.getKindAsString(itemKind));
+                    this.databaseHandler.equipArmor(this.name, Types.getKindAsString(itemKind));
                     this.equipArmor(itemKind);
                 }
                 this.updateHitPoints();
                 this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
             } else if(Types.isWeapon(itemKind)) {
-                databaseHandler.equipWeapon(this.name, Types.getKindAsString(itemKind));
+                this.databaseHandler.equipWeapon(this.name, Types.getKindAsString(itemKind));
                 this.equipWeapon(itemKind);
+
+                const achievementId = 1;
+                if(self.achievementProgress[achievementId] < 999) {
+                    self.achievementProgress[achievementId] = 999;
+                    self.send([Types.Messages.ACHIEVEMENT, achievementId, "complete"]);
+                    self.databaseHandler.progressAchievement(self.name, achievementId, self.achievementProgress[achievementId]);
+                }
             }
         }
     },
 
     updateHitPoints: function() {
-        this.resetHitPoints(Formulas.hp(this.armorLevel));
+        this.resetHitPoints(Formulas.hp(this.level));
     },
 
     updatePosition: function() {
@@ -598,7 +785,7 @@ module.exports = Player = Character.extend({
 
     incExp: function(gotexp){
         this.experience = parseInt(this.experience) + (parseInt(gotexp));
-        databaseHandler.setExp(this.name, this.experience);
+        this.databaseHandler.setExp(this.name, this.experience);
         var origLevel = this.level;
         this.level = Types.getLevel(this.experience);
         if(origLevel !== this.level) {
@@ -672,14 +859,9 @@ module.exports = Player = Character.extend({
         self.inventory[1] = Types.getKindFromString(inventory[1]);
         self.inventoryCount[0] = inventoryNumber[0];
         self.inventoryCount[1] = inventoryNumber[1];
-        self.achievement[1] = {found: achievementFound[0], progress: achievementProgress[0]};
-        self.achievement[2] = {found: achievementFound[1], progress: achievementProgress[1]};
-        self.achievement[3] = {found: achievementFound[2], progress: achievementProgress[2]};
-        self.achievement[4] = {found: achievementFound[3], progress: achievementProgress[3]};
-        self.achievement[5] = {found: achievementFound[4], progress: achievementProgress[4]};
-        self.achievement[6] = {found: achievementFound[5], progress: achievementProgress[5]};
-        self.achievement[7] = {found: achievementFound[6], progress: achievementProgress[6]};
-        self.achievement[8] = {found: achievementFound[7], progress: achievementProgress[7]};
+        self.achievementFound = achievementFound;
+        self.achievementProgress = achievementProgress;
+        
         self.bannedTime = bannedTime;
         self.banUseTime = banUseTime;
         self.experience = exp;
@@ -695,18 +877,13 @@ module.exports = Player = Character.extend({
 
         self.server.addPlayer(self);
         self.server.enter_callback(self);
-
+        
         self.send([
             Types.Messages.WELCOME, self.id, self.name, self.x, self.y,
             self.hitPoints, armor, weapon, avatar, weaponAvatar,
             self.experience, self.admin,
             inventory[0], inventoryNumber[0], inventory[1], inventoryNumber[1],
-            achievementFound[0], achievementProgress[0], achievementFound[1],
-            achievementProgress[1], achievementFound[2], achievementProgress[2],
-            achievementFound[3], achievementProgress[3], achievementFound[4],
-            achievementProgress[4], achievementFound[5], achievementProgress[5],
-            achievementFound[6], achievementProgress[6], achievementFound[7],
-            achievementProgress[7]
+            achievementFound, achievementProgress,
         ]);
 
         self.hasEnteredGame = true;
@@ -715,5 +892,30 @@ module.exports = Player = Character.extend({
         // self.server.addPlayer(self, aGuildId);
 
     },
-
+    putInventory: function(item){
+        if(Types.isHealingItem(item.kind)){
+            if(this.inventory[0] === item.kind){
+                this.inventoryCount[0] += item.count;
+                this.databaseHandler.setInventory(this.name, item.kind, 0, this.inventoryCount[0]);
+            } else if(this.inventory[1] === item.kind){
+                this.inventoryCount[1] += item.count;
+                this.databaseHandler.setInventory(this.name, item.kind, 1, this.inventoryCount[1]);
+            } else{
+                this._putInventory(item);
+            }
+        } else{
+            this._putInventory(item);
+        }
+    },
+    _putInventory: function(item){
+        if(!this.inventory[0]){
+            this.inventory[0] = item.kind;
+            this.inventoryCount[0] = item.count;
+            this.databaseHandler.setInventory(this.name, item.kind, 0, item.count);
+        } else if(!this.inventory[1]){
+            this.inventory[1] = item.kind;
+            this.inventoryCount[1] = item.count;
+            this.databaseHandler.setInventory(this.name, item.kind, 1, item.count);
+        }
+    },
 });

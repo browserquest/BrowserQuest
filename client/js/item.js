@@ -8,6 +8,8 @@ define(['entity'], function(Entity) {
             this.itemKind = Types.getKindAsString(kind);
             this.type = type;
             this.wasDropped = false;
+
+            this.count = 1;
         },
 
         hasShadow: function() {
@@ -17,9 +19,10 @@ define(['entity'], function(Entity) {
         onLoot: function(player) {
             if(this.type === "weapon") {
                 player.switchWeapon(this.itemKind);
-            }
-            else if(this.type === "armor") {
-                player.armorloot_callback(this.itemKind);
+            } else if(this.type === "armor") {
+                if(player.level < 100){
+                    player.armorloot_callback(this.itemKind);
+                }
             }
         },
 

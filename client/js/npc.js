@@ -186,11 +186,9 @@ define(['character'], function(Character) {
             this.itemKind = Types.getKindAsString(this.kind);
             if(typeof NpcTalk[this.itemKind][0] === 'string'){
 				this.discourse = -1;
-				this.talkCount = NpcTalk[this.itemKind].length;
 			}
 			else{
 				this.discourse = 0;
-				this.talkCount = NpcTalk[this.itemKind][this.discourse]["text"].length;
 			}
             this.talkIndex = 0;
         },
@@ -223,18 +221,29 @@ define(['character'], function(Character) {
         talk: function(game) {
             var msg = "";
 
-            if(this.selectTalk(game) || (this.talkIndex > this.talkCount) ){
-                this.talkIndex = 0;
+            if(this.beforeQuestCompleteTalk){
+                var talkCount = this.beforeQuestCompleteTalk.length;
+
+                if(this.talkIndex >= talkCount){
+                    this.talkIndex = 0;
+                }
+                if(this.talkIndex < talkCount) {
+                    msg = this.beforeQuestCompleteTalk[this.talkIndex];
+                }
+                this.talkIndex += 1;
+            } else {
+                if(this.selectTalk(game) || (this.talkIndex > this.talkCount) ){
+                    this.talkIndex = 0;
+                }
+                if(this.talkIndex < this.talkCount) {
+                    if(this.discourse == -1){
+                        msg = NpcTalk[this.itemKind][this.talkIndex];
+                    }
+                    else{
+                        msg = NpcTalk[this.itemKind][this.discourse]["text"][this.talkIndex];
+                    }
+                }
             }
-            if(this.talkIndex < this.talkCount) {
-				if(this.discourse == -1){
-					msg = NpcTalk[this.itemKind][this.talkIndex];
-				}
-				else{
-					msg = NpcTalk[this.itemKind][this.discourse]["text"][this.talkIndex];
-				}
-            }
-            this.talkIndex += 1;
 
             return msg.replace('*name*',game.player.name);
         }

@@ -19,14 +19,19 @@ var Types = require('../../shared/js/gametypes');
             this.formats[Types.Messages.ZONE] = [],
             this.formats[Types.Messages.OPEN] = ['n'],
             this.formats[Types.Messages.CHECK] = ['n'],
-            this.formats[Types.Messages.ACHIEVEMENT] = ['n', 's']
+            this.formats[Types.Messages.INVENTORY] = ['s', 'n', 'n'],
+            this.formats[Types.Messages.ACHIEVEMENT] = ['n', 's'],
+            this.formats[Types.Messages.TALKTONPC] = ['n'],
+            this.formats[Types.Messages.MAGIC] = ['s', 's'],
+            this.formats[Types.Messages.BOARD] = ['s', 'n', 'n'],
+            this.formats[Types.Messages.BOARDWRITE] = ['s', 's', 's'],
+            this.formats[Types.Messages.KUNG] = ['s'];
         },
 
         check: function (msg) {
             var message = msg.slice(0),
                 type = message[0],
                 format = this.formats[type];
-
             message.shift();
 
             if (format) {
