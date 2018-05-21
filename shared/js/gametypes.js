@@ -37,6 +37,8 @@ Types = {
         BOARDWRITE: 33,
         NOTIFY: 34,
         KUNG: 35,
+        CREATE: 36,
+        LOGIN: 37
     },
     
     Entities: {
