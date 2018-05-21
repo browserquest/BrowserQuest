@@ -164,7 +164,7 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
                return false;
             });
 
-            $('.play span', '.play div').click(function(event) {
+            $('.play span').click(function(event) {
                 var name = $('#nameinput').attr('value');
                 var pw = $('#pwinput').attr('value');
                 var pw2 = $('#pwinput2').attr('value');
