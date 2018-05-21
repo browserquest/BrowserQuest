@@ -663,8 +663,6 @@ module.exports = World = cls.Class.extend({
                 var mob = entity,
                     item = this.getDroppedItem(mob);
                 var mainTanker = this.getEntityById(mob.getMainTankerId());
-                console.log('--------entity--------');
-                console.log(entity);
 
                 if(mainTanker && mainTanker instanceof Player){
                   mainTanker.incExp(Types.getMobExp(mob.kind));

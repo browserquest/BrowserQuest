@@ -198,9 +198,6 @@ module.exports = Player = Character.extend({
                     if(dmg > 0) {
                       if(mob.type !== "player"){
                         mob.receiveDamage(dmg, self.id);
-                        console.log("killed mob kind " + mob.kind);
-                        console.log(Types.Entities.CRAB);
-                        console.log(self.achievementFound);
                         if(mob.hitPoints <= 0) {
                             if(mob.kind === Types.Entities.RAT) {
                                 if(self.achievementFound[2].found && self.achievementProgress[2] !== 999){
@@ -229,8 +226,6 @@ module.exports = Player = Character.extend({
                                         self.achievementProgress[achievementId] = 999;
                                         self.incExp(50);
                                     }
-                                    console.log('kill crab king');
-                                    console.log(self.achievementProgress[achievementId]);
                                     databaseHandler.progressAchievement(self.name, achievementId, self.achievementProgress[achievementId]);
                                 }
                             } else if(mob.kind === Types.Entities.SKELETON){

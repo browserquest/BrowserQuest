@@ -166,7 +166,6 @@ loadPlayer: function(player){
                             Utils.NaN2Zero(replies[67]),
                             Utils.NaN2Zero(replies[69])
                         ];
-                        console.log(replies);
                         var adminnames = replies[26];
                         var pubPoint =  Utils.NaN2Zero(replies[27]);
                         var weaponAvatar = replies[28] ? replies[28] : weapon;
