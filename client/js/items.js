@@ -149,8 +149,51 @@ define(['item'], function(Item) {
         }),
         Forestguardiansword: Item.extend({
             init: function(id) {
-                this._super(id, Types.Entities.Forestguardiansword, "weapon");
+                this._super(id, Types.Entities.FORESTGUARDIANSWORD, "weapon");
                 this.lootMessage = "You get a forest guardian sword";
+            },
+        }),
+        Sickle: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.SICKLE, "weapon");
+                this.lootMessage = "You get a Sickle";
+            },
+        }),
+        Plunger: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.PLUNGER, "weapon");
+                this.lootMessage = "You get a Plunger";
+            },
+        }),
+        Redsickle: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.REDSICKLE, "weapon");
+                this.lootMessage = "You get a red sickle";
+            },
+        }),
+        Daywalker: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.DAYWALKER, "weapon");
+                this.lootMessage = "You get a day walker";
+            },
+        }),
+        Purplecloudkallege: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.PURPLECLOUDKALLEGE, "weapon");
+                this.lootMessage = "You get a Purple cloud kallege";
+            },
+        }),
+        Searage: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.SEARAGE, "weapon");
+                this.lootMessage = "You get a sea rage";
+            },
+        }),
+
+        ClothArmor: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.CLOTHARMOR, "armor");
+                this.lootMessage = "You get cloth armor";
             },
         }),
 
@@ -357,6 +400,36 @@ define(['item'], function(Item) {
                 this.lootMessage = "You get a taekwondo";
             },
         }),
+        AdminArmor: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.ADMINARMOR, "armor");
+                this.lootMessage = "You get a admin armor";
+            },
+        }),
+        RabbitArmor: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.RABBITARMOR, "armor");
+                this.lootMessage = "You get a rabbit armor";
+            },
+        }),
+        PortalArmor: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.PORTALARMOR, "armor");
+                this.lootMessage = "You get a portal armor";
+            },
+        }),
+        PirateKing: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.PIRATEKING, "armor");
+                this.lootMessage = "You get a pirate king";
+            },
+        }),
+        SeadragonArmor: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.SEADRAGONARMOR, "armor");
+                this.lootMessage = "You get a sea dragon armor";
+            },
+        }),
 
         Flask: Item.extend({
             init: function(id) {
@@ -387,6 +460,18 @@ define(['item'], function(Item) {
 
             onLoot: function(player) {
                 player.startInvincibility();
+            },
+        }),
+        Book: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BOOK, "object");
+                this.lootMessage = "You get a book";
+            },
+        }),
+        Cd: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.CD, "object");
+                this.lootMessage = "You cat a CD";
             },
         }),
     };

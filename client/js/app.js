@@ -1,5 +1,5 @@
 
-define(['jquery', 'storage'], function($, Storage) {
+define(['jquery'], function($) {
 
     var App = Class.extend({
         init: function() {
@@ -7,15 +7,26 @@ define(['jquery', 'storage'], function($, Storage) {
             this.blinkInterval = null;
             this.isParchmentReady = true;
             this.ready = false;
-            this.storage = new Storage();
             this.watchNameInputInterval = setInterval(this.toggleButton.bind(this), 100);
-            this.initFormFields();
+            this.initFormFields(),
+            this.$playDiv = $('.play span');
 
-            if(localStorage && localStorage.data) {
-                this.frontPage = 'loadcharacter';
-            } else {
-                this.frontPage = 'createcharacter';
-            }
+            this.inventoryNumber = 0,
+            this.dropDialogPopuped = false;
+
+            var self = this;
+            $('#boardbutton').click(function(event){
+                if(self.game && self.ready){
+                    self.game.chathandler.hide();
+                    self.game.boardhandler.show();
+                }
+            });
+            $('#gamebutton').click(function(event){
+                if(self.game && self.ready){
+                    self.game.chathandler.show();
+                    self.game.boardhandler.hide();
+                }
+            });
         },
 
         setGame: function(game) {
@@ -65,42 +76,60 @@ define(['jquery', 'storage'], function($, Storage) {
             }
         },
 
-        tryStartingGame: function() {
-            if(this.starting) return;        // Already loading
-
-            var self = this;
-            var action = this.createNewCharacterFormActive() ? 'create' : 'login';
-            var username = this.getUsernameField().attr('value');
-            var userpw = this.getPasswordField().attr('value');
-            var email = '';
-            var userpw2;
-
-            if(action === 'create') {
-                email = this.$email.attr('value');
-                userpw2 = this.$pwinput2.attr('value');
-            }
-
-            if(!this.validateFormFields(username, userpw, userpw2, email)) return;
+        tryStartingGame: function(username, userpw, email, starting_callback) {
+            var self = this,
+                $play = this.$playButton;
             
-            this.setPlayButtonState(false);
-
-            if(!this.ready || !this.canStartGame()) {
-                var watchCanStart = setInterval(function() {
-                    log.debug("waiting...");
-                    if(self.canStartGame()) {
-                        clearInterval(watchCanStart);
-                        self.startGame(action, username, userpw, email);
+            if(username !== '') {
+                if(!this.ready || !this.canStartGame()) {
+                    if(!this.isMobile) {
+                        // on desktop and tablets, add a spinner to the play button
+                        $play.addClass('loading');
                     }
-                }, 100);
-            } else {
-                this.startGame(action, username, userpw, email);
+                    this.$playDiv.unbind('click');
+                    var watchCanStart = setInterval(function() {
+                        log.debug("waiting...");
+                        if(self.canStartGame()) {
+                            setTimeout(function() {
+                                if(!self.isMobile) {
+                                    $play.removeClass('loading');
+                                }
+                            }, 1500);
+                            clearInterval(watchCanStart);
+                            self.startGame(username, userpw, email, starting_callback);
+                        }
+                    }, 100);
+                } else {
+                    this.$playDiv.unbind('click');
+                    this.startGame(username, userpw, email, starting_callback);
+                }      
             }
         },
 
-        startGame: function(action, username, userpw, email) {
+        startGame: function(action, username, userpw, email, starting_callback) {
             var self = this;
-            self.firstTimePlaying = !self.storage.hasAlreadyPlayed();
 
+            if(username && !this.game.started) {
+                var optionsSet = false,
+                    config = this.config;
+
+                if(starting_callback) {
+                    starting_callback();
+                }
+                this.hideIntro(function() {
+                    if(!self.isDesktop) {
+                        // On mobile and tablet we load the map after the player has clicked
+                        // on the PLAY button instead of loading it in a web worker.
+                        self.game.loadMap();
+                    }
+                    self.start(username, userpw, email);
+                });
+            }
+        },
+
+        start: function(username, userpw, email) {
+            var self = this;
+            
             if(username && !this.game.started) {
                 var optionsSet = false,
                     config = this.config;
@@ -115,7 +144,7 @@ define(['jquery', 'storage'], function($, Storage) {
                 }
                 optionsSet = true;
                 //>>includeEnd("devHost");
-
+                
                 //>>includeStart("prodHost", pragmas.prodHost);
                 if(!optionsSet) {
                     log.debug("Starting game with build config.");
@@ -123,52 +152,10 @@ define(['jquery', 'storage'], function($, Storage) {
                 }
                 //>>includeEnd("prodHost");
 
-                if(!self.isDesktop) {
-                    // On mobile and tablet we load the map after the player has clicked
-                    // on the login/create button instead of loading it in a web worker.
-                    // See initGame in main.js.
-                    self.game.loadMap();
-                }
-
                 this.center();
-                this.game.run(action, function(result) {
-                    if(result.success === true) {
-                        self.start();
-                    } else {
-                        self.setPlayButtonState(true);
-
-                        switch(result.reason) {
-                            case 'invalidlogin':
-                                // Login information was not correct (either username or password)
-                                self.addValidationError(null, 'The username or password you entered is incorrect.');
-                                self.getUsernameField().focus();
-                                break;
-                            case 'userexists':
-                                // Attempted to create a new user, but the username was taken
-                                self.addValidationError(self.getUsernameField(), 'The username you entered is not available.');
-                                break;
-                            case 'invalidusername':
-                                // The username contains characters that are not allowed (rejected by the sanitizer)
-                                self.addValidationError(self.getUsernameField(), 'The username you entered contains invalid characters.');
-                                break;
-                            case 'loggedin':
-                                // Attempted to log in with the same user multiple times simultaneously
-                                self.addValidationError(self.getUsernameField(), 'A player with the specified username is already logged in.');
-                                break;
-                            default:
-                                self.addValidationError(null, 'Failed to launch the game: ' + (result.reason ? result.reason : '(reason unknown)'));
-                                break;
-                        }
-                    }
-                });
-            }
-        },
-
-        start: function() {
-            this.hideIntro();
-            $('body').addClass('started');
-            if(self.firstTimePlaying) {
-                this.toggleInstructions();
+                this.game.run(function() {
+                    $('body').addClass('started');
+            	});
             }
         },
         
@@ -312,6 +299,9 @@ define(['jquery', 'storage'], function($, Storage) {
                     x = ((sprite.animationData.idle_down.length-1)*sprite.width),
                     y = ((sprite.animationData.idle_down.row)*sprite.height);
                 $(el+' .name').text(name);
+                if(el === '#inspector') {
+                    $(el + ' .details').text("level." + Types.getMobLevel(Types.getKindFromString(name)));
+                }
                 $(el+' .headshot div').height(sprite.height).width(sprite.width);
                 $(el+' .headshot div').css('margin-left', -sprite.width/2).css('margin-top', -sprite.height/2);
                 $(el+' .headshot div').css('background', 'url(img/1/'+name+'.png) no-repeat -'+x+'px -'+y+'px');
@@ -423,6 +413,26 @@ define(['jquery', 'storage'], function($, Storage) {
                 $('#chatbox .legend').fadeOut('fast');
                 $('#chatinput').blur();
                 $('#chatbutton').removeClass('active');
+            }
+        },
+
+        showDropDialog: function(inventoryNumber) {
+            if(this.game.started) {
+                $('#dropDialog').addClass('active');
+                $('#dropCount').focus();
+                $('#dropCount').select();
+                
+                this.inventoryNumber = inventoryNumber;
+                this.dropDialogPopuped = true;
+            }
+        },
+
+        hideDropDialog: function() {
+            if(this.game.started) {
+                $('#dropDialog').removeClass('active');
+                $('#dropCount').blur();
+
+                this.dropDialogPopuped = false;
             }
         },
 

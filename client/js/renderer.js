@@ -446,6 +446,17 @@ function(Camera, Item, Character, Player, Timer) {
 
                 this.context.restore();
 
+                if(entity instanceof Item) {
+                    var item = entity;
+                    if(item.count > 1) {
+                        this.drawText(item.count,
+                                      (entity.x + 8) * this.scale,
+                                      (entity.y - 0.3) * this.scale,
+                                      true,
+                                      "white");
+                    }
+                }
+
                 if(entity.isFading) {
                     this.context.restore();
                 }
@@ -710,14 +721,15 @@ function(Camera, Item, Character, Player, Timer) {
                             ih = item.height * os,
                             rank = Types.getArmorRank(kind);
 
-                        if(rank > Types.getArmorRank(Types.Entities.NINJAARMOR)){
+                        if(rank > Types.getArmorRank(Types.Entities.SEADRAGONARMOR)){
                             return;
                         }
-
-                        self.context.drawImage(item.image, ix, iy, iw, ih,
-                                               item.offsetX * s + ((rank%14)*4+2)*self.tilesize,
-                                               item.offsetY * s + (Math.floor(rank/14)*3+2)*self.tilesize,
-                                               iw * ds, ih * ds);
+                        if(kind !== Types.Entities.ADMINARMOR){
+                            self.context.drawImage(item.image, ix, iy, iw, ih,
+                                item.offsetX * s + ((rank%19)*3+2)*self.tilesize,
+                                item.offsetY * s + (Math.floor(rank/19)*3+2)*self.tilesize,
+                                iw * ds, ih * ds);
+                        }
                     }
                 }
             });
@@ -733,13 +745,13 @@ function(Camera, Item, Character, Player, Timer) {
                             ih = item.height * os,
                             rank = Types.getWeaponRank(kind);
 
-                        if(rank > Types.getWeaponRank(Types.Entities.WHIP)){
+                        if(rank > Types.getWeaponRank(Types.Entities.SEARAGE)){
                             return;
                         }
 
                         self.context.drawImage(item.image, ix, iy, iw, ih,
-                                               item.offsetX * s + ((rank%14)*4+2)*self.tilesize,
-                                               item.offsetY * s + (Math.floor(rank/14)*3+2)*self.tilesize,
+                                               item.offsetX * s + ((rank%19)*3+2)*self.tilesize,
+                                               item.offsetY * s + (Math.floor(rank/19)*3+2)*self.tilesize,
                                                iw * ds, ih * ds);
 
                     }
@@ -754,17 +766,24 @@ function(Camera, Item, Character, Player, Timer) {
             this.context.translate(this.camera.x*s,
                                    this.camera.y*s);
 
-            this.drawRect((this.camera.gridW-2)*this.tilesize*s,
+            if(this.game.player && this.game.player.healingCoolTimeCallback === null){
+                this.drawRect((this.camera.gridW-2)*this.tilesize*s,
                           (this.camera.gridH-1)*this.tilesize*s,
                           2, 1, "rgba(0, 0, 0, 0.8)");
+            } else {
+                this.drawRect((this.camera.gridW-2)*this.tilesize*s,
+                          (this.camera.gridH-1)*this.tilesize*s,
+                          2, 1, "rgba(255, 0, 0, 0.8)");
+            }
+            
             if(this.game.menu && this.game.menu.inventoryOn === "inventory0"){
                 this.drawRect((this.camera.gridW-2)*this.tilesize*s,
                               (this.camera.gridH-1)*this.tilesize*s,
-                              1, 1, "rgba(255, 0, 0, 0.8)");
+                              1, 1, "rgba(0, 0, 255, 0.8)");
             } else if(this.game.menu && this.game.menu.inventoryOn === "inventory1"){
                 this.drawRect((this.camera.gridW-1)*this.tilesize*s,
                               (this.camera.gridH-1)*this.tilesize*s,
-                              1, 1, "rgba(255, 0, 0, 0.8)");
+                              1, 1, "rgba(0, 0, 255, 0.8)");
             }
             this._drawInventory(0);
             this._drawInventory(1);
@@ -783,7 +802,8 @@ function(Camera, Item, Character, Player, Timer) {
                 inventory = this.game.player.inventory;
             }
             if(inventory && inventory[i]){
-                var item = this.game.sprites["item-" + Types.getKindAsString(inventory[i])];
+                var itemKind = inventory[i];
+                var item = this.game.sprites["item-" + Types.getKindAsString(itemKind)];
                 if(item){
                     var itemAnimData = item.animationData["idle"];
                     if(itemAnimData){
@@ -795,6 +815,15 @@ function(Camera, Item, Character, Player, Timer) {
                                                item.offsetX * s + (this.camera.gridW-2+i)*self.tilesize*s,
                                                item.offsetY * s + (this.camera.gridH-1)*self.tilesize*s,
                                                iw * ds, ih * ds);
+                        if(Types.isHealingItem(itemKind)){
+                            var color = "white";
+                            if(i === this.game.healShortCut)
+                                color = "lime";
+
+                            self.drawText(this.game.player.inventoryCount[i].toString(),
+                                (this.camera.gridW-2+i)*self.tilesize*s,
+                                (this.camera.gridH-1)*self.tilesize*s, false, color);
+                        }
                     }
                 }
             }
@@ -802,21 +831,49 @@ function(Camera, Item, Character, Player, Timer) {
         drawInventoryMenu: function(){
             var s = this.scale;
             if(this.game.menu && this.game.menu.inventoryOn){
-                this.drawRect((this.camera.gridW-2)*this.tilesize*s,
-                              (this.camera.gridH-4)*this.tilesize*s,
-                              2, 3, "rgba(0, 0, 0, 0.8)");
-                this.drawText("equip",
-                              (this.camera.gridW-1)*this.tilesize*s,
-                              (this.camera.gridH-3.4)*this.tilesize*s,
-                              true, "white", "black");
-                this.drawText("Change Avatar",
-                              (this.camera.gridW-1)*this.tilesize*s,
-                              (this.camera.gridH-2.4)*this.tilesize*s,
-                              true, "white", "black");
-                this.drawText("drop",
-                              (this.camera.gridW-1)*this.tilesize*s,
-                              (this.camera.gridH-1.4)*this.tilesize*s,
-                              true, "white", "black");
+                var inventoryNumber = (this.game.menu.inventoryOn === "inventory0") ? 0 : 1;
+                if(this.game.player.inventory[inventoryNumber] === Types.Entities.CAKE
+                || this.game.player.inventory[inventoryNumber] === Types.Entities.CD){
+                    this.drawRect((this.camera.gridW-2)*this.tilesize*s,
+                                  (this.camera.gridH-2)*this.tilesize*s,
+                                  2, 1, "rgba(0, 0, 0, 0.8)");
+                    this.drawText("drop",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-1.4)*this.tilesize*s,
+                                  true, "white", "black");
+                } else if(Types.isHealingItem(this.game.player.inventory[inventoryNumber])){
+                    this.drawRect((this.camera.gridW-2)*this.tilesize*s,
+                                  (this.camera.gridH-4)*this.tilesize*s,
+                                  2, 3, "rgba(0, 0, 0, 0.8)");
+                    this.drawText("set hotkey",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-3.4)*this.tilesize*s,
+                                  true, "white", "black");
+                    this.drawText("eat",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-2.4)*this.tilesize*s,
+                                  true, "white", "black");
+                    this.drawText("drop",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-1.4)*this.tilesize*s,
+                                  true, "white", "black");
+                } else{
+                    this.drawRect((this.camera.gridW-2)*this.tilesize*s,
+                                  (this.camera.gridH-4)*this.tilesize*s,
+                                  2, 3, "rgba(0, 0, 0, 0.8)");
+                    this.drawText("equip",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-3.4)*this.tilesize*s,
+                                  true, "white", "black");
+                    this.drawText("change avatar",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-2.4)*this.tilesize*s,
+                                  true, "white", "black");
+                    this.drawText("drop",
+                                  (this.camera.gridW-1)*this.tilesize*s,
+                                  (this.camera.gridH-1.4)*this.tilesize*s,
+                                  true, "white", "black");
+                }
             }
         },
 

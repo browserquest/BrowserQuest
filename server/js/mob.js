@@ -13,8 +13,9 @@ var Mob = Character.extend({
         this.updateHitPoints();
         this.spawningX = x;
         this.spawningY = y;
-        this.armorLevel = Properties.getArmorLevel(this.kind);
-        this.weaponLevel = Properties.getWeaponLevel(this.kind);
+        this.armorLevel = 0;
+        this.weaponLevel = 0;
+        this.level = Types.getMobLevel(kind);
         this.hatelist = [];
         this.respawnTimeout = null;
         this.returnTimeout = null;

@@ -117,6 +117,7 @@ define(['jquery', 'area'], function($, Area) {
                     cameraY: door.tcy,
                     portal: door.p === 1,
                     level: door.l,
+                    admin: door.a,
                 };
             });
 
@@ -187,7 +188,11 @@ define(['jquery', 'area'], function($, Area) {
             if(this.isOutOfBounds(x, y) || !this.plateauGrid) {
                 return false;
             }
-            return (this.plateauGrid[y][x] === 1);
+            if(this.plateauGrid && this.plateauGrid[y] && this.plateauGrid[y][x]){
+                return (this.plateauGrid[y][x] === 1);
+              } else {
+                  return false;
+              }  
         },
 
         _generateCollisionGrid: function() {
