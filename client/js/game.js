@@ -199,7 +199,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
             this.player.setSprite(this.sprites[this.player.getSpriteName()]);
             this.player.idle();
 
-            log.debug("Finished initPlayer");
+            console.log("Finished initPlayer");
         },
 
         initShadows: function() {
@@ -819,7 +819,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 
             var wait = setInterval(function() {
                 if(self.map.isLoaded && self.spritesLoaded()) {
-                    log.debug('All sprites loaded.');
+                    console.log('All sprites loaded.');
 
                     self.loadAudio();
 
@@ -926,7 +926,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
             //>>includeEnd("prodHost");
 
             this.client.onDispatched(function(host, port) {
-                log.debug("Dispatched to game server "+host+ ":"+port);
+                console.log("Dispatched to game server "+host+ ":"+port);
 
                 self.client.host = host;
                 self.client.port = port;
@@ -1046,7 +1046,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 self.player.onBeforeStep(function() {
                     var blockingEntity = self.getEntityAt(self.player.nextGridX, self.player.nextGridY);
                     if(blockingEntity && blockingEntity.id !== self.playerId) {
-                        log.debug("Blocked by " + blockingEntity.id);
+                        console.log("Blocked by " + blockingEntity.id);
                     }
                     self.unregisterEntityPosition(self.player);
                 });
@@ -1263,7 +1263,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 
                                 self.addEntity(entity);
 
-                                log.debug("Spawned " + Types.getKindAsString(entity.kind) + " (" + entity.id + ") at "+entity.gridX+", "+entity.gridY);
+                                console.log("Spawned " + Types.getKindAsString(entity.kind) + " (" + entity.id + ") at "+entity.gridX+", "+entity.gridY);
 
                                 if(entity instanceof Character) {
                                     entity.onBeforeStep(function() {
@@ -1396,7 +1396,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                             log.error(e);
                         }
                     } else {
-                        log.debug("Character "+entity.id+" already exists. Don't respawn.");
+                        console.log("Character "+entity.id+" already exists. Don't respawn.");
                     }
                 });
 
@@ -1546,7 +1546,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         } else {
                             self.removeEntity(entity);
                         }
-                        log.debug("Entity was destroyed: "+entity.id);
+                        console.log("Entity was destroyed: "+entity.id);
                     }
                 });
 
@@ -1568,7 +1568,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         target = self.getEntityById(targetId);
 
                     if(attacker && target && attacker.id !== self.playerId) {
-                        log.debug(attacker.id + " attacks " + target.id);
+                        console.log(attacker.id + " attacks " + target.id);
 
                         if(attacker && target instanceof Player && target.id !== self.playerId && target.target && target.target.id === attacker.id && attacker.getDistanceToEntity(target) < 3) {
                             setTimeout(function() {
@@ -1872,7 +1872,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 this.registerEntityPosition(character);
                 this.assignBubbleTo(character);
             } else {
-                log.debug("Teleport out of bounds: "+x+", "+y);
+                console.log("Teleport out of bounds: "+x+", "+y);
             }
         },
 
@@ -2838,7 +2838,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
         },
 
         respawn: function() {
-            log.debug("Beginning respawn");
+            console.log("Beginning respawn");
 
             this.entities = {};
             this.initEntityGrid();
@@ -2859,7 +2859,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 this.renderer.clearScreen(this.renderer.context);
             }
 
-            log.debug("Finished respawn");
+            console.log("Finished respawn");
         },
 
         onGameStart: function(callback) {
@@ -2972,7 +2972,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         self.removeEntity(entity);
                     }
                 });
-                log.debug("Removed "+nb+" entities: "+_.pluck(_.reject(this.obsoleteEntities, function(id) { return id === self.player.id }), 'id'));
+                console.log("Removed "+nb+" entities: "+_.pluck(_.reject(this.obsoleteEntities, function(id) { return id === self.player.id }), 'id'));
                 this.obsoleteEntities = null;
             }
         },

@@ -95,15 +95,15 @@ function(Camera, Item, Character, Player, Timer) {
 
             this.canvas.width = this.camera.gridW * this.tilesize * this.scale;
             this.canvas.height = this.camera.gridH * this.tilesize * this.scale;
-            log.debug("#entities set to "+this.canvas.width+" x "+this.canvas.height);
+            console.log("#entities set to "+this.canvas.width+" x "+this.canvas.height);
 
             this.backcanvas.width = this.canvas.width;
             this.backcanvas.height = this.canvas.height;
-            log.debug("#background set to "+this.backcanvas.width+" x "+this.backcanvas.height);
+            console.log("#background set to "+this.backcanvas.width+" x "+this.backcanvas.height);
 
             this.forecanvas.width = this.canvas.width;
             this.forecanvas.height = this.canvas.height;
-            log.debug("#foreground set to "+this.forecanvas.width+" x "+this.forecanvas.height);
+            console.log("#foreground set to "+this.forecanvas.width+" x "+this.forecanvas.height);
         },
 
         initFPS: function() {
@@ -519,7 +519,7 @@ function(Camera, Item, Character, Player, Timer) {
             }
 
             if(count > 0) {
-                //log.debug("count:"+count);
+                //console.log("count:"+count);
             }
         },
 

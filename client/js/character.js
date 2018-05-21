@@ -452,7 +452,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                 }
 
             } else {
-                log.debug(character.id + " is already the target of " + this.id);
+                console.log(character.id + " is already the target of " + this.id);
             }
         },
         onSetTarget: function(callback){
