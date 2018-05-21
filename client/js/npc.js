@@ -220,16 +220,17 @@ define(['character'], function(Character) {
 
         talk: function(game) {
             var msg = "";
+
             if(this.beforeQuestCompleteTalk){
-                var msg = "";
                 var talkCount = this.beforeQuestCompleteTalk.length;
 
-                if(this.selectTalk(game) || (this.talkIndex > talkCount) ){
+                if(this.talkIndex >= talkCount){
                     this.talkIndex = 0;
                 }
-                if(this.talkIndex < this.talkCount) {
+                if(this.talkIndex < talkCount) {
                     msg = this.beforeQuestCompleteTalk[this.talkIndex];
                 }
+                this.talkIndex += 1;
             } else {
                 if(this.selectTalk(game) || (this.talkIndex > this.talkCount) ){
                     this.talkIndex = 0;
