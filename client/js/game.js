@@ -1602,7 +1602,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     var expForLevelUp = Types.expForLevel[self.player.level] - Types.expForLevel[self.player.level-1];
                     var expPercentThisLevel = (100*expInThisLevel/expForLevelUp);
 
-                    self.showNotification( "Total xp: " + self.player.experience + ". " + expPercentThisLevel.toFixed(0) + "% of this level done." );
+                    self.showNotification( "Total xp: " + expPercentThisLevel.toFixed(1) + "% of this level done." );
                 });
 
                 self.client.onPlayerChangeHealth(function(points, isRegen) {
