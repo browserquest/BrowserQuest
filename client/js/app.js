@@ -98,7 +98,7 @@ define(['jquery'], function($) {
                 }
                 this.$playDiv.unbind('click');
                 var watchCanStart = setInterval(function() {
-                    log.debug("waiting...");
+                    console.log("waiting...");
                     if(self.canStartGame()) {
                         setTimeout(function() {
                             if(!self.isMobile) {
@@ -145,10 +145,10 @@ define(['jquery'], function($) {
 
                 //>>includeStart("devHost", pragmas.devHost);
                 if(config.local) {
-                    log.debug("Starting game with local dev config.");
+                    console.log("Starting game with local dev config.");
                     this.game.setServerOptions(config.local.host, config.local.port, username, userpw, email);
                 } else {
-                    log.debug("Starting game with default dev config.");
+                    console.log("Starting game with default dev config.");
                     this.game.setServerOptions(config.dev.host, config.dev.port, username, userpw, email);
                 }
                 optionsSet = true;
@@ -156,7 +156,7 @@ define(['jquery'], function($) {
                 
                 //>>includeStart("prodHost", pragmas.prodHost);
                 if(!optionsSet) {
-                    log.debug("Starting game with build config.");
+                    console.log("Starting game with build config.");
                     this.game.setServerOptions(config.build.host, config.build.port, username, userpw, email);
                 }
                 //>>includeEnd("prodHost");

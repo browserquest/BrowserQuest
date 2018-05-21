@@ -119,7 +119,7 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                 });
 
                 this.connection.on('disconnect', function() {
-                    log.debug("Connection closed");
+                    console.log("Connection closed");
                     $('#container').addClass('error');
 
                     if(self.disconnected_callback) {
@@ -155,7 +155,7 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                     data = JSON.parse(message);
                 }
 
-                log.debug("data: " + message);
+                console.log("data: " + message);
 
                 if(data instanceof Array) {
                     if(data[0] instanceof Array) {

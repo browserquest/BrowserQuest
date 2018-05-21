@@ -18,9 +18,9 @@ define(function() {
             this.gridW = 15 * factor;
             this.gridH = 7 * factor;
 
-            log.debug("---------");
-            log.debug("Factor:"+factor);
-            log.debug("W:"+this.gridW + " H:" + this.gridH);
+            console.log("---------");
+            console.log("Factor:"+factor);
+            console.log("W:"+this.gridW + " H:" + this.gridH);
         },
 
         setPosition: function(x, y) {

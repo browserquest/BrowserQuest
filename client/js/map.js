@@ -141,7 +141,7 @@ define(['jquery', 'area'], function($, Area) {
 
                 self.tilesetCount -= 1;
                 if(self.tilesetCount === 0) {
-                    log.debug("All map tilesets loaded.")
+                    console.log("All map tilesets loaded.")
 
                     self.tilesetsLoaded = true;
                     self._checkReady();
@@ -218,7 +218,7 @@ define(['jquery', 'area'], function($, Area) {
                     self.grid[pos.y][pos.x] = 1;
                 }
             });
-            log.debug("Collision grid generated.");
+            console.log("Collision grid generated.");
         },
 
         _generatePlateauGrid: function() {
