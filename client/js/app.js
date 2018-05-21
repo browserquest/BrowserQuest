@@ -390,11 +390,12 @@ define(['jquery'], function($) {
             }
         },
 
-        hideIntro: function() {
+        hideIntro: function(hidden_callback) {
             clearInterval(this.watchNameInputInterval);
             $('body').removeClass('intro');
             setTimeout(function() {
                 $('body').addClass('game');
+                hidden_callback();
             }, 500);
         },
 
@@ -490,11 +491,10 @@ define(['jquery'], function($) {
             $notif.removeClass().addClass('active achievement' + id);
             $name.text(name);
             $title.text(title);
-            if(this.game.storage.getAchievementCount() === 1) {
-                this.blinkInterval = setInterval(function() {
-                    $button.toggleClass('blink');
-                }, 500);
-            }
+            $notif.removeClass().addClass('active achievement' + id);
+            this.blinkInterval = setInterval(function(){
+                $button.toggleClass('blink');
+            }, 500);
             setTimeout(function() {
                 $notif.removeClass('active');
                 $button.removeClass('blink');

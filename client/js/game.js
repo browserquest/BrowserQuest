@@ -1748,6 +1748,19 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+50 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
+                    } else if(type === "complete" && id === self.achievements['FIND_CAKE']){
+                        achievement = self.achievements['FIND_CAKE'];
+                        achievement.completed = true;
+                        self.app.displayUnlockedAchievement(achievement);
+                        self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed !");
+                        if(self.player.inventory[0] === Types.Entities.CAKE){
+                            self.player.inventory[0] = null;
+                        } else if(self.player.inventory[1] === Types.Entities.CAKE){
+                            self.player.inventory[1] = null;
+                        }
+                        setTimeout(function() {
+                            self.infoManager.addDamageInfo("+100 exp", self.player.x, self.player.y - 15, "exp", 3000);
+                        }, 1000);
                     } else if(type === "complete" && id === self.achievements['FIND_CD']){
                         achievement = self.achievements['FIND_CD'];
                         achievement.completed = true;
