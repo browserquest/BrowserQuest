@@ -3,11 +3,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite',
         'tile', 'warrior', 'gameclient', 'audio', 'updater', 'transition',
         'pathfinder', 'item', 'mob', 'npc', 'player', 'character', 'chest',
         'mobs', 'exceptions', 'config', 'chathandler', 'textwindowhandler',
-        'menu', 'guild', '../../shared/js/gametypes'],
+        'menu', 'boardhandler', 'kkhandler', 'guild', '../../shared/js/gametypes'],
 function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedTile,
          Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
          Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config,
-         ChatHandler, TextWindowHandler, Menu, Guild) {
+         ChatHandler, TextWindowHandler, Menu, BoardHandler, KkHandler, Guild) {
     var Game = Class.extend({
         init: function(app) {
             this.app = app;
@@ -64,7 +64,9 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
             this.infoManager = new InfoManager(this);
 
             // Chat commands
-            this.chathandler = new ChatHandler(this);
+            this.kkhandler = new KkHandler();
+            this.chathandler = new ChatHandler(this, this.kkhandler);
+            this.boardhandler = new BoardHandler(this);
 
             // TextWindow Handler
             this.textWindowHandler = new TextWindowHandler();
@@ -91,38 +93,65 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
             // pvp
             this.pvpFlag = false;
 
+            // Shorcut Healing
+            this.healShortCut = -1;
+            this.hpGuide = 0;
+
             // sprites
-            this.spriteNames = ["hermitcrab", "zombie", "piratecaptain", "ironogre", "ogrelord", "adherer", "icegolem",
-                                "crystalscolpion", "eliminator", "firebenef", "taekwondo", "item-taekwondo",
-                                "darkogre",
-                                "frostqueen", "snowrabbit", "snowwolf", "iceknight", "miniiceknight", "snowelf", "whitebear", "cobra",
-                                "goldgolem", "darkregion", "darkregionillusion", "nightmareregion",
-                                "justicehammer", "item-justicehammer", "firesword", "item-firesword", "whip", "item-whip",
-                                "forestguardiansword", "item-forestguardiansword",
-                                "gayarmor", "item-gayarmor", "schooluniform", "item-schooluniform", "beautifullife", "item-beautifullife",
-                                "regionarmor", "item-regionarmor", "ghostrider", "item-ghostrider",
-                                "desertscolpion", "darkscolpion", "vulture", "forestdragon",
-                                "bluewingarmor", "item-bluewingarmor", "thiefarmor", "item-thiefarmor", "ninjaarmor", "item-ninjaarmor",
-                                "dragonarmor", "item-dragonarmor", "fallenarmor", "item-fallenarmor", "paladinarmor", "item-paladinarmor", "crystalarmor", "item-crystalarmor", "adhererrobe", "item-adhererrobe", "frostarmor", "item-frostarmor",
-                                "redmetalsword", "item-redmetalsword", "bastardsword", "item-bastardsword", "halberd", "item-halberd", "rose", "item-rose", "icerose", "item-icerose",
-                                "hand", "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
-                                "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest",
-                                "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc", "clotharmor", "item-clotharmor", "leatherarmor", "mailarmor",
-                                "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1", "axe", "chest",
-                                "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor",
-                                "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-cake", "item-burger", "morningstar", "item-morningstar", "item-firepotion",
-                                "orc", "oldogre", "golem", "mimic", "hobgoblin", "greenarmor", "greenwingarmor", "item-greenarmor", "item-greenwingarmor",
-                                "redmouse", "redguard", "scimitar", "item-scimitar", "redguardarmor", "item-redguardarmor", "whitearmor", "item-whitearmor",
-                                "infectedguard", "livingarmor", "mermaid", "trident", "item-trident", "ratarmor", "item-ratarmor",
-                                "yellowfish", "greenfish", "redfish", "clam", "preta", "pirateskeleton",
-                                "bluescimitar", "item-bluescimitar", "bluepiratearmor", "item-bluepiratearmor",
-                                "penguin", "moleking", "cheoliarmor", "item-cheoliarmor", "hammer", "item-hammer",
-                                "darkskeleton", "greenpirateskeleton", "blackpirateskeleton", "redpirateskeleton", "yellowpreta", "bluepreta", "miniknight", "wolf",
-                                "dovakinarmor", "item-dovakinarmor", "gbwingarmor", "item-gbwingarmor", "redwingarmor", "item-redwingarmor", "snowfoxarmor", "item-snowfoxarmor", "wolfarmor", "item-wolfarmor",
-                                "pinkelf", "greenlightsaber", "item-greenlightsaber",
-                                "skyelf", "skylightsaber", "item-skylightsaber",
-                                "redelf", "redlightsaber", "item-redlightsaber",
-                                "item-sidesword", "sidesword", "yellowmouse", "whitemouse", "brownmouse", "spear", "item-spear", "guardarmor", "item-guardarmor"];
+            this.spriteNames = [
+                "seadragon", "seadragonarmor", "item-seadragonarmor", "searage",
+                "item-searage", "purplecloudkallege", "item-purplecloudkallege",
+                "snowlady", "daywalker", "item-daywalker", "pirateking", "item-pirateking",
+                "hermitcrab", "zombie", "piratecaptain", "ironogre", "ogrelord", "adherer",
+                "icegolem", "flaredeathknight", "redsickle", "item-redsickle",
+                "regionhenchman", "plunger", "item-plunger", "purplepreta", "sickle",
+                "item-sickle", "icevulture", "portalarmor", "item-portalarmor",
+                "item-adminarmor", "adminarmor", "pain", "rabbitarmor", "item-rabbitarmor",
+                "crystalscolpion", "eliminator", "firebenef", "taekwondo", "item-taekwondo",
+                "darkogre", "item-book", "item-cd", "frostqueen", "snowrabbit", "snowwolf",
+                "iceknight", "miniiceknight", "snowelf", "whitebear", "cobra", "goldgolem",
+                "darkregion", "darkregionillusion", "nightmareregion", "justicehammer",
+                "item-justicehammer", "firesword", "item-firesword", "whip", "item-whip",
+                "forestguardiansword", "item-forestguardiansword", "gayarmor",
+                "item-gayarmor", "schooluniform", "item-schooluniform", "beautifullife",
+                "item-beautifullife", "regionarmor", "item-regionarmor", "ghostrider",
+                "item-ghostrider", "desertscolpion", "darkscolpion", "vulture",
+                "forestdragon", "bluewingarmor", "item-bluewingarmor", "thiefarmor",
+                "item-thiefarmor", "ninjaarmor", "item-ninjaarmor", "dragonarmor",
+                "item-dragonarmor", "fallenarmor", "item-fallenarmor", "paladinarmor",
+                "item-paladinarmor", "crystalarmor", "item-crystalarmor", "adhererrobe",
+                "item-adhererrobe", "frostarmor", "item-frostarmor", "redmetalsword",
+                "item-redmetalsword", "bastardsword", "item-bastardsword", "halberd",
+                "item-halberd", "rose", "item-rose", "icerose", "item-icerose", "hand",
+                "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton",
+                "skeleton2", "spectre", "skeletonking", "deathknight", "ogre", "crab",
+                "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl",
+                "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", 
+                "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc",
+                "clotharmor", "item-clotharmor", "leatherarmor", "mailarmor", "platearmor",
+                "redarmor", "goldenarmor", "firefox", "death", "sword1", "axe", "chest",
+                "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe",
+                "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor",
+                "item-mailarmor", "item-platearmor", "item-redarmor", "item-goldenarmor",
+                "item-flask", "item-cake", "item-burger", "morningstar", "item-morningstar",
+                "item-firepotion", "orc", "oldogre", "golem", "mimic", "hobgoblin",
+                "greenarmor", "greenwingarmor", "item-greenarmor", "item-greenwingarmor",
+                "redmouse", "redguard", "scimitar", "item-scimitar", "redguardarmor",
+                "item-redguardarmor", "whitearmor", "item-whitearmor", "infectedguard",
+                "livingarmor", "mermaid", "trident", "item-trident", "ratarmor",
+                "item-ratarmor", "yellowfish", "greenfish", "redfish", "clam", "preta",
+                "pirateskeleton", "bluescimitar", "item-bluescimitar", "bluepiratearmor",
+                "item-bluepiratearmor", "penguin", "moleking", "cheoliarmor",
+                "item-cheoliarmor", "hammer", "item-hammer", "darkskeleton",
+                "greenpirateskeleton", "blackpirateskeleton", "redpirateskeleton",
+                "yellowpreta", "bluepreta", "miniknight", "wolf", "dovakinarmor",
+                "item-dovakinarmor", "gbwingarmor", "item-gbwingarmor", "redwingarmor",
+                "item-redwingarmor", "snowfoxarmor", "item-snowfoxarmor", "wolfarmor",
+                "item-wolfarmor", "pinkelf", "greenlightsaber", "item-greenlightsaber",
+                "skyelf", "skylightsaber", "item-skylightsaber", "redelf", "redlightsaber",
+                "item-redlightsaber", "item-sidesword", "sidesword", "yellowmouse",
+                "whitemouse", "brownmouse", "spear", "item-spear", "guardarmor",
+                "item-guardarmor"];
         },
 
         setup: function($bubbleContainer, canvas, background, foreground, input) {
@@ -381,6 +410,56 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     desc: "Bring the leatherarmor",
                     hidden: !achievementFound[16],
                     completed: achievementProgress[16] === 999 ? true : false,
+                    isCompleted: function() {
+                        return this.completed;
+                    }
+                },
+                KILL_CRAB: {
+                    id: 18,
+                    name: "Kill Crab",
+                    desc: "Kill 5 Crabs",
+                    hidden: !achievementFound[17],
+                    completed: achievementProgress[17] === 999 ? true : false,
+                    isCompleted: function() {
+                        return this.completed;
+                    }
+                },
+                FIND_CAKE: {
+                    id: 19,
+                    name: "Find Cake",
+                    desc: "Fine Cate",
+                    hidden: !achievementFound[18],
+                    completed: achievementProgress[18] === 999 ? true : false,
+                    isCompleted: function() {
+                        return this.completed;
+                    }
+                },
+                FIND_CD: {
+                    id: 20,
+                    name: "Find CD",
+                    desc: "Find CD",
+                    hidden: !achievementFound[19],
+                    completed: achievementProgress[19] === 999 ? true : false,
+                    isCompleted: function() {
+                        return this.completed;
+                    }
+                },
+                KILL_SKELETON: {
+                    id: 21,
+                    name: "Kill Skeleton",
+                    desc: "Kill 10 Skeletons",
+                    hidden: !achievementFound[20],
+                    completed: achievementProgress[20] === 999 ? true : false,
+                    isCompleted: function() {
+                        return this.completed;
+                    }
+                },
+                BRING_AXE: {
+                    id: 22,
+                    name: "Bring axe",
+                    desc: "Please, bring axe",
+                    hidden: !achievementFound[21],
+                    completed: achievementProgress[21] === 999 ? true : false,
                     isCompleted: function() {
                         return this.completed;
                     }
@@ -696,7 +775,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
             var x = entity.gridX,
                 y = entity.gridY;
 
-            if(entity) {
+            if(entity && x && y) {
                 if(entity instanceof Character || entity instanceof Chest) {
                     this.entityGrid[y][x][entity.id] = entity;
                     if(!(entity instanceof Player)) {
@@ -741,7 +820,6 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 
             var wait = setInterval(function() {
                 if(self.map.isLoaded && self.spritesLoaded()) {
-                    self.ready = true;
                     log.debug('All sprites loaded.');
 
                     self.loadAudio();
@@ -769,6 +847,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                     self.setCursor("hand");
 
                     self.connect(action, started_callback);
+                    self.ready = true;
 
                     clearInterval(wait);
                 }
@@ -817,7 +896,8 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
             var self = this,
                 connecting = false; // always in dispatcher mode in the build version
 
-            this.client = new GameClient(this.host, this.port);
+            this.client = new GameClient(this.host, this.port, this);
+            this.boardhandler.setClient(this.client);
             this.client.wrongpw_callback = function() {
                 self.textWindowHandler.setHtml("<center><h1>Wrong Password</h1></center>");
             }
@@ -887,20 +967,25 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 }
             });
 
-            this.client.onWelcome(function(id, name, x, y, hp, armor, weapon, avatar, weaponAvatar, experience, inventory0, inventory1, achievementFound, achievementProgress) {
+            this.client.onWelcome(function(id, name, x, y, hp, armor, weapon,
+                    avatar, weaponAvatar, experience,
+                    admin,
+                    inventory0, inventory0Number, inventory1, inventory1Number,
+                    achievementFound, achievementProgress) {
                 log.info("Received player ID from server : "+ id);
                 self.player.id = id;
                 self.playerId = id;
                 // Always accept name received from the server which will
                 // sanitize and shorten names exceeding the allowed length.
                 self.player.name = name;
+                self.player.admin = admin;
                 self.player.setGridPosition(x, y);
                 self.player.setMaxHitPoints(hp);
                 self.player.setArmorName(armor);
                 self.player.setSpriteName(avatar);
                 self.player.setWeaponName(weapon);
-                self.player.setInventory(Types.getKindFromString(inventory0), 0);
-                self.player.setInventory(Types.getKindFromString(inventory1), 1);
+                self.player.setInventory(Types.getKindFromString(inventory0), 0, inventory0Number);
+                self.player.setInventory(Types.getKindFromString(inventory1), 1, inventory1Number);
                 self.initAchievements(achievementFound, achievementProgress);
                 self.initPlayer();
                 self.player.experience = experience;
@@ -916,6 +1001,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
 
                 self.showNotification("Welcome to BrowserQuest!");
+                self.chathandler.show();
 
                 self.player.onStartPathing(function(path) {
                     var i = path.length - 1,
@@ -1006,6 +1092,11 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         var dest = self.map.getDoorDestination(x, y);
 
                         if(dest.level > self.player.level) {
+                            self.unregisterEntityPosition(self.player);
+                            self.registerEntityPosition(self.player);
+                            return;
+                        }
+                        if(dest.admin === 1 && self.player.admin === null){
                             self.unregisterEntityPosition(self.player);
                             self.registerEntityPosition(self.player);
                             return;
@@ -1126,7 +1217,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 });
 
                 self.player.onArmorLoot(function(armorName) {
-                    self.player.switchArmor(self.sprites[armorName]);
+                    self.player.switchArmor(armorName, self.sprites[armorName]);
                 });
 
                 self.player.onSwitchItem(function() {
@@ -1632,7 +1723,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         achievement = self.achievements['ANGRY_RATS'];
                         achievement.completed = true;
                         self.app.displayUnlockedAchievement(achievement);
-                        self.app.showAchievementNotification(achievement.id, achievement.name, "퀘스트 완료!");
+                        self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed!");
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+50 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
@@ -1640,16 +1731,65 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                         achievement = self.achievements['BRING_LEATHERARMOR'];
                         achievement.completed = true;
                         self.app.displayUnlockedAchievement(achievement);
-                        self.app.showAchievementNotification(achievement.id, achievement.name, "퀘스트 완료!");
-                        if(self.player.inventory[0] === Types.Entities.LEATHERARMOR){
+                        self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed !");
+                        self.player.switchArmor("clotharmor", self.sprites["clotharmor"]);
+                        setTimeout(function() {
+                            self.infoManager.addDamageInfo("+50 exp", self.player.x, self.player.y - 15, "exp", 3000);
+                        }, 1000);
+                    } else if(type === "complete" && id === self.achievements['KILL_CRAB']){
+                        achievement = self.achievements['KILL_CRAB'];
+                        achievement.completed = true;
+                        self.app.displayUnlockedAchievement(achievement);
+                        self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed !");
+                        if(self.player.inventory[0] === Types.Entities.CAKE){
                             self.player.inventory[0] = null;
-                        } else if(self.player.inventory[1] === Types.Entities.LEATHERARMOR){
+                        } else if(self.player.inventory[1] === Types.Entities.CAKE){
                             self.player.inventory[1] = null;
                         }
                         setTimeout(function() {
                             self.infoManager.addDamageInfo("+50 exp", self.player.x, self.player.y - 15, "exp", 3000);
                         }, 1000);
+                    } else if(type === "complete" && id === self.achievements['FIND_CD']){
+                        achievement = self.achievements['FIND_CD'];
+                        achievement.completed = true;
+                        self.app.displayUnlockedAchievement(achievement);
+                        self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed !");
+                        if(self.player.inventory[0] === Types.Entities.CD){
+                            self.player.inventory[0] = null;
+                        } else if(self.player.inventory[1] === Types.Entities.CD){
+                            self.player.inventory[1] = null;
+                        }
+                        setTimeout(function() {
+                            self.infoManager.addDamageInfo("+100 exp", self.player.x, self.player.y - 15, "exp", 3000);
+                        }, 1000);
+                    } else if(type === "complete" && id === self.achievements['KILL_SKELETON']){
+                        achievement = self.achievements['KILL_SKELETON'];
+                        achievement.completed = true;
+                        self.app.displayUnlockedAchievement(achievement);
+                        self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed !");
+                        setTimeout(function() {
+                            self.infoManager.addDamageInfo("+200 exp", self.player.x, self.player.y - 15, "exp", 3000);
+                        }, 1000);
+                    } else if(type === "complete" && id === self.achievements['BRING_AXE']){
+                        achievement = self.achievements['BRING_AXE'];
+                        achievement.completed = true;
+                        self.app.displayUnlockedAchievement(achievement);
+                        self.app.showAchievementNotification(achievement.id, achievement.name, "Quest Completed !");
+                        self.player.switchWeapon("sword2");
+                        setTimeout(function() {
+                            self.infoManager.addDamageInfo("+200 exp", self.player.x, self.player.y - 15, "exp", 3000);
+                        }, 1000);
                     }
+                });
+
+                self.client.onBoard(function(data){
+                    self.boardhandler.handleBoard(data, self.player.level);
+                });
+                self.client.onNotify(function(msg){
+                    self.showNotification(msg);
+                });
+                self.client.onKung(function(msg){
+                    self.kkhandler.add(msg, self.player);
                 });
 
                 self.gamestart_callback();
@@ -1829,6 +1969,22 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 } else if(npc.kind === Types.Entities.VILLAGER && this.achievements['BRING_LEATHERARMOR'].hidden) {
                     this.unhiddenAchievement(this.achievements['BRING_LEATHERARMOR']);
                 } else if(npc.kind === Types.Entities.VILLAGER && !this.achievements['BRING_LEATHERARMOR'].hidden) {
+                    this.client.sendTalkToNPC(npc.kind);
+                } else if(npc.kind === Types.Entities.BEACHNPC && this.achievements['KILL_CRAB'].hidden){
+                    this.unhiddenAchievement(this.achievements['KILL_CRAB']);
+                } else if(npc.kind === Types.Entities.AGENT && this.achievements['FIND_CAKE'].hidden){
+                    this.unhiddenAchievement(this.achievements['FIND_CAKE']);
+                } else if(npc.kind === Types.Entities.AGENT && !this.achievements['FIND_CAKE'].hidden) {
+                    this.client.sendTalkToNPC(npc.kind);
+                } else if(npc.kind === Types.Entities.NYAN && this.achievements['FIND_CD'].hidden) {
+                    this.unhiddenAchievement(this.achievements['FIND_CD']);
+                } else if(npc.kind === Types.Entities.NYAN && !this.achievements['FIND_CD'].hidden) {
+                    this.client.sendTalkToNPC(npc.kind);
+                } else if(npc.kind === Types.Entities.PRIEST && this.achievements['KILL_SKELETON'].hidden){
+                    this.unhiddenAchievement(this.achievements['KILL_SKELETON']);
+                } else if(npc.kind === Types.Entities.DESERTNPC && this.achievements['BRING_AXE'].hidden){
+                    this.unhiddenAchievement(this.achievements['BRING_AXE']);
+                } else if(npc.kind === Types.Entities.DESERTNPC && !this.achievements['BRING_AXE'].hidden){
                     this.client.sendTalkToNPC(npc.kind);
                 }
                 msg = npc.talk(this);
@@ -2188,6 +2344,7 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 return;
             } else if(this.menu.inventoryOn){
                 var inventoryNumber;
+                var clickedMenu;
 
                 if(this.menu.inventoryOn === "inventory0"){
                     inventoryNumber = 0;
@@ -2196,31 +2353,40 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 } else{
                     return;
                 }
-                if((pos.x === this.camera.gridX+this.camera.gridW-2
-                    || pos.x === this.camera.gridX+this.camera.gridW-1)
-                && pos.y == this.camera.gridY + this.camera.gridH-4){
-                    this.client.sendInventory("armor", inventoryNumber);
-                    this.player.equipFromInventory("armor", inventoryNumber, this.sprites);
-                    if(this.equipment_callback) {
-                        this.equipment_callback();
+                clickedMenu = this.menu.isClickedInventoryMenu(pos, this.camera);
+                if(clickedMenu === 3
+                    && this.player.inventory[inventoryNumber] !== Types.Entities.CAKE
+                    && this.player.inventory[inventoryNumber] !== Types.Entities.CD) {
+                    if(Types.isHealingItem(this.player.inventory[inventoryNumber])) {
+                        this.healShortCut = inventoryNumber;
+                        this.menu.close();
+                    } else {
+                        this.equip(inventoryNumber);
+                    }
+                    return;
+                } else if(clickedMenu === 2
+                    && this.player.inventory[inventoryNumber] !== Types.Entities.CAKE
+                    && this.player.inventory[inventoryNumber] !== Types.Entities.CD) {
+                    if(Types.isArmor(this.player.inventory[inventoryNumber])){
+                        this.avatar(inventoryNumber);
+                        return;
+                    } else if(Types.isHealingItem(this.player.inventory[inventoryNumber])) {
+                        this.eat(inventoryNumber);
+                        return;
+                    }
+                } else if(clickedMenu === 1
+                    && this.player.inventory[inventoryNumber] !== Types.Entities.CAKE
+                    && this.player.inventory[inventoryNumber] !== Types.Entities.CD) {
+                    if(Types.isHealingItem(this.player.inventory[inventoryNumber]) && (this.player.inventoryCount[inventoryNumber] > 1)) {
+                        $('#dropCount').val(this.player.inventoryCount[inventoryNumber]);
+                        this.app.showDropDialog(inventoryNumber);
+                    } else {
+                        this.client.sendInventory("empty", inventoryNumber, 1);
+                        this.player.makeEmptyInventory(inventoryNumber);
                     }
                     this.menu.close();
                     return;
-                } else if((pos.x === this.camera.gridX+this.camera.gridW-2
-                        || pos.x === this.camera.gridX+this.camera.gridW-1)
-                        && pos.y == this.camera.gridY + this.camera.gridH-3){
-                    this.client.sendInventory("avatar", inventoryNumber);
-                    this.player.equipFromInventory("avatar", inventoryNumber, this.sprites);
-                    this.menu.close();
-                    return;
-                } else if((pos.x === this.camera.gridX+this.camera.gridW-2
-                        || pos.x === this.camera.gridX+this.camera.gridW-1)
-                        && pos.y == this.camera.gridY + this.camera.gridH-2){
-                    this.client.sendInventory("empty", inventoryNumber);
-                    this.player.makeEmptyInventory(inventoryNumber);
-                    this.menu.close();
-                    return;
-                } else{
+                } else {
                     this.menu.close();
                 }
             } else{
@@ -2275,6 +2441,30 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
                 }
                 else {
                     this.makePlayerGoTo(pos.x, pos.y);
+                }
+            }
+        },
+
+        rightClick: function() {
+            var pos = this.getMouseGridPosition();
+
+            if(pos.x === this.camera.gridX+this.camera.gridW-2
+            && pos.y === this.camera.gridY+this.camera.gridH-1){
+                if(this.player.inventory[0]){
+                    if(Types.isHealingItem(this.player.inventory[0]))
+                        this.eat(0);
+                }
+                return;
+            } else if(pos.x === this.camera.gridX+this.camera.gridW-1
+                   && pos.y === this.camera.gridY+this.camera.gridH-1){
+                if(this.player.inventory[1]){
+                    if(Types.isHealingItem(this.player.inventory[1]))
+                        this.eat(1);
+                }
+            } else {
+                if((this.healShortCut >= 0) && this.player.inventory[this.healShortCut]) {
+                    if(Types.isHealingItem(this.player.inventory[this.healShortCut]))
+                        this.eat(this.healShortCut);
                 }
             }
         },
@@ -2900,8 +3090,30 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
         },
 
         keyDown: function(key) {
-            if(key === 49) {
-
+            var self = this;
+            if(key === 49 || key === 50){ // 1, 2
+              var inventoryNumber;
+              if(key === 49){ // 1
+                inventoryNumber = 0;
+              } else if(key === 50){ // 2
+                inventoryNumber = 1;
+              } else{
+                return;
+              }
+              if(Types.isHealingItem(this.player.inventory[inventoryNumber])){
+                this.eat(inventoryNumber);
+              }
+            } else if(key === 54){ // 6
+              if(this.player.magicCoolTimeCheck("heal")){
+                if(this.player.healTargetName){
+                  this.client.sendMagic("heal", "empty");
+                  this.showNotification("To " + this.player.healTargetName + " Healing");
+                } else{
+                  this.showNotification("Healing Target not specified howto: /h 닉네임");
+                }
+              } else{
+                this.showNotification("Heaing Magic CoolTime is not over yet");
+              }
             }
         },
 
@@ -2911,6 +3123,33 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
 
         closeItemInfo: function() {
             this.itemInfoOn = false;
+        },
+        equip: function(inventoryNumber){
+            if(Types.isArmor(this.player.inventory[inventoryNumber])){
+                this.client.sendInventory("armor", inventoryNumber, 1);
+                this.player.equipFromInventory("armor", inventoryNumber, this.sprites);
+                if(this.equipment_callback) {
+                     this.equipment_callback();
+                }
+                this.menu.close();
+            }
+        },
+        avatar: function(inventoryNumber){
+            this.client.sendInventory("avatar", inventoryNumber, 1);
+            this.player.equipFromInventory("avatar", inventoryNumber, this.sprites);
+            this.menu.close();
+        },
+        eat: function(inventoryNumber){
+            if(this.player.hitPoints < this.player.maxHitPoints) {
+                if(this.player.decInventory(inventoryNumber)){
+                    this.client.sendInventory("eat", inventoryNumber, 1);
+                } else{
+                    this.showNotification("힐링 아이템 쿨타임이 안 끝났습니다.");
+                }
+            } else {
+                this.showNotification("최대 체력입니다.");
+            }
+            this.menu.close();
         }
     });
 

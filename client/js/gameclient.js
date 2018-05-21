@@ -2,10 +2,11 @@
 define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory, BISON) {
 
     var GameClient = Class.extend({
-        init: function(host, port) {
+        init: function(host, port, game) {
             this.connection = null;
             this.host = host;
             this.port = port;
+            this.game = game;
 
             this.connected_callback = null;
             this.spawn_callback = null;
@@ -15,6 +16,8 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
             this.ban_callback = null;
 
             this.fail_callback = null;
+
+            this.notify_callback = null;
 
             this.notify_callback = null;
 
@@ -42,6 +45,9 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
             this.handlers[Types.Messages.GUILD] = this.receiveGuild;
             this.handlers[Types.Messages.PVP] = this.receivePVP;
             this.handlers[Types.Messages.ACHIEVEMENT] = this.receiveAchievement;
+            this.handlers[Types.Messages.BOARD] = this.receiveBoard;
+            this.handlers[Types.Messages.NOTIFY] = this.receiveNotify;
+            this.handlers[Types.Messages.KUNG] = this.receiveKung;
 
             this.useBison = false;
             this.enable();
@@ -189,16 +195,23 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                 hp = data[5],
                 armor = data[6],
                 weapon = data[7],
-                experience = data[8],
-                avatar = data[9],
-                inventory0 = data[10],
-                inventory1 = data[11],
-                achievementFound = [data[12], data[14], data[15]],
-                achievementProgress = [data[13], data[15], data[17]];
+                avatar = data[8],
+                weaponAvatar = data[9],
+                experience = data[10],
+                admin = data[11],
+                inventory0 = data[12],
+                inventory0Number = data[13],
+                inventory1 = data[14];
+                inventory1Number = data[15];
+                achievementFound = [data[16], data[18], data[20], data[22], data[24], data[26], data[28], data[30]],
+                achievementProgress = [data[17], data[19], data[21], data[23], data[25], data[27], data[29], data[31]];
                 
-
-            if(this.welcome_callback) {
-                this.welcome_callback(id, name, x, y, hp, armor, weapon, experience, avatar, inventory0, inventory1, achievementFound, achievementProgress);
+            if(this.game.ready){
+                this.welcome_callback(
+                        id, name, x, y, hp, armor, weapon, avatar, weaponAvatar,
+                        experience, admin, inventory0, inventory0Number,
+                        inventory1, inventory1Number,
+                        achievementFound, achievementProgress);
             }
         },
 
@@ -234,10 +247,13 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
             var id = data[1],
                 kind = data[2],
                 x = data[3],
-                y = data[4];
+                y = data[4],
+                count = data[5];
 
             if(Types.isItem(kind)) {
                 var item = EntityFactory.createEntity(kind, id);
+
+                item.count = count;
 
                 if(this.spawn_item_callback) {
                     this.spawn_item_callback(item, x, y);
@@ -256,6 +272,7 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                     orientation = data[6];
                     armor = data[7];
                     weapon = data[8];
+                    level = data[9];
                     if(data.length > 9) {
                         target = data[9];
                     }
@@ -272,6 +289,7 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                 if(character instanceof Player) {
                     character.weaponName = Types.getKindAsString(weapon);
                     character.spriteName = Types.getKindAsString(armor);
+                    character.level = level;
                 }
 
                 if(this.spawn_character_callback) {
@@ -426,7 +444,26 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
 			if(this.guilderror_callback) {
 				this.guilderror_callback(errorType, guildName);
 			}
-		},
+        },
+        
+        receiveBoard: function(data){
+            if(this.board_callback){
+                this.board_callback(data);
+            }
+        },
+
+        receiveNotify: function(data){
+            var msg = data[1];
+            if(this.notify_callback){
+                this.notify_callback(msg);
+            }
+        },
+        receiveKung: function(data){
+            var msg = data[1];
+            if(this.kung_callback){
+                this.kung_callback(msg);
+            }
+        },
 		
 		receiveGuild: function(data) {
 			if( (data[1] === Types.Messages.GUILDACTION.CONNECT) &&
@@ -565,6 +602,15 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
         onAchievement: function(callback) {
             this.achievement_callback = callback;
         },
+        onBoard: function(callback){
+            this.board_callback = callback;
+        },
+        onNotify: function(callback){
+            this.notify_callback = callback;
+        },
+        onKung: function(callback){
+            this.kung_callback = callback;
+        },
         onGuildError: function(callback) {
 			this.guilderror_callback = callback;
 		},
@@ -688,14 +734,34 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
             this.sendMessage([Types.Messages.CHECK,
                               id]);
         },
-        sendInventory: function(type, inventoryNumber) {
-            this.sendMessage([Types.Messages.INVENTORY, type, inventoryNumber]);
+        sendInventory: function(type, inventoryNumber, count) {
+            this.sendMessage([Types.Messages.INVENTORY, type, inventoryNumber, count]);
         },
         sendAchievement: function(id, type) {
             this.sendMessage([Types.Messages.ACHIEVEMENT, id, type]);
         },
         sendTalkToNPC: function(kind) {
             this.sendMessage([Types.Messages.TALKTONPC, kind]);
+        },
+        sendMagic: function(magicName, target){
+            this.sendMessage([Types.Messages.MAGIC,
+                              magicName, target]);
+        },
+        sendBoard: function(command, number, replynumber){
+          this.sendMessage([Types.Messages.BOARD,
+                            command,
+                            number,
+                            replynumber]);
+        },
+        sendBoardWrite: function(command, title, content){
+          this.sendMessage([Types.Messages.BOARDWRITE,
+                            command,
+                            title,
+                            content]);
+        },
+        sendKung: function(word) {
+            this.sendMessage([Types.Messages.KUNG,
+                              word]);
         },
         
         sendWho: function(ids) {

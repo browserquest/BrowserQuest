@@ -1,65 +1,47 @@
 
 Types = {
     Messages: {
-        CREATE: 0,
-        LOGIN: 1,
-        WELCOME: 2,
-        SPAWN: 3,
-        DESPAWN: 4,
-        MOVE: 5,
-        LOOTMOVE: 6,
-        AGGRO: 7,
-        ATTACK: 8,
-        HIT: 9,
-        HURT: 10,
-        HEALTH: 11,
-        CHAT: 12,
-        LOOT: 13,
-        EQUIP: 14,
-        DROP: 15,
-        TELEPORT: 16,
-        DAMAGE: 17,
-        POPULATION: 18,
-        KILL: 19,
-        LIST: 20,
-        WHO: 21,
-        ZONE: 22,
-        DESTROY: 23,
-        HP: 24,
-        BLINK: 25,
-        OPEN: 26,
-        CHECK: 27,
-        PVP: 28,
-        GUILD: 29,
-        GUILDERROR: 30,
-        INVENTORY: 31,
-        ACHIEVEMENT: 32,
-        TALKTONPC: 33,
-        GUILDERRORTYPE: {
-        	DOESNOTEXIST: 1,
-        	BADNAME: 2,
-        	ALREADYEXISTS: 3,
-        	NOLEAVE: 4,
-        	BADINVITE: 5,
-        	GUILDRULES: 6,
-        	IDWARNING: 7
-        },
-        GUILDACTION: {
-			CONNECT: 8,
-			ONLINE: 9,
-			DISCONNECT: 10,
-			INVITE: 11,
-			LEAVE: 12,
-			CREATE: 13,
-			TALK: 14,
-			JOIN: 15,
-			POPULATION: 16
-		}
+        HELLO: 0,
+        WELCOME: 1,
+        SPAWN: 2,
+        DESPAWN: 3,
+        MOVE: 4,
+        LOOTMOVE: 5,
+        AGGRO: 6,
+        ATTACK: 7,
+        HIT: 8,
+        HURT: 9,
+        HEALTH: 10,
+        CHAT: 11,
+        LOOT: 12,
+        EQUIP: 13,
+        DROP: 14,
+        TELEPORT: 15,
+        DAMAGE: 16,
+        POPULATION: 17,
+        KILL: 18,
+        LIST: 19,
+        WHO: 20,
+        ZONE: 21,
+        DESTROY: 22,
+        HP: 23,
+        BLINK: 24,
+        OPEN: 25,
+        CHECK: 26,
+        PVP: 27,
+        INVENTORY: 28,
+        ACHIEVEMENT: 29,
+        TALKTONPC: 30,
+        MAGIC: 31,
+        BOARD: 32,
+        BOARDWRITE: 33,
+        NOTIFY: 34,
+        KUNG: 35,
     },
-
+    
     Entities: {
         WARRIOR: 1,
-
+        
         // Mobs
         RAT: 2,
         SKELETON: 3,
@@ -72,7 +54,7 @@ Types = {
         EYE: 10,
         SNAKE: 11,
         SKELETON2: 12,
-        BOSS: 13,
+        SKELETONKING: 13,
         DEATHKNIGHT: 14,
         ORC: 67,
         OLDOGRE: 68,
@@ -131,8 +113,15 @@ Types = {
         DARKREGION: 157,
         DARKREGIONILLUSION: 158,
         NIGHTMAREREGION: 159,
-        DARKOGRE: 171, // Last
-
+        DARKOGRE: 171,
+        PAIN: 174,
+        ICEVULTURE: 177,
+        REGIONHENCHMAN: 180,
+        PURPLEPRETA: 181,
+        FLAREDEATHKNIGHT: 183,
+        SNOWLADY: 185,
+        SEADRAGON: 189,
+        
         // Armors
         CLOTHARMOR: 21,
         LEATHERARMOR: 22,
@@ -168,14 +157,21 @@ Types = {
         REGIONARMOR: 163,
         GHOSTRIDER: 164,
         TAEKWONDO: 170,
-
+        ADMINARMOR: 175,
+        RABBITARMOR: 176,
+        PORTALARMOR: 179,
+        PIRATEKING: 187,
+        SEADRAGONARMOR: 190,
+        
         // Objects
         FLASK: 35,
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
         CAKE: 39,
-
+        BOOK: 172,
+        CD: 173,
+        
         // NPCs
         GUARD: 40,
         KING: 41,
@@ -193,7 +189,7 @@ Types = {
         DESERTNPC: 53,
         LAVANPC: 54,
         CODER: 55,
-
+        
         // Weapons
         SWORD1: 60,
         SWORD2: 61,
@@ -220,115 +216,107 @@ Types = {
         FIRESWORD: 166,
         WHIP: 167,
         FORESTGUARDIANSWORD: 168,
+        SICKLE: 178,
+        PLUNGER: 182,
+        REDSICKLE: 184,
+        DAYWALKER: 186,
+        PURPLECLOUDKALLEGE: 188,
+        SEARAGE: 191, // Last
 
+        // Benef
         DEBENEF: 20,
         FIREBENEF: 169,
     },
-
     Orientations: {
         UP: 1,
         DOWN: 2,
         LEFT: 3,
         RIGHT: 4
-    },
-
-    Keys: {
-        ENTER: 13,
-        UP: 38,
-        DOWN: 40,
-        LEFT: 37,
-        RIGHT: 39,
-        W: 87,
-        A: 65,
-        S: 83,
-        D: 68,
-        SPACE: 32,
-        I: 73,
-        H: 72,
-        M: 77,
-        P: 80,
-        KEYPAD_4: 100,
-        KEYPAD_6: 102,
-        KEYPAD_8: 104,
-        KEYPAD_2: 98
     }
 };
 
 var kinds = {
     warrior: [Types.Entities.WARRIOR, "player", 0],
+    
+    wizard:             [Types.Entities.WIZARD,              "mob", 7, 1],
+    crab:               [Types.Entities.CRAB,                "mob", 1, 1],
+    rat:                [Types.Entities.RAT,                 "mob", 5, 2],
+    bat:                [Types.Entities.BAT,                 "mob", 6, 3],
+    goblin:             [Types.Entities.GOBLIN,              "mob", 8, 5],
+    yellowfish:         [Types.Entities.YELLOWFISH,          "mob", 8, 5],
+    skeleton:           [Types.Entities.SKELETON ,           "mob", 15, 8],
+    greenfish:          [Types.Entities.GREENFISH,           "mob", 15, 8],
+    snake:              [Types.Entities.SNAKE,               "mob", 25, 10],
+    redfish:            [Types.Entities.REDFISH,             "mob", 25, 10],
+    ogre:               [Types.Entities.OGRE,                "mob", 27, 12],
+    clam:               [Types.Entities.CLAM,                "mob", 27, 12],
+    skeleton2:          [Types.Entities.SKELETON2,           "mob", 38, 15],
+    hermitcrab:         [Types.Entities.HERMITCRAB,          "mob", 38, 15],
+    eye:                [Types.Entities.EYE,                 "mob", 45, 18],
+    spectre:            [Types.Entities.SPECTRE,             "mob", 55, 21],
+    deathknight:        [Types.Entities.DEATHKNIGHT,         "mob", 70, 24],
+    skeletonking:       [Types.Entities.SKELETONKING,        "mob", 180, 15],
+    mimic:              [Types.Entities.MIMIC,               "mob", 100, 27],
+    orc:                [Types.Entities.ORC,                 "mob", 100, 27],
+    oldogre:            [Types.Entities.OLDOGRE,             "mob", 119, 27],
+    golem:              [Types.Entities.GOLEM,               "mob", 119, 27],
+    hobgoblin:          [Types.Entities.HOBGOBLIN,           "mob", 123, 33],
+    yellowmouse:        [Types.Entities.YELLOWMOUSE,         "mob", 143, 33],
+    brownmouse:         [Types.Entities.BROWNMOUSE,          "mob", 152, 36],
+    redguard:           [Types.Entities.REDGUARD,            "mob", 155, 36],
+    redmouse:           [Types.Entities.REDMOUSE,            "mob", 159, 39],
+    infectedguard:      [Types.Entities.INFECTEDGUARD,       "mob", 169, 39],
+    livingarmor:        [Types.Entities.LIVINGARMOR,         "mob", 169, 39],
+    whitemouse:         [Types.Entities.WHITEMOUSE,          "mob", 171, 39],
+    mermaid:            [Types.Entities.MERMAID,             "mob", 177, 39],
+    preta:              [Types.Entities.PRETA,               "mob", 197, 42],
+    pirateskeleton:     [Types.Entities.PIRATESKELETON,      "mob", 218, 45],
+    vulture:            [Types.Entities.VULTURE,             "mob", 243, 48],
+    penguin:            [Types.Entities.PENGUIN,             "mob", 270, 51],
+    desertscolpion:     [Types.Entities.DESERTSCOLPION,      "mob", 300, 54],
+    moleking:           [Types.Entities.MOLEKING,            "mob", 360, 57],
+    darkskeleton:       [Types.Entities.DARKSKELETON,        "mob", 395, 60],
+    darkscolpion:       [Types.Entities.DARKSCOLPION,        "mob", 471, 66],
+    greenpirateskeleton:[Types.Entities.GREENPIRATESKELETON, "mob", 504, 69],
+    blackpirateskeleton:[Types.Entities.BLACKPIRATESKELETON, "mob", 545, 72],
+    redpirateskeleton:  [Types.Entities.REDPIRATESKELETON,   "mob", 600, 75],
+    yellowpreta:        [Types.Entities.YELLOWPRETA,         "mob", 664, 78],
+    bluepreta:          [Types.Entities.BLUEPRETA,           "mob", 720, 81],
+    miniknight:         [Types.Entities.MINIKNIGHT,          "mob", 794, 84],
+    wolf:               [Types.Entities.WOLF,                "mob", 952, 90],
+    pinkelf:            [Types.Entities.PINKELF,             "mob", 1108, 96],
+    skyelf:             [Types.Entities.SKYELF,              "mob", 1336, 102],
+    redelf:             [Types.Entities.REDELF,              "mob", 1612, 108],
+    zombie:             [Types.Entities.ZOMBIE,              "mob", 1840, 114],
+    piratecaptain:      [Types.Entities.PIRATECAPTAIN,       "mob", 2175, 120],
+    ironogre:           [Types.Entities.IRONOGRE,            "mob", 2600, 126],
+    ogrelord:           [Types.Entities.OGRELORD,            "mob", 3150, 132],
+    crystalscolpion:    [Types.Entities.CRYSTALSCOLPION,     "mob", 3800, 138],
+    eliminator:         [Types.Entities.ELIMINATOR,          "mob", 4550, 144],
+    adherer:            [Types.Entities.ADHERER,             "mob", 5400, 150],
+    miniiceknight:      [Types.Entities.MINIICEKNIGHT,       "mob", 6480, 156],
+    iceknight:          [Types.Entities.ICEKNIGHT,           "mob", 7776, 162],
+    icegolem:           [Types.Entities.ICEGOLEM,            "mob", 9331, 168],
+    snowwolf:           [Types.Entities.SNOWWOLF,            "mob", 11197, 174],
+    cobra:              [Types.Entities.COBRA,               "mob", 13436, 180],
+    darkogre:           [Types.Entities.DARKOGRE,            "mob", 16123, 186],
+    snowelf:            [Types.Entities.SNOWELF,             "mob", 19348, 192],
+    forestdragon:       [Types.Entities.FORESTDRAGON,        "mob", 23218, 130],
+    pain:               [Types.Entities.PAIN,                "mob", 27862, 204],
+    whitebear:          [Types.Entities.WHITEBEAR,           "mob", 33434, 210],
+    snowrabbit:         [Types.Entities.SNOWRABBIT,          "mob", 34389, 216],
+    icevulture:         [Types.Entities.ICEVULTURE,          "mob", 35344, 222],
+    darkregionillusion: [Types.Entities.DARKREGIONILLUSION,  "mob", 36299, 228],
+    regionhenchman:     [Types.Entities.REGIONHENCHMAN,      "mob", 37255, 234],
+    purplepreta:        [Types.Entities.PURPLEPRETA,         "mob", 38210, 240],
+    flaredeathknight:   [Types.Entities.FLAREDEATHKNIGHT,    "mob", 39165, 246],
+    snowlady:           [Types.Entities.SNOWLADY,            "mob", 40120, 252],
+    frostqueen:         [Types.Entities.FROSTQUEEN,          "mob", 41075, 258],
+    darkregion:         [Types.Entities.DARKREGION,          "mob", 42030, 264],
+    nightmareregion:    [Types.Entities.NIGHTMAREREGION,     "mob", 42985, 270],
+    seadragon:          [Types.Entities.SEADRAGON,           "mob", 43940, 180],
 
-    wizard: [Types.Entities.WIZARD, "mob", 7],
-    rat: [Types.Entities.RAT, "mob", 1],
-    bat: [Types.Entities.BAT, "mob", 3],
-    crab: [Types.Entities.CRAB, "mob", 4],
-    goblin: [Types.Entities.GOBLIN, "mob", 5],
-    yellowfish: [Types.Entities.YELLOWFISH, "mob", 5],
-    skeleton: [Types.Entities.SKELETON , "mob", 8],
-    greenfish: [Types.Entities.GREENFISH, "mob", 8],
-    snake: [Types.Entities.SNAKE, "mob", 10],
-    redfish: [Types.Entities.REDFISH, "mob", 10],
-    ogre: [Types.Entities.OGRE, "mob", 12],
-    clam: [Types.Entities.CLAM, "mob", 12],
-    skeleton2: [Types.Entities.SKELETON2, "mob", 14],
-    hermitcrab: [Types.Entities.HERMITCRAB, "mob", 14],
-    eye: [Types.Entities.EYE, "mob", 16],
-    spectre: [Types.Entities.SPECTRE, "mob", 18],
-    deathknight: [Types.Entities.DEATHKNIGHT, "mob", 21],
-    boss: [Types.Entities.BOSS, "mob", 120],
-    mimic: [Types.Entities.MIMIC, "mob", 32],
-    orc: [Types.Entities.ORC, "mob", 32],
-    oldogre: [Types.Entities.OLDOGRE, "mob", 41],
-    golem: [Types.Entities.GOLEM, "mob", 41],
-    hobgoblin: [Types.Entities.HOBGOBLIN, "mob", 48],
-    yellowmouse: [Types.Entities.YELLOWMOUSE, "mob", 55],
-    brownmouse: [Types.Entities.BROWNMOUSE, "mob", 66],
-    redguard: [Types.Entities.REDGUARD, "mob", 84],
-    redmouse: [Types.Entities.REDMOUSE, "mob", 89],
-    infectedguard: [Types.Entities.INFECTEDGUARD, "mob", 101],
-    livingarmor: [Types.Entities.LIVINGARMOR, "mob", 101],
-    whitemouse: [Types.Entities.WHITEMOUSE, "mob", 114],
-    mermaid: [Types.Entities.MERMAID, "mob", 125],
-    preta: [Types.Entities.PRETA, "mob", 162],
-    pirateskeleton: [Types.Entities.PIRATESKELETON, "mob", 180],
-    vulture: [Types.Entities.VULTURE, "mob", 231],
-    penguin: [Types.Entities.PENGUIN, "mob", 269],
-    moleking: [Types.Entities.MOLEKING, "mob", 360],
-    desertscolpion: [Types.Entities.DESERTSCOLPION, "mob", 368],
-    darkskeleton: [Types.Entities.DARKSKELETON, "mob", 432],
-    darkscolpion: [Types.Entities.DARKSCOLPION, "mob", 471],
-    greenpirateskeleton: [Types.Entities.GREENPIRATESKELETON, "mob", 504],
-    blackpirateskeleton: [Types.Entities.BLACKPIRATESKELETON, "mob", 600],
-    redpirateskeleton: [Types.Entities.REDPIRATESKELETON, "mob", 720],
-    yellowpreta: [Types.Entities.YELLOWPRETA, "mob", 864],
-    bluepreta: [Types.Entities.BLUEPRETA, "mob", 1032],
-    miniknight: [Types.Entities.MINIKNIGHT, "mob", 1224],
-    wolf: [Types.Entities.WOLF, "mob", 1464],
-    pinkelf: [Types.Entities.PINKELF, "mob", 1700],
-    skyelf: [Types.Entities.SKYELF, "mob", 2000],
-    redelf: [Types.Entities.REDELF, "mob", 2400],
-    zombie: [Types.Entities.ZOMBIE, "mob", 2900],
-    piratecaptain: [Types.Entities.PIRATECAPTAIN, "mob", 3500],
-    ironogre: [Types.Entities.IRONOGRE, "mob", 4200],
-    ogrelord: [Types.Entities.OGRELORD, "mob", 5000],
-    crystalscolpion: [Types.Entities.CRYSTALSCOLPION, "mob", 5900],
-    eliminator: [Types.Entities.ELIMINATOR, "mob", 6900],
-    adherer: [Types.Entities.ADHERER, "mob", 8000],
-    miniiceknight: [Types.Entities.MINIICEKNIGHT, "mob", 9200],
-    iceknight: [Types.Entities.ICEKNIGHT, "mob", 10500],
-    icegolem: [Types.Entities.ICEGOLEM, "mob", 11600],
-    snowwolf: [Types.Entities.SNOWWOLF, "mob", 12600],
-    cobra: [Types.Entities.COBRA, "mob", 13700],
-    darkogre: [Types.Entities.DARKOGRE, "mob", 14800],
-
-    forestdragon: [Types.Entities.FORESTDRAGON, "mob", 1],
-    frostqueen: [Types.Entities.FROSTQUEEN, "mob", 1],
-    snowrabbit: [Types.Entities.SNOWRABBIT, "mob", 1],
-    snowelf: [Types.Entities.SNOWELF, "mob", 1],
-    whitebear: [Types.Entities.WHITEBEAR, "mob", 1],
-    goldgolem: [Types.Entities.GOLDGOLEM, "mob", 1],
-    darkregion: [Types.Entities.DARKREGION, "mob", 1],
-    darkregionillusion: [Types.Entities.DARKREGIONILLUSION, "mob", 1],
-    nightmareregion: [Types.Entities.NIGHTMAREREGION, "mob", 1],
+    goldgolem: [Types.Entities.GOLDGOLEM, "mob", 1, 1],
 
     sword1: [Types.Entities.SWORD1, "weapon", 0],
     sword2: [Types.Entities.SWORD2, "weapon", 0],
@@ -355,7 +343,13 @@ var kinds = {
     firesword: [Types.Entities.FIRESWORD, "weapon", 0],
     whip: [Types.Entities.WHIP, "weapon", 0],
     forestguardiansword: [Types.Entities.FORESTGUARDIANSWORD, "weapon", 0],
-
+    sickle: [Types.Entities.SICKLE, "weapon", 0],
+    plunger: [Types.Entities.PLUNGER, "weapon", 0],
+    redsickle: [Types.Entities.REDSICKLE, "weapon", 0],
+    daywalker: [Types.Entities.DAYWALKER, "weapon", 0],
+    purplecloudkallege: [Types.Entities.PURPLECLOUDKALLEGE, "weapon", 0],
+    searage: [Types.Entities.SEARAGE, "weapon", 0],
+    
     clotharmor: [Types.Entities.CLOTHARMOR, "armor", 0],
     leatherarmor: [Types.Entities.LEATHERARMOR, "armor", 0],
     mailarmor: [Types.Entities.MAILARMOR, "armor", 0],
@@ -390,12 +384,19 @@ var kinds = {
     regionarmor: [Types.Entities.REGIONARMOR, "armor", 0],
     ghostrider: [Types.Entities.GHOSTRIDER, "armor", 0],
     taekwondo: [Types.Entities.TAEKWONDO, "armor", 0],
+    adminarmor: [Types.Entities.ADMINARMOR, "armor", 0],
+    rabbitarmor: [Types.Entities.RABBITARMOR, "armor", 0],
+    portalarmor: [Types.Entities.PORTALARMOR, "armor", 0],
+    seadragonarmor: [Types.Entities.SEADRAGONARMOR, "armor", 0],
+    pirateking: [Types.Entities.PIRATEKING, "armor", 0],
 
-    flask: [Types.Entities.FLASK, "object"],
-    cake: [Types.Entities.CAKE, "object"],
-    burger: [Types.Entities.BURGER, "object"],
-    chest: [Types.Entities.CHEST, "object"],
-    firepotion: [Types.Entities.FIREPOTION, "object"],
+    flask: [Types.Entities.FLASK, "object", 0],
+    cake: [Types.Entities.CAKE, "object", 0],
+    burger: [Types.Entities.BURGER, "object", 0],
+    chest: [Types.Entities.CHEST, "object", 0],
+    firepotion: [Types.Entities.FIREPOTION, "object", 0],
+    book: [Types.Entities.BOOK, "object", 0],
+    cd: [Types.Entities.CD, "object", 0],
 
     guard: [Types.Entities.GUARD, "npc", 0],
     villagegirl: [Types.Entities.VILLAGEGIRL, "npc", 0],
@@ -416,7 +417,7 @@ var kinds = {
 
     debenef: [Types.Entities.DEBENEF, "benef", 0],
     firebenef: [Types.Entities.FIREBENEF, "benef", 0],
-
+    
     getType: function(kind) {
         return kinds[Types.getKindAsString(kind)][1];
     },
@@ -426,7 +427,6 @@ var kinds = {
     getMobLevel: function(kind){
         return kinds[Types.getKindAsString(kind)][3];
     }
-
 };
 
 Types.rankedWeapons = [
@@ -453,13 +453,20 @@ Types.rankedWeapons = [
     Types.Entities.ICEROSE,
     Types.Entities.HALBERD,
     Types.Entities.WHIP,
+    Types.Entities.FORESTGUARDIANSWORD,
+    Types.Entities.SICKLE,
+    Types.Entities.PLUNGER,
+    Types.Entities.REDSICKLE,
+    Types.Entities.DAYWALKER,
+    Types.Entities.PURPLECLOUDKALLEGE,
+    Types.Entities.SEARAGE,
 
     Types.Entities.FIRESWORD,
-    Types.Entities.FORESTGUARDIANSWORD,
 ];
 
 Types.rankedArmors = [
     Types.Entities.CLOTHARMOR,
+//    Types.Entities.ADMINARMOR,
     Types.Entities.LEATHERARMOR,
     Types.Entities.MAILARMOR,
     Types.Entities.PLATEARMOR,
@@ -486,48 +493,78 @@ Types.rankedArmors = [
     Types.Entities.SCHOOLUNIFORM,
     Types.Entities.TAEKWONDO,
     Types.Entities.GAYARMOR,
-
     Types.Entities.NINJAARMOR,
-    Types.Entities.THIEFARMOR,
-    Types.Entities.DRAGONARMOR,
-    Types.Entities.FROSTARMOR,
     Types.Entities.BEAUTIFULLIFE,
-    Types.Entities.REGIONARMOR,
+    Types.Entities.THIEFARMOR,
+    Types.Entities.RABBITARMOR,
+    Types.Entities.PORTALARMOR,
     Types.Entities.GHOSTRIDER,
+    Types.Entities.FROSTARMOR,
+    Types.Entities.REGIONARMOR,
+    Types.Entities.SEADRAGONARMOR,
+    Types.Entities.PIRATEKING,
+    Types.Entities.DRAGONARMOR,
 ];
 
 Types.expForLevel = [
-    1, 16, 81, 256, 625,
-    1296, 2401, 4096, 6561, 10000,
-    14641, 20736, 28561, 38416, 50625,
-    65536, 83521, 104976, 130321, 160000,
-    194481, 234256, 279841, 331776, 390625,
-    456976, 531441, 614656, 707281, 810000,
-    923521, 1048576, 1185921, 1336336, 1500625,
-    1679616, 1874161, 2085136, 2313441, 2560000,
-    2825761, 3111696, 3418801, 3748096, 4100625,
-    4477456, 4879681, 5308416, 5764801, 6250000,
+    1, 2, 5, 16, 39,
+    81, 150, 256, 410, 625, // 10
+
+    915, 1296, 1785, 2401, 3164,
+    4096, 5220, 6561, 8145, 10000, // 20
+
+    12155, 14641, 17490, 20736, 24414,
+    28561, 33215, 38416, 44205, 50625, // 30
+
+    57720, 65536, 74120, 83521, 93789,
+    104976, 117135, 130321, 144590, 160000, // 40
+
+    176610, 194481, 213675, 234256, 256289,
+    279841, 304980, 331776, 360300, 390625, // 50
+
+    422825, 456976, 493155, 531441, 571914,
+    614656, 659750, 707281, 757335, 810000, // 60
+
+    865365, 923521, 984560, 1048576, 1115664,
+    1185921, 1259445, 1336336, 1416695, 1500625, // 70
+
+    1588230, 1679616, 1774890, 1874161, 1977539,
+    2085136, 2197065, 2313441, 2434380, 2560000, // 80
+
+    2690420, 2825761, 2966145, 3111696, 3262539,
+    3418801, 3580610, 3748096, 3921390, 4100625, // 90
+
+    4285935, 4477456, 4675325, 4879681, 5090664,
+    5318416, 5553080, 5804801, 6083725, 6410000, // 100
+
     6765201, 7311616, 7890481, 8503056, 9150625,
-    9834496, 10556001, 11316496, 12117361, 12960000,
+    9834496, 10556001, 11316496, 12117361, 12960000, // 110
+
     13845841, 14776336, 15752961, 16777216, 17850625,
-    18974736, 20151121, 21381376, 22667121, 24010000,
+    18974736, 20151121, 21381376, 22667121, 24010000, // 120
+
     25411681, 26873856, 28398241, 29986576, 31640625,
-    33362176, 35153041, 37015056, 38950081, 40960000,
+    33362176, 35153041, 37015056, 38950081, 40960000, // 130
+
     43046721, 45212176, 47458321, 49787136, 52200625,
-    54700816, 57289761, 59969536, 62742241, 65610000,
+    54700816, 57289761, 59969536, 62742241, 65610000, // 140
+
     68574961, 71639296, 74805201, 78074896, 81450625,
-    84934656, 88529281, 92236816, 96059601, 100000000,
+    84934656, 88529281, 92236816, 96059601, 100000000, // 150
+
+    108243216,
 ];
 
 Types.getLevel = function(exp){
     var i=1;
-    for(i=1; i<90; i++){
+    for(i=1; i<135; i++){
         if(exp < Types.expForLevel[i]){
             return i;
         }
     }
-    return 90;
+    return 135;
 };
+
 Types.getWeaponRank = function(weaponKind) {
     return _.indexOf(Types.rankedWeapons, weaponKind);
 };
@@ -535,6 +572,7 @@ Types.getWeaponRank = function(weaponKind) {
 Types.getArmorRank = function(armorKind) {
     return _.indexOf(Types.rankedArmors, armorKind);
 };
+
 Types.getMobExp = function(mobKind){
     return kinds.getMobExp(mobKind);
 };
@@ -579,13 +617,13 @@ Types.isChest = function(kind) {
 };
 
 Types.isItem = function(kind) {
-    return Types.isWeapon(kind)
-        || Types.isArmor(kind)
+    return Types.isWeapon(kind) 
+        || Types.isArmor(kind) 
         || (Types.isObject(kind) && !Types.isChest(kind));
 };
 
 Types.isHealingItem = function(kind) {
-    return kind === Types.Entities.FLASK
+    return kind === Types.Entities.FLASK 
         || kind === Types.Entities.BURGER;
 };
 
@@ -638,6 +676,7 @@ Types.forEachArmorKind = function(callback) {
         }
     });
 };
+
 Types.forEachWeaponKind = function(callback) {
     Types.forEachKind(function(kind, kindName) {
         if(Types.isWeapon(kind)) {
@@ -660,7 +699,7 @@ Types.getRandomItemKind = function(item) {
         forbidden = [Types.Entities.SWORD1, Types.Entities.CLOTHARMOR],
         itemKinds = _.difference(all, forbidden),
         i = Math.floor(Math.random() * _.size(itemKinds));
-
+    
     return itemKinds[i];
 };
 

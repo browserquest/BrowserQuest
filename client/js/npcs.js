@@ -37,8 +37,8 @@ define(['npc'], function(Npc) {
             init: function(id) {
                 this._super(id, Types.Entities.KING, 1);
                 this.beforeQuestCompleteTalk = [
-                    "Monster was caught by Princess Leona.",
-                    "Please, rescue the princess."
+                    "Monster was caught by Princess Leona",
+                    "Please, rescue the princess"
                 ];
             }
         }),
@@ -47,10 +47,8 @@ define(['npc'], function(Npc) {
             init: function(id) {
                 this._super(id, Types.Entities.AGENT, 1);
                 this.beforeQuestCompleteTalk = [
-                    "Do not try to bend the sword",
-                    "That's impossible",
-                    "Instead, only try to realize the truth...",
-                    "There is no sword."
+                    "Oh, I lost my girlfriend's birthday cake...",
+                    "Have you ever seen a cake near here?",
                 ]
             }
         }),
@@ -128,10 +126,7 @@ define(['npc'], function(Npc) {
                 this._super(id, Types.Entities.NYAN, 1);
                 this.idleSpeed = 50;
                 this.beforeQuestCompleteTalk = [
-                    "nyan nyan nyan nyan nyan",
-                    "nyan nyan nyan nyan nyan nyan nyan",
-                    "nyan nyan nyan nyan nyan nyan",
-                    "nyan nyan nyan nyan nyan nyan nyan nyan"
+                    "Do you want to find some music CDs? nyan",
                 ]
             }
         }),
@@ -160,16 +155,8 @@ define(['npc'], function(Npc) {
             init: function(id) {
                 this._super(id, Types.Entities.PRIEST, 1);
                 this.beforeQuestCompleteTalk = [
-                    "Oh, hello, young man.",
-                    "Wisdom is everything, so I'll share a few guidelines with you.",
-                    "You are free to go wherever you like in this world",
-                    "but beware of the many foes that await you.",
-                    "You can find many weapons and armors by killing enemies.",
-                    "The tougher the enemy, the higher the potential rewards.",
-                    "You can also unlock achievements by exploring and hunting.",
-                    "Click on the small cup icon to see a list of all the achievements.",
-                    "Please stay a while and enjoy the many surprises of BrowserQuest",
-                    "Farewell, young friend."
+                    "I came to pray to the friend of the skeleton king who died, but I can not do it because there are too many skeletons...",
+                    "Please, kill skeleton",
                 ]
             }
         }),
@@ -178,10 +165,8 @@ define(['npc'], function(Npc) {
             init: function(id) {
                 this._super(id, Types.Entities.BEACHNPC, 1);
                 this.beforeQuestCompleteTalk = [
-                    "Don't mind me, I'm just here on vacation.",
-                    "I have to say...",
-                    "These giant crabs are somewhat annoying.",
-                    "Could you please get rid of them for me?"
+                    "There are so many crabs that I can not play.",
+                    "Please, kill crab",
                 ]
             }
         }),

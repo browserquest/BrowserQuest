@@ -1,5 +1,5 @@
 
-define(['jquery', 'storage'], function($, Storage) {
+define(['jquery'], function($) {
 
     var App = Class.extend({
         init: function() {
@@ -9,13 +9,24 @@ define(['jquery', 'storage'], function($, Storage) {
             this.ready = false;
             this.storage = new Storage();
             this.watchNameInputInterval = setInterval(this.toggleButton.bind(this), 100);
-            this.initFormFields();
+            this.initFormFields(),
 
-            if(localStorage && localStorage.data) {
-                this.frontPage = 'loadcharacter';
-            } else {
-                this.frontPage = 'createcharacter';
-            }
+            this.inventoryNumber = 0,
+            this.dropDialogPopuped = false;
+
+            var self = this;
+            $('#boardbutton').click(function(event){
+                if(self.game && self.ready){
+                    self.game.chathandler.hide();
+                    self.game.boardhandler.show();
+                }
+            });
+            $('#gamebutton').click(function(event){
+                if(self.game && self.ready){
+                    self.game.chathandler.show();
+                    self.game.boardhandler.hide();
+                }
+            });
         },
 
         setGame: function(game) {
@@ -312,6 +323,9 @@ define(['jquery', 'storage'], function($, Storage) {
                     x = ((sprite.animationData.idle_down.length-1)*sprite.width),
                     y = ((sprite.animationData.idle_down.row)*sprite.height);
                 $(el+' .name').text(name);
+                if(el === '#inspector') {
+                    $(el + ' .details').text("level." + Types.getMobLevel(Types.getKindFromString(name)));
+                }
                 $(el+' .headshot div').height(sprite.height).width(sprite.width);
                 $(el+' .headshot div').css('margin-left', -sprite.width/2).css('margin-top', -sprite.height/2);
                 $(el+' .headshot div').css('background', 'url(img/1/'+name+'.png) no-repeat -'+x+'px -'+y+'px');
@@ -423,6 +437,26 @@ define(['jquery', 'storage'], function($, Storage) {
                 $('#chatbox .legend').fadeOut('fast');
                 $('#chatinput').blur();
                 $('#chatbutton').removeClass('active');
+            }
+        },
+
+        showDropDialog: function(inventoryNumber) {
+            if(this.game.started) {
+                $('#dropDialog').addClass('active');
+                $('#dropCount').focus();
+                $('#dropCount').select();
+                
+                this.inventoryNumber = inventoryNumber;
+                this.dropDialogPopuped = true;
+            }
+        },
+
+        hideDropDialog: function() {
+            if(this.game.started) {
+                $('#dropDialog').removeClass('active');
+                $('#dropCount').blur();
+
+                this.dropDialogPopuped = false;
             }
         },
 

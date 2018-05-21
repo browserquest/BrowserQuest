@@ -2,9 +2,9 @@ var Utils = require('./utils');
 
 var Formulas = {};
 
-Formulas.dmg = function (weaponLevel, attackerLevel, armorLevel, defenderLevel) {
-    var dealt = (weaponLevel * 0.9 + attackerLevel * 0.65) * Utils.randomInt(6, 9),
-        absorbed = (armorLevel * 0.9 + defenderLevel * 0.65) * 2,
+Formulas.dmg = function(attacker, defender) {
+    var dealt = (attacker.weaponLevel*0.9+attacker.level*0.3 + 5) * Utils.randomInt(6, 9),
+        absorbed = (defender.armorLevel*1.8+defender.level*0.325) * 2,
         dmg =  Math.floor(dealt - absorbed);
 
     //console.log("abs: "+absorbed+"   dealt: "+ dealt+"   dmg: "+ (dealt - absorbed));
@@ -16,7 +16,7 @@ Formulas.dmg = function (weaponLevel, attackerLevel, armorLevel, defenderLevel) 
 };
 
 Formulas.hp = function (armorLevel, entityLevel) {
-    var hp = 80 + ((armorLevel + entityLevel) * 15);;
+    var hp = 200 + ((armorLevel + entityLevel) * 8);;
     return hp;
 };
 

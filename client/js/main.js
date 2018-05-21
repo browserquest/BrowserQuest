@@ -181,6 +181,33 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
                 }
             });
 
+            $('#dropAccept').click(function(event) {
+                try {
+                    var count = parseInt($('#dropCount').val());
+                    if(count > 0) {
+                        if(count > game.player.inventoryCount[app.inventoryNumber])
+                            count = game.player.inventoryCount[app.inventoryNumber];
+
+                        game.client.sendInventory("empty", app.inventoryNumber, count);
+
+                        game.player.inventoryCount[app.inventoryNumber] -= count;
+                        if(game.player.inventoryCount[app.inventoryNumber] === 0)
+                            game.player.inventory[app.inventoryNumber] = null;
+                    }
+                } catch(e) {
+                }
+
+                setTimeout(function () {
+                    app.hideDropDialog();
+                }, 100);
+            });
+
+            $('#dropCancel').click(function(event) {
+                setTimeout(function () {
+                    app.hideDropDialog();
+                }, 100);
+            });
+
             document.addEventListener("touchstart", function() {},false);
 
             $('#resize-check').bind("transitionend", app.resizeUi.bind(app));
@@ -340,7 +367,7 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
                     }
                 }
 
-                if(game.started && !game.renderer.mobile && game.player && !hasClosedParchment) {
+                if(game.started && !game.renderer.mobile && game.player && !hasClosedParchment  && !app.dropDialogPopuped) {
                     game.click();
                 }
             });
@@ -355,7 +382,16 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
                 app.setMouseCoordinates(event);
                 if(game.started) {
             	    game.pvpFlag = event.shiftKey;
-                  game.movecursor();
+                    game.movecursor();
+                }
+            });
+
+            $(document).mouseup(function(event) { 
+                if(event.button === 2) {
+                    app.center();
+                    app.setMouseCoordinates(event);
+
+                    game.rightClick();
                 }
             });
 
@@ -408,6 +444,8 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
                 }
                 else if(key === 16)
                     game.pvpFlag = true;
+                else if(key === 27)
+                    app.hideDropDialog();
                 if (game.started && !$('#chatbox').hasClass('active')) {
                     pos = {
                         x: game.player.gridX,
@@ -621,13 +659,13 @@ define(['jquery', 'app', 'entrypoint'], function($, App, EntryPoint) {
                     }
                 }
 
-                if($('#chatinput:focus').size() == 0 && $('#nameinput:focus').size() == 0 && game.ready) {
+                if($('#chatinput:focus').size() == 0 && $('#nameinput:focus').size() == 0 && game.ready && !app.dropDialogPopuped) {
                     if(key === 13) { // Enter
                         $chat.focus();
                         return false
-                    } else if(key === 8 ) { // BackSpace
+                    } else if(key === 8) { // BackSpace
                         return false;
-                    } else if(key === 49){ // 1
+                    } else if(key === 49 || key === 50){ // 1,2,6
                         game.keyDown(key);
                         return false;
                     } else if(key === 107) { // +
