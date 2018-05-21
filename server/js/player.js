@@ -84,7 +84,7 @@ module.exports = Player = Character.extend({
                             log.info("CREATE: " + self.name);
                             self.email = Utils.sanitize(message[3]);
                             self.pw = hash;
-                            databaseHandler.createPlayer(self);
+                            databaseHandler.loadPlayer(self);
                         })
                     });
                 } else {
