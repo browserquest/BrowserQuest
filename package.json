@@ -21,11 +21,13 @@
   },
   "devDependencies": {
     "mocha": ">=1",
+    "nodemon": "^1.17.4",
     "should": ">=1",
     "sinon": ">=1"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "dev": "nodemon ./server/js/main.js"
   },
   "engines": {
     "node": "0.10.x",

@@ -87,7 +87,7 @@ module.exports = World = cls.Class.extend({
 
             var move_callback = function(x, y) {
                 log.debug(player.name + " is moving to (" + x + ", " + y + ").");
-                 var isPVP = self.map.isPVP(x, y);
+                var isPVP = self.map.isPVP(x, y);
                 player.flagPVP(isPVP); 
                 player.forEachAttacker(function(mob) {
                      if(mob.target === null){
@@ -289,7 +289,7 @@ module.exports = World = cls.Class.extend({
             log.error("pushToPlayer: player was undefined");
         }
     },
-    
+
     pushToGuild: function(guild, message, except) {
 		var	self = this;
 
@@ -408,7 +408,7 @@ module.exports = World = cls.Class.extend({
 		}
 		return false;
 	},
-	
+
 	reloadGuild: function(guildId, guildName){
 			var res = false;
 			var lastItem = 0;
@@ -439,7 +439,7 @@ module.exports = World = cls.Class.extend({
 			}
 		return res;
 	},
-	
+
 	addGuild: function(guildName){
 		var res = true;
 		var id=0;//an ID here
@@ -447,7 +447,7 @@ module.exports = World = cls.Class.extend({
 			id = parseInt(key,10)+1;
 			return (guild.name !== guildName);
 		});
-		if (res) { 
+		if (res) {
 			this.guilds[id] = new Guild(id, guildName, this);
 			res = id;
 		}
@@ -663,11 +663,13 @@ module.exports = World = cls.Class.extend({
                 var mob = entity,
                     item = this.getDroppedItem(mob);
                 var mainTanker = this.getEntityById(mob.getMainTankerId());
+                console.log('--------entity--------');
+                console.log(entity);
 
                 if(mainTanker && mainTanker instanceof Player){
                   mainTanker.incExp(Types.getMobExp(mob.kind));
                   this.pushToPlayer(mainTanker, new Messages.Kill(mob, mainTanker.level, mainTanker.experience));
-                } else{
+                } else {
                   attacker.incExp(Types.getMobExp(mob.kind));
                   this.pushToPlayer(attacker, new Messages.Kill(mob, attacker.level, attacker.experience));
                 }
