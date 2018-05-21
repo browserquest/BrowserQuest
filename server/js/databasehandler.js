@@ -1,6 +1,6 @@
 
 var cls = require("./lib/class"),
-
+    bcrypt = require('bcrypt'),
     Player = require('./player'),
     Messages = require("./message"),
     redis = require("redis"),

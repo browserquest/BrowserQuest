@@ -43,7 +43,7 @@ function main(config) {
     }, 1000);
 
     log.info("Starting BrowserQuest game server...");
-    var databaseHandler = new DatabaseHandler(config);
+    var databaseHandler = new DatabaseHandler();
     // var selector = DatabaseSelector(config);
     // databaseHandler = new selector(config);
 
