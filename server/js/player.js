@@ -200,6 +200,8 @@ module.exports = Player = Character.extend({
                     if(dmg > 0) {
                       if(mob.type !== "player"){
                         mob.receiveDamage(dmg, self.id);
+                        console.log("killed mob kind " + mob.kind);
+                        console.log(Types.Entities.CRAB);
                         if(mob.hitPoints <= 0) {
                             if(mob.kind === Types.Entities.RAT) {
                                 if(self.achievementFound[2].found && self.achievementProgress[2] !== 999){
@@ -216,6 +218,8 @@ module.exports = Player = Character.extend({
                                     databaseHandler.progressAchievement(self.name, 2, self.achievementProgress[2]);
                                 }
                             } else if(mob.kind === Types.Entities.CRAB){
+                                console.log(self.achievementFound[18]);
+                                console.log(self.achievementProgress[18]);
                                 if(self.achievementFound[18] && self.achievementProgress[18] !== 999){
                                     if(isNaN(self.achievementProgress[18])){
                                         self.achievementProgress[18] = 0;
@@ -227,21 +231,24 @@ module.exports = Player = Character.extend({
                                         self.achievementProgress[18] = 999;
                                         self.incExp(50);
                                     }
+                                    console.log('kill crab king');
+                                    console.log(self.achievementProgress[18]);
                                     databaseHandler.progressAchievement(self.name, 4, self.achievementProgress[4]);
                                 }
                             } else if(mob.kind === Types.Entities.SKELETON){
-                                if(self.achievement[21].found && self.achievement[21].progress !== 999){
-                                    if(isNaN(self.achievement[21].progress)){
-                                        self.achievement[21].progress = 0;
+                                if(self.achievementFound && self.achievement[21].progress !== 999){
+                                    const achievementId = 21;
+                                    if(isNaN(self.achievementProgress[achievementId])){
+                                        self.achievementProgress[achievementId] = 0;
                                     } else{
-                                        self.achievement[21].progress++;
+                                        self.achievementProgress[achievementId]++;
                                     }
-                                    if(self.achievement[21].progress >= 10){
+                                    if(self.achievementProgress[achievementId] >= 10){
                                         self.send([Types.Messages.ACHIEVEMENT, 21, "complete"]);
-                                        self.achievement[21].progress = 999;
+                                        self.achievementProgress[achievementId] = 999;
                                         self.incExp(200);
                                     }
-                                    databaseHandler.progressAchievement(self.name, 7, self.achievement[7].progress);
+                                    databaseHandler.progressAchievement(self.name, 7, self.achievementProgress[achievementId]);
                                 }
                             }
                         }
@@ -439,26 +446,26 @@ module.exports = Player = Character.extend({
             else if(action === Types.Messages.ACHIEVEMENT) {
                 log.info("ACHIEVEMENT: " + self.name + " " + message[1] + " " + message[2]);
                 if(message[2] === "found") {
-                    self.achievement[message[1]].found = true;
+                    self.achievementFound[message[1]] = true;
                     databaseHandler.foundAchievement(self.name, message[1]);
                 }
             } else if(action === Types.Messages.TALKTONPC){
                 log.info("TALKTONPC: " + self.name + " " + message[1]);
                 if(message[1] === Types.Entities.VILLAGER){
                     if(self.armor === Types.Entities.LEATHERARMOR
-                    && self.achievement[17].found === true
-                    && self.achievement[17].progress !== 999){
+                    && self.achievementFound[17] === true
+                    && self.achievementProgress[17] !== 999){
                         self.equipItem(Types.Entities.CLOTHARMOR);
-                        self.send([Types.Messages.ACHIEVEMENT, 3, "complete"]);
-                        self.achievement[17].progress = 999;
+                        self.send([Types.Messages.ACHIEVEMENT, 17, "complete"]);
+                        self.achievementProgress[17] = 999;
                         self.incExp(50);
-                        databaseHandler.progressAchievement(self.name, 17, self.achievement[17].progress);
+                        databaseHandler.progressAchievement(self.name, 17, self.achievementProgress[17]);
                     }
                 } else if(message[1] === Types.Entities.AGENT){
                     if((self.inventory[0] === Types.Entities.CAKE
                     || self.inventory[1] === Types.Entities.CAKE)
-                    && self.achievement[19].found === true
-                    && self.achievement[19].progress !== 999) {
+                    && self.achievementFound[19] === true
+                    && self.achievementProgress[19] !== 999) {
                         if(self.inventory[0] === Types.Entities.CAKE){
                             self.inventory[0] = null;
                             databaseHandler.makeEmptyInventory(self.name, 0);
@@ -468,15 +475,16 @@ module.exports = Player = Character.extend({
                         }
 
                         self.send([Types.Messages.ACHIEVEMENT, 19, "complete"]);
-                        self.achievement[19].progress = 999;
+                        self.achievementProgress[19] = 999;
                         self.incExp(50);
-                        databaseHandler.progressAchievement(self.name, 19, self.achievement[19].progress);
+                        databaseHandler.progressAchievement(self.name, 19, self.achievementProgress[19]);
                     }
                 } else if(message[1] === Types.Entities.NYAN){
+                    const achievementId = 20;
                     if((self.inventory[0] === Types.Entities.CD
                      || self.inventory[1] === Types.Entities.CD)
-                    && self.achievement[20].found === true
-                    && self.achievement[20].progress !== 999){
+                    && self.achievementFound[achievementId] === true
+                    && self.achievementProgress[achievementId] !== 999){
                         if(self.inventory[0] === Types.Entities.CD){
                             self.inventory[0] = null;
                             databaseHandler.makeEmptyInventory(self.name, 0);
@@ -486,19 +494,20 @@ module.exports = Player = Character.extend({
                         }
 
                         self.send([Types.Messages.ACHIEVEMENT, 20, "complete"]);
-                        self.achievement[20].progress = 999;
+                        self.achievementProgress[achievementId] = 999;
                         self.incExp(100);
-                        databaseHandler.progressAchievement(self.name, 20, self.achievement[20].progress);
+                        databaseHandler.progressAchievement(self.name, 20, self.achievementProgress[achievementId]);
                     }
                 } else if(message[1] === Types.Entities.DESERTNPC){
+                    const achievementId = 22;
                     if(self.weapon === Types.Entities.AXE
-                    && self.achievement[22].found === true
-                    && self.achievement[22].progress !== 999){
+                    && self.achievementFound[achievementId] === true
+                    && self.achievementProgress[achievementId] !== 999){
                         self.equipItem(Types.Entities.SWORD2);
                         self.send([Types.Messages.ACHIEVEMENT, 22, "complete"]);
-                        self.achievement[22].progress = 999;
+                        self.achievementProgress[achievementId] = 999;
                         self.incExp(200);
-                        databaseHandler.progressAchievement(self.name, 22, self.achievement[22].progress);
+                        databaseHandler.progressAchievement(self.name, 22, self.achievementProgress[achievementId]);
                     }
                 }
             } else if(action === Types.Messages.MAGIC){
