@@ -20,8 +20,6 @@
     "underscore": "~1.7.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
     "mocha": ">=1",
     "nodemon": "^1.17.4",
     "should": ">=1",
@@ -29,7 +27,7 @@
   },
   "scripts": {
     "test": "make test",
-    "dev": "nodemon --exec yarn run babel-node --presets env -- ./server/js/main.js"
+    "dev": "nodemon ./server/js/main.js"
   },
   "engines": {
     "node": "0.10.x",

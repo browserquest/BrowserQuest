@@ -106,7 +106,6 @@ module.exports = DatabaseHandler = cls.Class.extend({
                             let achievements = JSON.parse(replies[36] || '{}');
 
                             // Check Password
-
                             bcrypt.compare(player.pw, pw, function(err, res) {
                                 if(!res) {
                                     player.connection.sendUTF8("invalidlogin");

@@ -8,7 +8,11 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
             this.isLoaded = false;
             this.offsetX = 0;
             this.offsetY = 0;
-            this.loadJSON(sprites[name]);
+            var data = sprites[name]
+            if(!data) {
+                data = sprites['rat'];
+            }
+            this.loadJSON(data);
         },
 
         loadJSON: function(data) {

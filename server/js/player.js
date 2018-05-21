@@ -85,7 +85,7 @@ module.exports = Player = Character.extend({
                             log.info("CREATE: " + self.name);
                             self.email = Utils.sanitize(message[3]);
                             self.pw = hash;
-                            databaseHandler.loadPlayer(self);
+                            databaseHandler.createPlayer(self);
                         })
                     });
                 } else {
@@ -886,18 +886,15 @@ module.exports = Player = Character.extend({
 
         self.server.addPlayer(self);
         self.server.enter_callback(self);
-
+        console.log('----achievementProgress-----')
+        console.log(achievementProgress);
+        
         self.send([
             Types.Messages.WELCOME, self.id, self.name, self.x, self.y,
             self.hitPoints, armor, weapon, avatar, weaponAvatar,
             self.experience, self.admin,
             inventory[0], inventoryNumber[0], inventory[1], inventoryNumber[1],
-            achievementFound[0], achievementProgress[0], achievementFound[1],
-            achievementProgress[1], achievementFound[2], achievementProgress[2],
-            achievementFound[3], achievementProgress[3], achievementFound[4],
-            achievementProgress[4], achievementFound[5], achievementProgress[5],
-            achievementFound[6], achievementProgress[6], achievementFound[7],
-            achievementProgress[7]
+            achievementFound, achievementProgress
         ]);
 
         self.hasEnteredGame = true;
